@@ -3,15 +3,11 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ChevronRight, Upload, X, Image as ImageIcon } from 'lucide-react'
+import Image from 'next/image'
+import { ChevronRight, X, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
-
-const categories = [
-  'Tecnologia', 'Moda', 'Casa & Jardim', 'Veículos', 'Eletrónicos',
-  'Beleza', 'Desporto', 'Alimentos', 'Educação', 'Serviços',
-]
 
 const conditions = [
   { value: 'novo', label: 'Novo' },
@@ -95,7 +91,7 @@ export default function NewProductPage() {
           <div className="flex flex-wrap gap-3">
             {images.map((img, i) => (
               <div key={i} className="relative h-24 w-24 rounded-lg overflow-hidden border border-gray-200">
-                <img src={img} alt="" className="h-full w-full object-cover" />
+                <Image src={img} alt="" fill unoptimized className="object-cover" />
                 <button
                   type="button"
                   onClick={() => removeImage(i)}

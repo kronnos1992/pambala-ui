@@ -3,11 +3,11 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { Heart, ShoppingCart, Star, MapPin } from 'lucide-react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { formatPrice, truncate } from '@/lib/utils'
 import { useCartStore } from '@/store/cart-store'
 import { toast } from '@/components/ui/toast'
-import { Badge } from '@/components/ui/badge'
 
 interface ProductCardProps {
   product: {
@@ -69,10 +69,12 @@ export function ProductCard({ product }: ProductCardProps) {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="relative aspect-square overflow-hidden bg-gray-100">
-        <img
+        <Image
           src={product.image}
           alt={product.name}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          fill
+          unoptimized
+          className="object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className={cn(
           'absolute top-2 left-2 px-2 py-0.5 rounded-md text-xs font-semibold',

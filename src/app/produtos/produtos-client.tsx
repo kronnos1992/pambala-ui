@@ -1,7 +1,7 @@
 'use client'
 
 import * as React from 'react'
-import { useSearchParams, useRouter } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { SlidersHorizontal, X, ChevronRight } from 'lucide-react'
 import { ProductGrid } from '@/components/product/product-grid'
 import { ProductFilters } from '@/components/product/product-filters'
@@ -25,7 +25,6 @@ const allProducts = [
 
 export default function ProdutosClient() {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const [mobileFilters, setMobileFilters] = React.useState(false)
 
   const q = searchParams.get('q') || ''

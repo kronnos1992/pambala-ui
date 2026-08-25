@@ -24,7 +24,7 @@ api.interceptors.response.use(
       if (typeof window !== 'undefined') {
         localStorage.removeItem('pambala-token')
         localStorage.removeItem('pambala-user')
-        window.location.href = '/login'
+        window.location.href = '/login' // eslint-disable-line @next/next/no-location-assign-relative-destination
       }
     }
     return Promise.reject(error)

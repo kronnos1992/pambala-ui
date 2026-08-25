@@ -3,9 +3,10 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { ChevronRight, Plus, Minus, Trash2, ShoppingBag, ArrowRight } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { useCartStore } from '@/store/cart-store'
-import { formatPrice, cn } from '@/lib/utils'
+import { formatPrice } from '@/lib/utils'
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, clearCart, total } = useCartStore()
@@ -67,10 +68,13 @@ export default function CartPage() {
                 {storeItems.map((item) => (
                   <div key={item.id} className="flex gap-4 p-4">
                     <Link href={`/produtos/${item.id}`}>
-                      <img
+                      <Image
                         src={item.image}
                         alt={item.name}
-                        className="h-24 w-24 rounded-lg object-cover shrink-0"
+                        width={96}
+                        height={96}
+                        unoptimized
+                        className="rounded-lg object-cover shrink-0"
                       />
                     </Link>
                     <div className="flex-1 min-w-0">

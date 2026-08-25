@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { use } from 'react'
 import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
@@ -110,7 +111,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <div className="space-y-3">
                 {order.items.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <img src={item.image} alt={item.name} className="h-16 w-16 rounded-lg object-cover" />
+                    <Image src={item.image} alt={item.name} width={64} height={64} unoptimized className="rounded-lg object-cover" />
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.name}</p>
                       <p className="text-sm text-gray-500">Qtd: {item.quantity}</p>

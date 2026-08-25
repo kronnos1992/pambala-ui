@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 import { ZoomIn } from 'lucide-react'
 
@@ -37,7 +38,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
                 : 'border-gray-200 hover:border-gray-300 opacity-70 hover:opacity-100'
             )}
           >
-            <img src={img} alt={`${name} ${i + 1}`} className="h-full w-full object-cover" />
+            <Image src={img} alt={`${name} ${i + 1}`} fill unoptimized className="object-cover" />
           </button>
         ))}
       </div>
@@ -48,10 +49,12 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
         onMouseLeave={() => setIsZoomed(false)}
         onMouseMove={handleMouseMove}
       >
-        <img
+        <Image
           src={images[selectedIndex]}
           alt={name}
-          className="h-full w-full object-cover transition-transform duration-200"
+          fill
+          unoptimized
+          className="object-cover transition-transform duration-200"
           style={
             isZoomed
               ? {

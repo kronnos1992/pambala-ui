@@ -61,7 +61,7 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
 
   React.useEffect(() => {
     updateParams()
-  }, [sort, province])
+  }, [sort, province, updateParams])
 
   const toggleCondition = (value: string) => {
     setSelectedConditions((prev) =>

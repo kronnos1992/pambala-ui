@@ -20,18 +20,15 @@ export function SearchBar({ className, placeholder, defaultValue = '' }: SearchB
   const router = useRouter()
   const [query, setQuery] = React.useState(defaultValue)
   const [showSuggestions, setShowSuggestions] = React.useState(false)
-  const [filteredSuggestions, setFilteredSuggestions] = React.useState<string[]>([])
   const wrapperRef = React.useRef<HTMLDivElement>(null)
 
-  React.useEffect(() => {
+  const filteredSuggestions = React.useMemo(() => {
     if (query.length > 0) {
-      const filtered = suggestions.filter((s) =>
+      return suggestions.filter((s) =>
         s.toLowerCase().includes(query.toLowerCase())
       )
-      setFilteredSuggestions(filtered)
-    } else {
-      setFilteredSuggestions(suggestions.slice(0, 6))
     }
+    return suggestions.slice(0, 6)
   }, [query])
 
   React.useEffect(() => {

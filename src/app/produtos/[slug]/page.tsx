@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { use } from 'react'
 import {
   ChevronRight, Minus, Plus, ShoppingCart, Heart, Star, MapPin,
-  Store, Truck, Shield, RotateCcw, MessageCircle
+  Truck, Shield, RotateCcw
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

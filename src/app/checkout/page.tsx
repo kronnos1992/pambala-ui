@@ -4,6 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ChevronRight, CreditCard, Banknote, Truck, Check } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCartStore } from '@/store/cart-store'
@@ -28,7 +29,6 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCartStore()
   const user = useAuthStore((s) => s.user)
   const [loading, setLoading] = React.useState(false)
-  const [step, setStep] = React.useState(1)
   const [paymentMethod, setPaymentMethod] = React.useState('multicaixa')
   const [form, setForm] = React.useState({
     name: user?.name || '',
@@ -189,7 +189,7 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.id} className="flex items-center gap-3">
-                  <img src={item.image} alt={item.name} className="h-12 w-12 rounded-lg object-cover" />
+                  <Image src={item.image} alt={item.name} width={48} height={48} unoptimized className="rounded-lg object-cover" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
                     <p className="text-xs text-gray-500">Qtd: {item.quantity}</p>

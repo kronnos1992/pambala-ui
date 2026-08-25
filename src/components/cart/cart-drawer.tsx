@@ -2,6 +2,7 @@
 
 import * as React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react'
 import { useCartStore } from '@/store/cart-store'
 import { formatPrice } from '@/lib/utils'
@@ -56,10 +57,13 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
             <div className="space-y-4">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-3 rounded-lg border border-gray-100 p-3">
-                  <img
+                  <Image
                     src={item.image}
                     alt={item.name}
-                    className="h-20 w-20 rounded-lg object-cover"
+                    width={80}
+                    height={80}
+                    unoptimized
+                    className="rounded-lg object-cover"
                   />
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-gray-900 truncate">{item.name}</h4>

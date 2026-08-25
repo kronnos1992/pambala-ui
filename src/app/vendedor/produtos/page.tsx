@@ -3,6 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { ChevronRight, Plus, Edit, Trash2, Search, Eye } from 'lucide-react'
+import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { formatPrice, cn } from '@/lib/utils'
 
@@ -71,7 +72,7 @@ export default function SellerProductsPage() {
                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-6 py-3">
                     <div className="flex items-center gap-3">
-                      <img src={product.image} alt={product.name} className="h-12 w-12 rounded-lg object-cover" />
+                      <Image src={product.image} alt={product.name} width={48} height={48} unoptimized className="rounded-lg object-cover" />
                       <span className="text-sm font-medium text-gray-900 max-w-[250px] truncate">{product.name}</span>
                     </div>
                   </td>
