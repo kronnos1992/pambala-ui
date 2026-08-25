@@ -10,26 +10,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { useRouter } from 'next/navigation'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-
-const orders = [
-  { id: 'ORD-001', date: '2024-12-20', total: 450000, status: 'entregue', items: 2 },
-  { id: 'ORD-002', date: '2024-12-18', total: 95000, status: 'enviado', items: 1 },
-  { id: 'ORD-003', date: '2024-12-15', total: 280000, status: 'processando', items: 3 },
-]
-
-const statusColors: Record<string, string> = {
-  entregue: 'bg-emerald-100 text-emerald-700',
-  enviado: 'bg-blue-100 text-blue-700',
-  processando: 'bg-amber-100 text-amber-700',
-  cancelado: 'bg-red-100 text-red-700',
-}
-
-const statusLabels: Record<string, string> = {
-  entregue: 'Entregue',
-  enviado: 'Enviado',
-  processando: 'Processando',
-  cancelado: 'Cancelado',
-}
+import { fetchOrders, updateProfile, type UiOrder, getStatusLabel, getStatusColor } from '@/lib/api-helpers'
 
 export default function MinhaContaPage() {
   const router = useRouter()
@@ -40,6 +21,15 @@ export default function MinhaContaPage() {
     email: user?.email || '',
     phone: user?.phone || '',
   })
+  const [orders, setOrders] = React.useState<UiOrder[]>([])
+  const [loadingOrders, setLoadingOrders] = React.useState(true)
+
+  React.useEffect(() => {
+    fetchOrders({ limit: 10 })
+      .then((data) => setOrders(data.orders))
+      .catch(() => {})
+      .finally(() => setLoadingOrders(false))
+  }, [])
 
   const tabs = [
     { id: 'profile', label: 'Perfil', icon: User },
@@ -48,10 +38,20 @@ export default function MinhaContaPage() {
     { id: 'favorites', label: 'Favoritos', icon: Heart },
   ]
 
-  const handleSaveProfile = () => {
-    if (user) {
-      setUser({ ...user, name: form.name, email: form.email, phone: form.phone })
+  const handleSaveProfile = async () => {
+    try {
+      const updated = await updateProfile({ name: form.name, phone: form.phone })
+      setUser({
+        id: updated.id,
+        name: updated.name,
+        email: updated.email,
+        phone: updated.phone,
+        role: user?.role || 'buyer',
+        avatar: updated.avatar,
+      })
       toast('Perfil atualizado com sucesso!', 'success')
+    } catch {
+      toast('Erro ao atualizar perfil', 'error')
     }
   }
 
@@ -126,6 +126,7 @@ export default function MinhaContaPage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  disabled
                 />
                 <Input
                   label="Telefone"
@@ -141,26 +142,44 @@ export default function MinhaContaPage() {
           {activeTab === 'orders' && (
             <div className="space-y-4">
               <h2 className="text-lg font-semibold text-gray-900">Os Meus Pedidos</h2>
-              {orders.map((order) => (
-                <Link
-                  key={order.id}
-                  href={`/minha-conta/pedidos/${order.id}`}
-                  className="block rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md transition-shadow"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-semibold text-gray-900">{order.id}</p>
-                      <p className="text-sm text-gray-500">{order.date} · {order.items} itens</p>
+              {loadingOrders ? (
+                <div className="space-y-3">
+                  {Array.from({ length: 3 }).map((_, i) => (
+                    <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+                      <div className="flex justify-between">
+                        <div>
+                          <div className="h-4 bg-gray-100 rounded w-24 mb-2" />
+                          <div className="h-3 bg-gray-100 rounded w-48" />
+                        </div>
+                        <div className="h-4 bg-gray-100 rounded w-20" />
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="font-bold text-gray-900">{new Intl.NumberFormat('pt-AO', { style: 'decimal' }).format(order.total)} Kz</p>
-                      <span className={cn('inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold', statusColors[order.status])}>
-                        {statusLabels[order.status]}
-                      </span>
+                  ))}
+                </div>
+              ) : orders.length > 0 ? (
+                orders.map((order) => (
+                  <Link
+                    key={order.id}
+                    href={`/minha-conta/pedidos/${order.id}`}
+                    className="block rounded-xl border border-gray-200 bg-white p-4 hover:shadow-md transition-shadow"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-semibold text-gray-900">{order.id}</p>
+                        <p className="text-sm text-gray-500">{order.date} · {order.items} itens</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-gray-900">{new Intl.NumberFormat('pt-AO', { style: 'decimal' }).format(order.total)} Kz</p>
+                        <span className={cn('inline-block mt-1 px-2 py-0.5 rounded-full text-xs font-semibold', getStatusColor(order.status))}>
+                          {getStatusLabel(order.status)}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">Nenhum pedido ainda.</p>
+              )}
             </div>
           )}
 

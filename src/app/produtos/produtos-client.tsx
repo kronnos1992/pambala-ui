@@ -7,50 +7,50 @@ import { ProductGrid } from '@/components/product/product-grid'
 import { ProductFilters } from '@/components/product/product-filters'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-
-const allProducts = [
-  { id: '1', name: 'iPhone 15 Pro Max 256GB', slug: 'iphone-15-pro-max', price: 450000, image: 'https://placehold.co/400x400/f0fdf4/166534?text=iPhone+15', storeName: 'TechStore', storeSlug: 'techstore', province: 'Luanda', condition: 'novo' as const, rating: 4.8, reviewCount: 124, stock: 10 },
-  { id: '2', name: 'Samsung Galaxy S24 Ultra', slug: 'samsung-galaxy-s24', price: 380000, image: 'https://placehold.co/400x400/f0f9ff/0369a1?text=Galaxy+S24', storeName: 'MegaLoja', storeSlug: 'megaloja', province: 'Luanda', condition: 'novo' as const, rating: 4.7, reviewCount: 89, stock: 5 },
-  { id: '3', name: 'MacBook Air M3 15"', slug: 'macbook-air-m3', price: 620000, image: 'https://placehold.co/400x400/faf5ff/7c3aed?text=MacBook+Air', storeName: 'Apple Store AO', storeSlug: 'apple-store-ao', province: 'Luanda', condition: 'novo' as const, rating: 4.9, reviewCount: 56, stock: 3 },
-  { id: '4', name: 'Sofá Modular 3 Lugares', slug: 'sofa-modular-3', price: 85000, image: 'https://placehold.co/400x400/fef3c7/b45309?text=Sof%C3%A1', storeName: 'Casa & Estilo', storeSlug: 'casa-estilo', province: 'Benguela', condition: 'novo' as const, rating: 4.5, reviewCount: 32, stock: 8 },
-  { id: '5', name: 'Honda Civic 2022', slug: 'honda-civic-2022', price: 3500000, image: 'https://placehold.co/400x400/ecfdf5/059669?text=Honda+Civic', storeName: 'AutoAngola', storeSlug: 'autoangola', province: 'Luanda', condition: 'usado' as const, rating: 4.6, reviewCount: 18, stock: 1 },
-  { id: '6', name: 'Nike Air Max 270', slug: 'nike-air-max-270', price: 32000, image: 'https://placehold.co/400x400/fff1f2/be123c?text=Nike+Air+Max', storeName: 'SportMax', storeSlug: 'sportmax', province: 'Luanda', condition: 'novo' as const, rating: 4.4, reviewCount: 67, stock: 15 },
-  { id: '7', name: 'PlayStation 5 + 2 Controllers', slug: 'ps5-2-controllers', price: 280000, image: 'https://placehold.co/400x400/eff6ff/1d4ed8?text=PS5', storeName: 'GameZone', storeSlug: 'gamezone', province: 'Luanda', condition: 'novo' as const, rating: 4.9, reviewCount: 201, stock: 4 },
-  { id: '8', name: 'Smart TV LG 55" 4K', slug: 'smart-tv-lg-55', price: 195000, image: 'https://placehold.co/400x400/f8fafc/334155?text=Smart+TV+LG', storeName: 'EletronicosPlus', storeSlug: 'eletronicos-plus', province: 'Huambo', condition: 'novo' as const, rating: 4.3, reviewCount: 45, stock: 7 },
-  { id: '9', name: 'Xiaomi Redmi Note 13 Pro', slug: 'xiaomi-redmi-note-13', price: 95000, image: 'https://placehold.co/400x400/fff7ed/c2410c?text=Xiaomi', storeName: 'TechStore', storeSlug: 'techstore', province: 'Luanda', condition: 'novo' as const, rating: 4.2, reviewCount: 78, stock: 12 },
-  { id: '10', name: 'Bicicleta Mountain Bike 26"', slug: 'bicicleta-mtb-26', price: 45000, image: 'https://placehold.co/400x400/f0fdf4/166534?text=Bicicleta', storeName: 'SportMax', storeSlug: 'sportmax', province: 'Luanda', condition: 'usado' as const, rating: 4.0, reviewCount: 12, stock: 2 },
-  { id: '11', name: 'Air Fryer Mondial 5L', slug: 'air-fryer-mondial-5l', price: 28000, image: 'https://placehold.co/400x400/fef3c7/b45309?text=Air+Fryer', storeName: 'Casa & Estilo', storeSlug: 'casa-estilo', province: 'Benguela', condition: 'novo' as const, rating: 4.6, reviewCount: 34, stock: 10 },
-  { id: '12', name: 'iPhone 13 128GB Recondicionado', slug: 'iphone-13-recondicionado', price: 165000, image: 'https://placehold.co/400x400/ecfdf5/059669?text=iPhone+13', storeName: 'MegaLoja', storeSlug: 'megaloja', province: 'Luanda', condition: 'recondicionado' as const, rating: 4.3, reviewCount: 23, stock: 6 },
-]
+import { fetchProducts, type UiProduct } from '@/lib/api-helpers'
 
 export default function ProdutosClient() {
   const searchParams = useSearchParams()
   const [mobileFilters, setMobileFilters] = React.useState(false)
+  const [products, setProducts] = React.useState<UiProduct[]>([])
+  const [totalPages, setTotalPages] = React.useState(1)
+  const [loading, setLoading] = React.useState(true)
 
   const q = searchParams.get('q') || ''
   const category = searchParams.get('category') || ''
   const page = parseInt(searchParams.get('page') || '1')
-  const perPage = 8
+  const minPrice = searchParams.get('min') || ''
+  const maxPrice = searchParams.get('max') || ''
+  const condition = searchParams.get('condition') || ''
+  const sort = searchParams.get('sort') || ''
+  const province = searchParams.get('province') || ''
 
-  const filteredProducts = allProducts.filter((p) => {
-    if (q && !p.name.toLowerCase().includes(q.toLowerCase())) return false
-    if (category && p.storeName.toLowerCase() !== category.toLowerCase() && !p.name.toLowerCase().includes(category.toLowerCase())) return false
-    const min = searchParams.get('min')
-    const max = searchParams.get('max')
-    if (min && p.price < parseInt(min)) return false
-    if (max && p.price > parseInt(max)) return false
-    const condition = searchParams.get('condition')
-    if (condition) {
-      const conditions = condition.split(',')
-      if (!conditions.includes(p.condition)) return false
-    }
-    const province = searchParams.get('province')
-    if (province && p.province !== province) return false
-    return true
-  })
+  React.useEffect(() => {
+    setLoading(true)
+    const params: Record<string, unknown> = { page, limit: 12 }
+    if (q) params.q = q
+    if (category) params.categorySlug = category
+    if (minPrice) params.minPrice = parseInt(minPrice)
+    if (maxPrice) params.maxPrice = parseInt(maxPrice)
+    if (condition) params.condition = condition
+    if (sort === 'price_asc') params.sort = 'price-asc'
+    else if (sort === 'price_desc') params.sort = 'price-desc'
+    else if (sort === 'popular') params.sort = 'popular'
 
-  const totalPages = Math.ceil(filteredProducts.length / perPage)
-  const paginatedProducts = filteredProducts.slice((page - 1) * perPage, page * perPage)
+    fetchProducts(params)
+      .then((data) => {
+        let filtered = data.products
+        if (province) {
+          filtered = filtered.filter((p: UiProduct) => p.province === province)
+        }
+        setProducts(filtered)
+        setTotalPages(data.pagination?.totalPages || 1)
+      })
+      .catch(() => setProducts([]))
+      .finally(() => setLoading(false))
+  }, [q, category, page, minPrice, maxPrice, condition, sort, province])
+
+  const perPage = 12
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
@@ -72,7 +72,7 @@ export default function ProdutosClient() {
             {category || q ? `Resultados para "${category || q}"` : 'Todos os Produtos'}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            {filteredProducts.length} produto{filteredProducts.length !== 1 ? 's' : ''} encontrado{filteredProducts.length !== 1 ? 's' : ''}
+            {loading ? 'A carregar...' : `${products.length} produto${products.length !== 1 ? 's' : ''} encontrado${products.length !== 1 ? 's' : ''}`}
           </p>
         </div>
         <Button
@@ -94,9 +94,19 @@ export default function ProdutosClient() {
         </aside>
 
         <div className="flex-1 min-w-0">
-          {paginatedProducts.length > 0 ? (
+          {loading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+                  <div className="aspect-square rounded-lg bg-gray-100 mb-3" />
+                  <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-gray-100 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          ) : products.length > 0 ? (
             <>
-              <ProductGrid products={paginatedProducts} />
+              <ProductGrid products={products} />
               {totalPages > 1 && (
                 <div className="flex justify-center gap-2 mt-8">
                   {Array.from({ length: totalPages }).map((_, i) => {

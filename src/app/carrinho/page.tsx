@@ -74,6 +74,7 @@ export default function CartPage() {
                         width={96}
                         height={96}
                         unoptimized
+                        loading="lazy"
                         className="rounded-lg object-cover shrink-0"
                       />
                     </Link>

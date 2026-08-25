@@ -7,52 +7,76 @@ import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin } from 'lucide
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-
-const orderDetails: Record<string, {
-  id: string; date: string; total: number; status: string;
-  items: { name: string; price: number; quantity: number; image: string }[];
-  shipping: { name: string; address: string; province: string; phone: string };
-  timeline: { status: string; date: string; time: string; completed: boolean }[];
-}> = {
-  'ORD-001': {
-    id: 'ORD-001', date: '2024-12-20', total: 450000, status: 'entregue',
-    items: [
-      { name: 'iPhone 15 Pro Max 256GB', price: 450000, quantity: 1, image: 'https://placehold.co/100x100/f0fdf4/166534?text=iPhone' },
-    ],
-    shipping: { name: 'Carlos Silva', address: 'Rua da Missao, 45, Ingombota', province: 'Luanda', phone: '+244 923 456 789' },
-    timeline: [
-      { status: 'Pedido realizado', date: '20/12/2024', time: '14:30', completed: true },
-      { status: 'Pagamento confirmado', date: '20/12/2024', time: '14:35', completed: true },
-      { status: 'Em preparação', date: '20/12/2024', time: '16:00', completed: true },
-      { status: 'Enviado', date: '21/12/2024', time: '09:00', completed: true },
-      { status: 'Entregue', date: '22/12/2024', time: '14:15', completed: true },
-    ],
-  },
-}
-
-const defaultOrder = {
-  id: '', date: '', total: 0, status: 'processando',
-  items: [], shipping: { name: '', address: '', province: '', phone: '' },
-  timeline: [
-    { status: 'Pedido realizado', date: '', time: '', completed: true },
-    { status: 'Pagamento confirmado', date: '', time: '', completed: false },
-    { status: 'Em preparação', date: '', time: '', completed: false },
-    { status: 'Enviado', date: '', time: '', completed: false },
-    { status: 'Entregue', date: '', time: '', completed: false },
-  ],
-}
+import { fetchOrderById, getStatusLabel, getStatusColor, mapStatus, type ApiOrder } from '@/lib/api-helpers'
 
 const timelineIcons: Record<string, React.ElementType> = {
   'Pedido realizado': Clock,
   'Pagamento confirmado': CheckCircle,
-  'Em preparação': Package,
+  'Em preparacao': Package,
   'Enviado': Truck,
   'Entregue': CheckCircle,
 }
 
+const statusSteps = ['pending', 'confirmed', 'processing', 'shipped', 'delivered']
+const statusLabelsMap: Record<string, string> = {
+  pending: 'Pedido realizado',
+  confirmed: 'Pagamento confirmado',
+  processing: 'Em preparacao',
+  shipped: 'Enviado',
+  delivered: 'Entregue',
+}
+
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
-  const order = orderDetails[id] || { ...defaultOrder, id }
+  const [order, setOrder] = React.useState<ApiOrder | null>(null)
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    fetchOrderById(id)
+      .then(setOrder)
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [id])
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-100 rounded w-48 mb-6" />
+          <div className="h-8 bg-gray-100 rounded w-40 mb-8" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="rounded-xl border border-gray-200 bg-white p-6 h-64" />
+              <div className="rounded-xl border border-gray-200 bg-white p-6 h-48" />
+            </div>
+            <div className="space-y-6">
+              <div className="rounded-xl border border-gray-200 bg-white p-6 h-40" />
+              <div className="rounded-xl border border-gray-200 bg-white p-6 h-32" />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!order) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 text-center py-16">
+        <h1 className="text-2xl font-bold text-gray-900">Pedido nao encontrado</h1>
+        <Link href="/minha-conta/pedidos" className="text-emerald-600 hover:text-emerald-700 mt-4 inline-block">Voltar aos pedidos</Link>
+      </div>
+    )
+  }
+
+  const orderStatus = mapStatus(order.status)
+  const currentStepIndex = statusSteps.indexOf(orderStatus)
+
+  const items = (order.items || []).map((item) => ({
+    name: item.product?.name || 'Produto',
+    price: item.price,
+    quantity: item.quantity,
+    image: item.product?.images?.[0] || 'https://placehold.co/100x100/f0fdf4/166534?text=Produto',
+  }))
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
@@ -78,25 +102,29 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-6">Estado do Pedido</h2>
             <div className="space-y-0">
-              {order.timeline.map((step, i) => {
-                const Icon = timelineIcons[step.status] || Clock
+              {statusSteps.map((step, i) => {
+                const label = statusLabelsMap[step]
+                const Icon = timelineIcons[label] || Clock
+                const completed = i <= currentStepIndex
+                const isCurrent = i === currentStepIndex
                 return (
-                  <div key={i} className="flex gap-4">
+                  <div key={step} className="flex gap-4">
                     <div className="flex flex-col items-center">
                       <div className={cn(
                         'flex h-8 w-8 items-center justify-center rounded-full',
-                        step.completed ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-400'
+                        completed ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-400',
+                        isCurrent && 'ring-2 ring-emerald-200'
                       )}>
                         <Icon className="h-4 w-4" />
                       </div>
-                      {i < order.timeline.length - 1 && (
-                        <div className={cn('w-0.5 flex-1 my-1', step.completed ? 'bg-emerald-600' : 'bg-gray-200')} />
+                      {i < statusSteps.length - 1 && (
+                        <div className={cn('w-0.5 flex-1 my-1', completed ? 'bg-emerald-600' : 'bg-gray-200')} />
                       )}
                     </div>
                     <div className="pb-6">
-                      <p className={cn('font-medium', step.completed ? 'text-gray-900' : 'text-gray-400')}>{step.status}</p>
-                      {step.date && (
-                        <p className="text-sm text-gray-500">{step.date} às {step.time}</p>
+                      <p className={cn('font-medium', completed ? 'text-gray-900' : 'text-gray-400')}>{label}</p>
+                      {isCurrent && (
+                        <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString('pt-AO')}</p>
                       )}
                     </div>
                   </div>
@@ -107,11 +135,11 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
           <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Itens do Pedido</h2>
-            {order.items.length > 0 ? (
+            {items.length > 0 ? (
               <div className="space-y-3">
-                {order.items.map((item, i) => (
+                {items.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
-                    <Image src={item.image} alt={item.name} width={64} height={64} unoptimized className="rounded-lg object-cover" />
+                    <Image src={item.image} alt={item.name} width={64} height={64} unoptimized loading="lazy" className="rounded-lg object-cover" />
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.name}</p>
                       <p className="text-sm text-gray-500">Qtd: {item.quantity}</p>
@@ -121,7 +149,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 ))}
               </div>
             ) : (
-              <p className="text-gray-500 text-sm">Detalhes do pedido não disponíveis.</p>
+              <p className="text-gray-500 text-sm">Detalhes do pedido nao disponiveis.</p>
             )}
           </div>
         </div>
@@ -136,7 +164,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Envio</span>
-                <span className="font-medium text-emerald-600">Grátis</span>
+                <span className="font-medium text-emerald-600">Gratis</span>
               </div>
               <hr className="my-2 border-gray-100" />
               <div className="flex justify-between text-base">
@@ -148,15 +176,14 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
           <div className="rounded-xl border border-gray-200 bg-white p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Envio</h2>
-            {order.shipping.name ? (
-              <div className="text-sm space-y-1">
-                <p className="font-medium text-gray-900">{order.shipping.name}</p>
-                <p className="text-gray-600 flex items-start gap-1"><MapPin className="h-4 w-4 shrink-0 mt-0.5" />{order.shipping.address}, {order.shipping.province}</p>
-                <p className="text-gray-600">{order.shipping.phone}</p>
-              </div>
-            ) : (
-              <p className="text-gray-500 text-sm">Informação de envio não disponível.</p>
-            )}
+            <div className="text-sm space-y-1">
+              <p className="font-medium text-gray-900">{order.shippingName || 'N/A'}</p>
+              <p className="text-gray-600 flex items-start gap-1">
+                <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
+                {order.shippingAddress}{order.shippingDistrict ? `, ${order.shippingDistrict}` : ''}, {order.shippingProvince}
+              </p>
+              <p className="text-gray-600">{order.shippingPhone}</p>
+            </div>
           </div>
         </div>
       </div>

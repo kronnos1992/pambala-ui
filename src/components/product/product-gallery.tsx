@@ -38,7 +38,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
                 : 'border-gray-200 hover:border-gray-300 opacity-70 hover:opacity-100'
             )}
           >
-            <Image src={img} alt={`${name} ${i + 1}`} fill unoptimized className="object-cover" />
+            <Image src={img} alt={`${name} ${i + 1}`} fill unoptimized loading="lazy" className="object-cover" />
           </button>
         ))}
       </div>
@@ -54,6 +54,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
           alt={name}
           fill
           unoptimized
+          loading="lazy"
           className="object-cover transition-transform duration-200"
           style={
             isZoomed

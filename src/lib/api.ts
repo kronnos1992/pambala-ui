@@ -9,10 +9,16 @@ const api = axios.create({
 
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
-    const token = localStorage.getItem('pambala-token')
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`
-    }
+    try {
+      const raw = localStorage.getItem('pambala-auth')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        const token = parsed?.state?.token
+        if (token) {
+          config.headers.Authorization = `Bearer ${token}`
+        }
+      }
+    } catch {}
   }
   return config
 })
@@ -22,9 +28,8 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        localStorage.removeItem('pambala-token')
-        localStorage.removeItem('pambala-user')
-        window.location.href = '/login' // eslint-disable-line @next/next/no-location-assign-relative-destination
+        localStorage.removeItem('pambala-auth')
+        window.location.href = '/login'
       }
     }
     return Promise.reject(error)

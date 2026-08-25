@@ -5,21 +5,20 @@ import { Search, ChevronRight, Grid3X3, Map } from 'lucide-react'
 import { StoreCard } from '@/components/store/store-card'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-
-const stores = [
-  { id: '1', name: 'TechStore', slug: 'techstore', rating: 4.8, productCount: 156, location: 'Luanda', description: 'Os melhores produtos tecnologicos' },
-  { id: '2', name: 'MegaLoja', slug: 'megaloja', rating: 4.6, productCount: 342, location: 'Luanda', description: 'Tudo para o seu dia a dia' },
-  { id: '3', name: 'Casa & Estilo', slug: 'casa-estilo', rating: 4.5, productCount: 89, location: 'Benguela', description: 'Mobilha e decoracao' },
-  { id: '4', name: 'SportMax', slug: 'sportmax', rating: 4.4, productCount: 203, location: 'Luanda', description: 'Artigos desportivos premium' },
-  { id: '5', name: 'Apple Store AO', slug: 'apple-store-ao', rating: 4.9, productCount: 45, location: 'Luanda', description: 'Produtos Apple oficiais' },
-  { id: '6', name: 'AutoAngola', slug: 'autoangola', rating: 4.6, productCount: 78, location: 'Luanda', description: 'Veiculos novos e usados' },
-  { id: '7', name: 'GameZone', slug: 'gamezone', rating: 4.9, productCount: 120, location: 'Luanda', description: 'Games e acessorios' },
-  { id: '8', name: 'EletronicosPlus', slug: 'eletronicos-plus', rating: 4.3, productCount: 267, location: 'Huambo', description: 'Eletronicos e eletrodomesticos' },
-]
+import { fetchStores, type UiStore } from '@/lib/api-helpers'
 
 export default function LojasPage() {
   const [searchQuery, setSearchQuery] = React.useState('')
   const [view, setView] = React.useState<'grid' | 'map'>('grid')
+  const [stores, setStores] = React.useState<UiStore[]>([])
+  const [loading, setLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    fetchStores({ limit: 50 })
+      .then((data) => setStores(data.stores))
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [])
 
   const filteredStores = stores.filter((s) =>
     s.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -71,6 +70,20 @@ export default function LojasPage() {
             <p className="text-gray-500">Vista de mapa em breve</p>
           </div>
         </div>
+      ) : loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+              <div className="flex items-center gap-3">
+                <div className="h-14 w-14 rounded-full bg-gray-100" />
+                <div className="flex-1">
+                  <div className="h-4 bg-gray-100 rounded w-2/3 mb-2" />
+                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredStores.map((store) => (
@@ -79,7 +92,7 @@ export default function LojasPage() {
         </div>
       )}
 
-      {filteredStores.length === 0 && view === 'grid' && (
+      {filteredStores.length === 0 && view === 'grid' && !loading && (
         <div className="text-center py-16">
           <p className="text-gray-500">Nenhuma loja encontrada.</p>
         </div>

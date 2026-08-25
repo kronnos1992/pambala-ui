@@ -8,28 +8,34 @@ import { ChevronRight, X, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
+import { createProduct, fetchCategories, type ApiCategory } from '@/lib/api-helpers'
 
 const conditions = [
-  { value: 'novo', label: 'Novo' },
-  { value: 'usado', label: 'Usado' },
-  { value: 'recondicionado', label: 'Recondicionado' },
+  { value: 'NEW', label: 'Novo' },
+  { value: 'USED', label: 'Usado' },
+  { value: 'REFURBISHED', label: 'Recondicionado' },
 ]
 
 export default function NewProductPage() {
   const router = useRouter()
   const [loading, setLoading] = React.useState(false)
   const [images, setImages] = React.useState<string[]>([])
+  const [categories, setCategories] = React.useState<ApiCategory[]>([])
   const [form, setForm] = React.useState({
     name: '',
     description: '',
     price: '',
     comparePrice: '',
     category: '',
-    condition: 'novo',
+    condition: 'NEW',
     stock: '',
     province: 'Luanda',
   })
   const [errors, setErrors] = React.useState<Record<string, string>>({})
+
+  React.useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {})
+  }, [])
 
   const updateForm = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -61,7 +67,16 @@ export default function NewProductPage() {
     if (!validate()) return
     setLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 1500))
+      await createProduct({
+        name: form.name,
+        description: form.description || undefined,
+        price: parseFloat(form.price),
+        comparePrice: form.comparePrice ? parseFloat(form.comparePrice) : undefined,
+        images: images.length > 0 ? images : undefined,
+        condition: form.condition,
+        stock: parseInt(form.stock),
+        categoryId: form.category,
+      })
       toast('Produto criado com sucesso!', 'success')
       router.push('/vendedor/produtos')
     } catch {
@@ -135,13 +150,20 @@ export default function NewProductPage() {
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <Input
-                label="Categoria"
-                value={form.category}
-                onChange={(e) => updateForm('category', e.target.value)}
-                error={errors.category}
-                placeholder="Selecione..."
-              />
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1.5">Categoria</label>
+                <select
+                  value={form.category}
+                  onChange={(e) => updateForm('category', e.target.value)}
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                >
+                  <option value="">Selecione...</option>
+                  {categories.map((cat) => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </select>
+                {errors.category && <p className="text-xs text-red-500 mt-1">{errors.category}</p>}
+              </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5">Condição</label>
                 <div className="flex gap-2">

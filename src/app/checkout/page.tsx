@@ -11,6 +11,7 @@ import { useCartStore } from '@/store/cart-store'
 import { useAuthStore } from '@/store/auth-store'
 import { formatPrice, cn } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
+import { createOrder } from '@/lib/api-helpers'
 
 const provinces = [
   'Bengo', 'Benguela', 'Bié', 'Cabinda', 'Cuando-Cubango', 'Cuanza Norte',
@@ -19,9 +20,9 @@ const provinces = [
 ]
 
 const paymentMethods = [
-  { id: 'multicaixa', name: 'Multicaixa Express', icon: CreditCard, description: 'Pagamento rapido e seguro via Multicaixa Express' },
-  { id: 'transferencia', name: 'Transferência Bancária', icon: Banknote, description: 'Transferência para conta bancária do vendedor' },
-  { id: 'entrega', name: 'Pagamento na Entrega', icon: Truck, description: 'Pague quando receber o produto' },
+  { id: 'MULTICAIXA', name: 'Multicaixa Express', icon: CreditCard, description: 'Pagamento rapido e seguro via Multicaixa Express' },
+  { id: 'TRANSFER', name: 'Transferência Bancária', icon: Banknote, description: 'Transferência para conta bancária do vendedor' },
+  { id: 'CASH_ON_DELIVERY', name: 'Pagamento na Entrega', icon: Truck, description: 'Pague quando receber o produto' },
 ]
 
 export default function CheckoutPage() {
@@ -29,7 +30,7 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCartStore()
   const user = useAuthStore((s) => s.user)
   const [loading, setLoading] = React.useState(false)
-  const [paymentMethod, setPaymentMethod] = React.useState('multicaixa')
+  const [paymentMethod, setPaymentMethod] = React.useState('MULTICAIXA')
   const [form, setForm] = React.useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -57,8 +58,15 @@ export default function CheckoutPage() {
     if (!validateShipping()) return
     setLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 2000))
-      clearCart()
+      await createOrder({
+        shippingName: form.name,
+        shippingPhone: form.phone,
+        shippingAddress: form.address,
+        shippingProvince: form.province,
+        shippingDistrict: form.district,
+        paymentMethod: paymentMethod as 'MULTICAIXA' | 'TRANSFER' | 'CASH_ON_DELIVERY',
+      })
+      await clearCart()
       toast('Pedido realizado com sucesso!', 'success')
       router.push('/minha-conta/pedidos')
     } catch {
@@ -189,7 +197,7 @@ export default function CheckoutPage() {
             <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.id} className="flex items-center gap-3">
-                  <Image src={item.image} alt={item.name} width={48} height={48} unoptimized className="rounded-lg object-cover" />
+                  <Image src={item.image} alt={item.name} width={48} height={48} unoptimized loading="lazy" className="rounded-lg object-cover" />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
                     <p className="text-xs text-gray-500">Qtd: {item.quantity}</p>

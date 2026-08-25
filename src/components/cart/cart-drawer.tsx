@@ -63,6 +63,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                     width={80}
                     height={80}
                     unoptimized
+                    loading="lazy"
                     className="rounded-lg object-cover"
                   />
                   <div className="flex-1 min-w-0">

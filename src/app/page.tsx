@@ -11,17 +11,29 @@ import { Button } from '@/components/ui/button'
 import { ProductCard } from '@/components/product/product-card'
 import { StoreCard } from '@/components/store/store-card'
 import { SearchBar } from '@/components/search/search-bar'
+import { fetchFeaturedProducts, fetchStores, type UiProduct, type UiStore } from '@/lib/api-helpers'
 
-const categories = [
-  { name: 'Tecnologia', icon: Laptop, color: 'from-blue-500 to-indigo-500' },
-  { name: 'Moda', icon: Shirt, color: 'from-pink-500 to-rose-500' },
-  { name: 'Casa & Jardim', icon: Home, color: 'from-amber-500 to-orange-500' },
-  { name: 'Veículos', icon: Car, color: 'from-gray-600 to-gray-800' },
-  { name: 'Eletrónicos', icon: Headphones, color: 'from-violet-500 to-purple-500' },
-  { name: 'Beleza', icon: Flower2, color: 'from-fuchsia-500 to-pink-500' },
-  { name: 'Desporto', icon: Dumbbell, color: 'from-emerald-500 to-green-500' },
-  { name: 'Alimentos', icon: Utensils, color: 'from-red-500 to-orange-500' },
-]
+const categoryIcons: Record<string, React.ElementType> = {
+  'Electrónica e Tecnologia': Laptop,
+  'Roupa e Acessórios': Shirt,
+  'Eletrodomésticos': Home,
+  'Móveis e Decoração': Home,
+  'Desporto e Lazer': Dumbbell,
+  'Beleza e Saúde': Flower2,
+  'Serviços': Utensils,
+  'Animais': Flower2,
+}
+
+const categoryColors: Record<string, string> = {
+  'Electrónica e Tecnologia': 'from-blue-500 to-indigo-500',
+  'Roupa e Acessórios': 'from-pink-500 to-rose-500',
+  'Eletrodomésticos': 'from-amber-500 to-orange-500',
+  'Móveis e Decoração': 'from-amber-500 to-orange-500',
+  'Desporto e Lazer': 'from-emerald-500 to-green-500',
+  'Beleza e Saúde': 'from-fuchsia-500 to-pink-500',
+  'Serviços': 'from-red-500 to-orange-500',
+  'Animais': 'from-gray-500 to-gray-700',
+}
 
 const steps = [
   {
@@ -62,26 +74,19 @@ const testimonials = [
   },
 ]
 
-const mockProducts = [
-  { id: '1', name: 'iPhone 15 Pro Max 256GB', slug: 'iphone-15-pro-max', price: 450000, image: 'https://placehold.co/400x400/f0fdf4/166534?text=iPhone+15', storeName: 'TechStore', storeSlug: 'techstore', province: 'Luanda', condition: 'novo' as const, rating: 4.8, reviewCount: 124, stock: 10 },
-  { id: '2', name: 'Samsung Galaxy S24 Ultra', slug: 'samsung-galaxy-s24', price: 380000, image: 'https://placehold.co/400x400/f0f9ff/0369a1?text=Galaxy+S24', storeName: 'MegaLoja', storeSlug: 'megaloja', province: 'Luanda', condition: 'novo' as const, rating: 4.7, reviewCount: 89, stock: 5 },
-  { id: '3', name: 'MacBook Air M3 15"', slug: 'macbook-air-m3', price: 620000, image: 'https://placehold.co/400x400/faf5ff/7c3aed?text=MacBook+Air', storeName: 'Apple Store AO', storeSlug: 'apple-store-ao', province: 'Luanda', condition: 'novo' as const, rating: 4.9, reviewCount: 56, stock: 3 },
-  { id: '4', name: 'Sofá Modular 3 Lugares', slug: 'sofa-modular-3', price: 85000, image: 'https://placehold.co/400x400/fef3c7/b45309?text=Sof%C3%A1', storeName: 'Casa & Estilo', storeSlug: 'casa-estilo', province: 'Benguela', condition: 'novo' as const, rating: 4.5, reviewCount: 32, stock: 8 },
-  { id: '5', name: 'Honda Civic 2022', slug: 'honda-civic-2022', price: 3500000, image: 'https://placehold.co/400x400/ecfdf5/059669?text=Honda+Civic', storeName: 'AutoAngola', storeSlug: 'autoangola', province: 'Luanda', condition: 'usado' as const, rating: 4.6, reviewCount: 18, stock: 1 },
-  { id: '6', name: 'Nike Air Max 270', slug: 'nike-air-max-270', price: 32000, image: 'https://placehold.co/400x400/fff1f2/be123c?text=Nike+Air+Max', storeName: 'SportMax', storeSlug: 'sportmax', province: 'Luanda', condition: 'novo' as const, rating: 4.4, reviewCount: 67, stock: 15 },
-  { id: '7', name: 'PlayStation 5 + 2 Controllers', slug: 'ps5-2-controllers', price: 280000, image: 'https://placehold.co/400x400/eff6ff/1d4ed8?text=PS5', storeName: 'GameZone', storeSlug: 'gamezone', province: 'Luanda', condition: 'novo' as const, rating: 4.9, reviewCount: 201, stock: 4 },
-  { id: '8', name: 'Smart TV LG 55" 4K', slug: 'smart-tv-lg-55', price: 195000, image: 'https://placehold.co/400x400/f8fafc/334155?text=Smart+TV+LG', storeName: 'EletronicosPlus', storeSlug: 'eletronicos-plus', province: 'Huambo', condition: 'novo' as const, rating: 4.3, reviewCount: 45, stock: 7 },
-]
-
-const mockStores = [
-  { id: '1', name: 'TechStore', slug: 'techstore', rating: 4.8, productCount: 156, location: 'Luanda', description: 'Os melhores produtos tecnologicos' },
-  { id: '2', name: 'MegaLoja', slug: 'megaloja', rating: 4.6, productCount: 342, location: 'Luanda', description: 'Tudo para o seu dia a dia' },
-  { id: '3', name: 'Casa & Estilo', slug: 'casa-estilo', rating: 4.5, productCount: 89, location: 'Benguela', description: 'Mobilha e decoracao' },
-  { id: '4', name: 'SportMax', slug: 'sportmax', rating: 4.4, productCount: 203, location: 'Luanda', description: 'Artigos desportivos premium' },
-]
-
 export default function HomePage() {
   const [currentTestimonial, setCurrentTestimonial] = React.useState(0)
+  const [featuredProducts, setFeaturedProducts] = React.useState<UiProduct[]>([])
+  const [topStores, setTopStores] = React.useState<UiStore[]>([])
+  const [categories, setCategories] = React.useState<{ id: string; name: string; slug: string }[]>([])
+
+  React.useEffect(() => {
+    fetchFeaturedProducts().then(setFeaturedProducts).catch(() => {})
+    fetchStores({ limit: 4 }).then((data) => setTopStores(data.stores)).catch(() => {})
+    import('@/lib/api-helpers').then((m) =>
+      m.fetchCategories().then(setCategories).catch(() => {})
+    )
+  }, [])
 
   return (
     <div>
@@ -127,14 +132,15 @@ export default function HomePage() {
           </h2>
           <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-4">
             {categories.map((cat) => {
-              const Icon = cat.icon
+              const Icon = categoryIcons[cat.name] || Laptop
+              const color = categoryColors[cat.name] || 'from-gray-500 to-gray-700'
               return (
                 <Link
-                  key={cat.name}
-                  href={`/produtos?category=${encodeURIComponent(cat.name)}`}
+                  key={cat.id}
+                  href={`/produtos?category=${cat.slug}`}
                   className="group flex flex-col items-center gap-3 rounded-xl p-4 transition-all hover:shadow-lg hover:-translate-y-1"
                 >
-                  <div className={`flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${cat.color} text-white shadow-md group-hover:scale-110 transition-transform`}>
+                  <div className={`flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br ${color} text-white shadow-md group-hover:scale-110 transition-transform`}>
                     <Icon className="h-6 w-6" />
                   </div>
                   <span className="text-sm font-medium text-gray-700 text-center">{cat.name}</span>
@@ -183,11 +189,23 @@ export default function HomePage() {
               Ver todos <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {mockProducts.map((p) => (
-              <ProductCard key={p.id} product={p} />
-            ))}
-          </div>
+          {featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {featuredProducts.slice(0, 8).map((p) => (
+                <ProductCard key={p.id} product={p} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+                  <div className="aspect-square rounded-lg bg-gray-100 mb-3" />
+                  <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
+                  <div className="h-4 bg-gray-100 rounded w-1/2" />
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -201,11 +219,27 @@ export default function HomePage() {
               Ver todas <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {mockStores.map((s) => (
-              <StoreCard key={s.id} store={s} />
-            ))}
-          </div>
+          {topStores.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {topStores.map((s) => (
+                <StoreCard key={s.id} store={s} />
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+                  <div className="flex items-center gap-3">
+                    <div className="h-14 w-14 rounded-full bg-gray-100" />
+                    <div className="flex-1">
+                      <div className="h-4 bg-gray-100 rounded w-2/3 mb-2" />
+                      <div className="h-3 bg-gray-100 rounded w-1/2" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

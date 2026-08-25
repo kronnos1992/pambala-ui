@@ -11,7 +11,7 @@ import { toast } from '@/components/ui/toast'
 
 export default function LoginPage() {
   const router = useRouter()
-  const login = useAuthStore((s) => s.login)
+  const loginWithApi = useAuthStore((s) => s.loginWithApi)
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [showPassword, setShowPassword] = React.useState(false)
@@ -33,16 +33,7 @@ export default function LoginPage() {
     if (!validate()) return
     setLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 1000))
-      login(
-        {
-          id: '1',
-          name: 'Demo User',
-          email,
-          role: 'buyer',
-        },
-        'demo-token-123'
-      )
+      await loginWithApi(email, password)
       toast('Bem-vindo ao Pambala!', 'success')
       router.push('/')
     } catch {
@@ -50,11 +41,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false)
     }
-  }
-
-  const handleDemoLogin = () => {
-    setEmail('demo@pambala.ao')
-    setPassword('demo123')
   }
 
   return (
@@ -101,10 +87,9 @@ export default function LoginPage() {
       </form>
 
       <div className="mt-4 rounded-lg bg-emerald-50 border border-emerald-100 p-3">
-        <button onClick={handleDemoLogin} className="w-full text-left">
-          <p className="text-xs font-semibold text-emerald-700">Demo</p>
-          <p className="text-xs text-emerald-600">Clique para preencher com credenciais de demonstracao</p>
-        </button>
+        <p className="text-xs font-semibold text-emerald-700 mb-1">Contas de teste</p>
+        <p className="text-xs text-emerald-600">Admin: admin@pambala.ao / admin123</p>
+        <p className="text-xs text-emerald-600">Vendedor: vendedor@pambala.ao / seller123</p>
       </div>
 
       <p className="mt-6 text-center text-sm text-gray-500">

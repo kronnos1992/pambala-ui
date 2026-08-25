@@ -8,44 +8,65 @@ import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ProductGrid } from '@/components/product/product-grid'
 import { cn } from '@/lib/utils'
-
-const storeData: Record<string, {
-  name: string; slug: string; banner?: string; logo?: string;
-  rating: number; reviewCount: number; productCount: number;
-  location: string; description: string; joinedDate: string;
-  reviews: { name: string; rating: number; text: string; date: string }[];
-}> = {
-  techstore: {
-    name: 'TechStore', slug: 'techstore', rating: 4.8, reviewCount: 312, productCount: 156,
-    location: 'Luanda', description: 'A sua loja de confianca para produtos tecnologicos em Angola. Trabalhamos apenas com marcas de referencia e oferecemos garantia em todos os produtos.',
-    joinedDate: '2022-03-15',
-    reviews: [
-      { name: 'Manuel G.', rating: 5, text: 'Excelente loja! Entrega rapida e produtos originais.', date: '2024-12-20' },
-      { name: 'Rosa P.', rating: 5, text: 'Comprei um iPhone e chegou perfeito. Recomendo!', date: '2024-12-18' },
-      { name: 'Joao A.', rating: 4, text: 'Bom atendimento, demorou um pouco na entrega.', date: '2024-12-15' },
-    ],
-  },
-}
-
-const defaultStore = {
-  name: 'Loja', slug: 'loja', rating: 4.5, reviewCount: 0, productCount: 0,
-  location: 'Luanda', description: 'Descricao da loja.', joinedDate: '2023-01-01', reviews: [],
-}
-
-const storeProducts = [
-  { id: '1', name: 'iPhone 15 Pro Max 256GB', slug: 'iphone-15-pro-max', price: 450000, image: 'https://placehold.co/400x400/f0fdf4/166534?text=iPhone+15', storeName: 'TechStore', storeSlug: 'techstore', province: 'Luanda', condition: 'novo' as const, rating: 4.8, reviewCount: 124, stock: 10 },
-  { id: '9', name: 'Xiaomi Redmi Note 13 Pro', slug: 'xiaomi-redmi-note-13', price: 95000, image: 'https://placehold.co/400x400/fff7ed/c2410c?text=Xiaomi', storeName: 'TechStore', storeSlug: 'techstore', province: 'Luanda', condition: 'novo' as const, rating: 4.2, reviewCount: 78, stock: 12 },
-  { id: '12', name: 'iPhone 13 128GB Recondicionado', slug: 'iphone-13-recondicionado', price: 165000, image: 'https://placehold.co/400x400/ecfdf5/059669?text=iPhone+13', storeName: 'TechStore', storeSlug: 'techstore', province: 'Luanda', condition: 'recondicionado' as const, rating: 4.3, reviewCount: 23, stock: 6 },
-]
+import { fetchStoreBySlug, fetchStoreProducts, fetchStoreReviews, type ApiStore, type UiProduct, type ApiReview } from '@/lib/api-helpers'
 
 export default function StoreDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
-  const store = storeData[slug] || { ...defaultStore, slug, name: decodeURIComponent(slug).replace(/-/g, ' ') }
+  const [store, setStore] = React.useState<ApiStore | null>(null)
+  const [products, setProducts] = React.useState<UiProduct[]>([])
+  const [reviews, setReviews] = React.useState<ApiReview[]>([])
+  const [avgRating, setAvgRating] = React.useState(0)
+  const [totalReviews, setTotalReviews] = React.useState(0)
   const [activeTab, setActiveTab] = React.useState<'products' | 'reviews'>('products')
+  const [loading, setLoading] = React.useState(true)
 
-  const avgRating = store.reviews.length > 0
-    ? store.reviews.reduce((s, r) => s + r.rating, 0) / store.reviews.length
-    : store.rating
+  React.useEffect(() => {
+    setLoading(true)
+    Promise.all([
+      fetchStoreBySlug(slug),
+      fetchStoreProducts(slug, { limit: 20 }),
+      fetchStoreReviews(slug),
+    ])
+      .then(([storeData, productsData, reviewsData]) => {
+        setStore(storeData)
+        setProducts(productsData.products)
+        setReviews(reviewsData.reviews)
+        setAvgRating(reviewsData.avgRating)
+        setTotalReviews(reviewsData.totalReviews)
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false))
+  }, [slug])
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
+        <div className="animate-pulse">
+          <div className="h-6 bg-gray-100 rounded w-32 mb-6" />
+          <div className="h-40 bg-gray-100 rounded-2xl mb-12" />
+          <div className="h-8 bg-gray-100 rounded w-48 mb-4" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+                <div className="aspect-square rounded-lg bg-gray-100 mb-3" />
+                <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-1/2" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (!store) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 text-center py-16">
+        <h1 className="text-2xl font-bold text-gray-900">Loja nao encontrada</h1>
+        <Link href="/lojas" className="text-emerald-600 hover:text-emerald-700 mt-4 inline-block">Voltar as lojas</Link>
+      </div>
+    )
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
@@ -67,15 +88,15 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
               <span className="text-sm font-medium text-gray-700">{avgRating.toFixed(1)}</span>
-              <span className="text-sm text-gray-400">({store.reviewCount})</span>
+              <span className="text-sm text-gray-400">({totalReviews})</span>
             </div>
             <div className="flex items-center gap-1 text-sm text-gray-500">
               <Package className="h-4 w-4" />
-              <span>{store.productCount} produtos</span>
+              <span>{store._count?.products || 0} produtos</span>
             </div>
             <div className="flex items-center gap-1 text-sm text-gray-500">
               <MapPin className="h-4 w-4" />
-              <span>{store.location}</span>
+              <span>{store.province}</span>
             </div>
           </div>
         </div>
@@ -85,7 +106,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
         </Button>
       </div>
 
-      <p className="text-gray-600 mb-8">{store.description}</p>
+      {store.description && <p className="text-gray-600 mb-8">{store.description}</p>}
 
       <div className="flex gap-1 border-b border-gray-200 mb-6">
         <button
@@ -95,7 +116,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
             activeTab === 'products' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-gray-500 hover:text-gray-700'
           )}
         >
-          Produtos ({store.productCount})
+          Produtos ({store._count?.products || 0})
         </button>
         <button
           onClick={() => setActiveTab('reviews')}
@@ -104,11 +125,11 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
             activeTab === 'reviews' ? 'border-emerald-600 text-emerald-700' : 'border-transparent text-gray-500 hover:text-gray-700'
           )}
         >
-          Avaliações ({store.reviewCount})
+          Avaliações ({totalReviews})
         </button>
       </div>
 
-      {activeTab === 'products' && <ProductGrid products={storeProducts} />}
+      {activeTab === 'products' && <ProductGrid products={products} />}
 
       {activeTab === 'reviews' && (
         <div className="space-y-4 max-w-2xl">
@@ -120,29 +141,29 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
                   <Star key={i} className={cn('h-4 w-4', i < Math.round(avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300')} />
                 ))}
               </div>
-              <p className="text-xs text-gray-500">{store.reviewCount} avaliações</p>
+              <p className="text-xs text-gray-500">{totalReviews} avaliações</p>
             </div>
           </div>
-          {store.reviews.map((review, i) => (
-            <div key={i} className="rounded-xl border border-gray-100 p-4">
+          {reviews.map((review) => (
+            <div key={review.id} className="rounded-xl border border-gray-100 p-4">
               <div className="flex items-center gap-3 mb-2">
-                <Avatar fallback={review.name} size="sm" />
+                <Avatar fallback={review.user?.name || 'U'} size="sm" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{review.name}</p>
+                  <p className="text-sm font-medium text-gray-900">{review.user?.name || 'Anonimo'}</p>
                   <div className="flex items-center gap-2">
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, j) => (
                         <Star key={j} className={cn('h-3 w-3', j < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300')} />
                       ))}
                     </div>
-                    <span className="text-xs text-gray-400">{review.date}</span>
+                    <span className="text-xs text-gray-400">{new Date(review.createdAt).toLocaleDateString('pt-AO')}</span>
                   </div>
                 </div>
               </div>
-              <p className="text-sm text-gray-700">{review.text}</p>
+              <p className="text-sm text-gray-700">{review.comment}</p>
             </div>
           ))}
-          {store.reviews.length === 0 && (
+          {reviews.length === 0 && (
             <p className="text-center text-gray-500 py-8">Nenhuma avaliação ainda.</p>
           )}
         </div>

@@ -11,11 +11,7 @@ import { useAuthStore } from '@/store/auth-store'
 import { useCartStore } from '@/store/cart-store'
 import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-
-const categories = [
-  'Tecnologia', 'Moda', 'Casa & Jardim', 'Veículos', 'Eletrónicos',
-  'Beleza', 'Desporto', 'Alimentos', 'Educação', 'Serviços',
-]
+import { fetchCategories, type ApiCategory } from '@/lib/api-helpers'
 
 export function Header() {
   const router = useRouter()
@@ -26,7 +22,15 @@ export function Header() {
   const [categoriesOpen, setCategoriesOpen] = React.useState(false)
   const [searchQuery, setSearchQuery] = React.useState('')
   const [scrolled, setScrolled] = React.useState(false)
+  const [categories, setCategories] = React.useState<ApiCategory[]>([])
+  const [mounted, setMounted] = React.useState(false)
   const userMenuRef = React.useRef<HTMLDivElement>(null)
+
+  React.useEffect(() => { setMounted(true) }, [])
+
+  React.useEffect(() => {
+    fetchCategories().then(setCategories).catch(() => {})
+  }, [])
 
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10)
@@ -105,12 +109,12 @@ export function Header() {
               <div className="absolute left-0 top-full mt-1 w-56 rounded-xl border border-gray-200 bg-white py-2 shadow-lg">
                 {categories.map((cat) => (
                   <Link
-                    key={cat}
-                    href={`/produtos?category=${encodeURIComponent(cat)}`}
+                    key={cat.id}
+                    href={`/produtos?category=${cat.slug}`}
                     className="block px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 transition-colors"
                     onClick={() => setCategoriesOpen(false)}
                   >
-                    {cat}
+                    {cat.name}
                   </Link>
                 ))}
               </div>
@@ -120,7 +124,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             <Link href="/carrinho" className="relative rounded-lg p-2 text-gray-700 hover:bg-gray-100 transition-colors">
               <ShoppingCart className="h-5 w-5" />
-              {itemCount > 0 && (
+              {mounted && itemCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-green-500 text-[10px] font-bold text-white">
                   {itemCount > 99 ? '99+' : itemCount}
                 </span>
@@ -237,12 +241,12 @@ export function Header() {
             <div className="py-2 text-xs font-semibold text-gray-400 uppercase tracking-wider">Categorias</div>
             {categories.map((cat) => (
               <Link
-                key={cat}
-                href={`/produtos?category=${encodeURIComponent(cat)}`}
+                key={cat.id}
+                href={`/produtos?category=${cat.slug}`}
                 className="block rounded-lg px-3 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                {cat}
+                {cat.name}
               </Link>
             ))}
             <hr className="my-2 border-gray-100" />

@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 
 export default function RegisterPage() {
   const router = useRouter()
-  const login = useAuthStore((s) => s.login)
+  const registerWithApi = useAuthStore((s) => s.registerWithApi)
   const [name, setName] = React.useState('')
   const [email, setEmail] = React.useState('')
   const [phone, setPhone] = React.useState('')
@@ -39,17 +39,13 @@ export default function RegisterPage() {
     if (!validate()) return
     setLoading(true)
     try {
-      await new Promise((r) => setTimeout(r, 1000))
-      login(
-        {
-          id: '1',
-          name,
-          email,
-          phone: phone || undefined,
-          role,
-        },
-        'demo-token-123'
-      )
+      await registerWithApi({
+        name,
+        email,
+        password,
+        phone: phone || undefined,
+        role: role === 'seller' ? 'SELLER' : 'BUYER',
+      })
       toast('Conta criada com sucesso!', 'success')
       router.push('/')
     } catch {
