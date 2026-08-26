@@ -6,8 +6,8 @@ import { Search as SearchIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const suggestions = [
-  'iPhone 15', 'Samsung Galaxy', 'iPhone', 'Notebook', 'Televisão',
-  'Sofá', 'Honda Civic', 'Tênis Nike', 'PlayStation 5', 'Arroz',
+  'iPhone 15', 'Samsung Galaxy', 'iPhone', 'Notebook', 'Televisao',
+  'Sofa', 'Honda Civic', 'Tenis Nike', 'PlayStation 5', 'Arroz',
 ]
 
 interface SearchBarProps {
@@ -69,23 +69,23 @@ export function SearchBar({ className, placeholder, defaultValue = '' }: SearchB
             }}
             onFocus={() => setShowSuggestions(true)}
             placeholder={placeholder || 'Pesquisar produtos, lojas e mais...'}
-            className="h-12 w-full rounded-l-xl border border-r-0 border-gray-300 bg-white pl-12 pr-4 text-base focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="h-12 w-full rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-12 pr-4 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-colors"
           />
         </div>
         <button
           type="submit"
-          className="h-12 px-8 rounded-r-xl bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold hover:from-emerald-700 hover:to-green-600 transition-all"
+          className="h-12 px-8 rounded-r-xl bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold hover:from-emerald-700 hover:to-green-600 transition-all shadow-md"
         >
           Pesquisar
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-1 rounded-xl border border-gray-200 bg-white py-2 shadow-lg z-50">
+        <div className="absolute top-full left-0 right-0 mt-1 rounded-xl glass-card py-2 z-50">
           {filteredSuggestions.map((suggestion) => (
             <button
               key={suggestion}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-emerald-50 transition-colors"
+              className="flex w-full items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-100 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-colors"
             >
               <SearchIcon className="h-4 w-4 text-gray-400" />
               {suggestion}

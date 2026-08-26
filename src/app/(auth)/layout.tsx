@@ -10,7 +10,7 @@ export default function AuthLayout({
           <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-600 to-green-400">
             <span className="text-white font-bold text-xl">P</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Pambala</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pambala</h1>
         </div>
         {children}
       </div>

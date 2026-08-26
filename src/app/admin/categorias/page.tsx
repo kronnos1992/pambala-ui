@@ -74,7 +74,7 @@ export default function AdminCategoriesPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Gerir Categorias</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gerir Categorias</h1>
         <Button size="sm" onClick={openCreate}>
           <Plus className="h-4 w-4 mr-2" />
           Nova Categoria
@@ -82,10 +82,10 @@ export default function AdminCategoriesPage() {
       </div>
 
       {showForm && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-900/20">
           <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">{editId ? 'Editar Categoria' : 'Nova Categoria'}</h3>
-            <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600">
+            <h3 className="font-semibold text-gray-900 dark:text-white">{editId ? 'Editar Categoria' : 'Nova Categoria'}</h3>
+            <button onClick={() => setShowForm(false)} className="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-300">
               <X className="h-5 w-5" />
             </button>
           </div>
@@ -104,16 +104,16 @@ export default function AdminCategoriesPage() {
         </div>
       )}
 
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />)}
+            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />)}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <th className="px-4 py-3">Icone</th>
                   <th className="px-4 py-3">Nome</th>
                   <th className="px-4 py-3">Slug</th>
@@ -122,20 +122,20 @@ export default function AdminCategoriesPage() {
                   <th className="px-4 py-3">Acoes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {categories.map((cat) => (
-                  <tr key={cat.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={cat.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-4 py-3 text-lg">{cat.icon || '📁'}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{cat.name}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{cat.slug}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{(cat as any)._count?.products || 0}</td>
-                    <td className="px-4 py-3 text-sm text-gray-500">{cat.children?.length || 0}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{cat.name}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{cat.slug}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">{(cat as any)._count?.products || 0}</td>
+                    <td className="px-4 py-3 text-sm text-gray-500 dark:text-gray-300">{cat.children?.length || 0}</td>
                     <td className="px-4 py-3">
                       <div className="flex gap-1">
-                        <button onClick={() => openEdit(cat)} className="rounded-md p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors">
+                        <button onClick={() => openEdit(cat)} className="rounded-md p-1.5 text-gray-400 hover:text-blue-500 hover:bg-blue-50 transition-colors dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-blue-900/30">
                           <Pencil className="h-4 w-4" />
                         </button>
-                        <button onClick={() => handleDelete(cat.id, cat.name)} className="rounded-md p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors">
+                        <button onClick={() => handleDelete(cat.id, cat.name)} className="rounded-md p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/30">
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>
@@ -143,7 +143,7 @@ export default function AdminCategoriesPage() {
                   </tr>
                 ))}
                 {categories.length === 0 && (
-                  <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500 text-sm">Nenhuma categoria encontrada.</td></tr>
+                  <tr><td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">Nenhuma categoria encontrada.</td></tr>
                 )}
               </tbody>
             </table>

@@ -45,14 +45,14 @@ export default function ContactoPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">Informações de Contacto</h2>
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Informações de Contacto</h2>
 
               <div className="flex items-start gap-4">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700 shrink-0">
                   <MessageCircle className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">WhatsApp</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">WhatsApp</h3>
                   <p className="text-sm text-gray-500 mb-1">Resposta rapida</p>
                   <a
                     href="https://wa.me/244900000000"
@@ -70,7 +70,7 @@ export default function ContactoPage() {
                   <Mail className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Email</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Email</h3>
                   <p className="text-sm text-gray-500 mb-1">Para assuntos gerais</p>
                   <a href="mailto:info@pambala.ao" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                     info@pambala.ao
@@ -83,7 +83,7 @@ export default function ContactoPage() {
                   <Phone className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Telefone</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Telefone</h3>
                   <p className="text-sm text-gray-500 mb-1">Seg-Sex, 8h-17h</p>
                   <a href="tel:+244900000000" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                     +244 900 000 000
@@ -96,7 +96,7 @@ export default function ContactoPage() {
                   <MapPin className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Endereco</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Endereco</h3>
                   <p className="text-sm text-gray-500">
                     Rua Major Kanhangulo, 123<br />
                     Ingombota, Luanda<br />
@@ -110,7 +110,7 @@ export default function ContactoPage() {
                   <Clock className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">Horario</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Horario</h3>
                   <p className="text-sm text-gray-500">
                     Segunda a Sexta: 8h00 - 17h00<br />
                     Sabado: 9h00 - 13h00<br />
@@ -132,8 +132,8 @@ export default function ContactoPage() {
             </div>
 
             <div className="lg:col-span-2">
-              <div className="rounded-xl border border-gray-200 bg-white p-6">
-                <h2 className="text-xl font-bold text-gray-900 mb-6">Envie-nos uma mensagem</h2>
+              <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Envie-nos uma mensagem</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input
@@ -166,7 +166,7 @@ export default function ContactoPage() {
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       rows={6}
                       placeholder="Escreva a sua mensagem..."
-                      className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 resize-none"
+                      className="w-full rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 resize-none"
                       required
                     />
                   </div>

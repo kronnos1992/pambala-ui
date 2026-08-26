@@ -23,13 +23,13 @@ export default function CartPage() {
         <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
           <Link href="/" className="hover:text-emerald-600 transition-colors">Inicio</Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <span className="text-gray-900 font-medium">Carrinho</span>
+          <span className="text-gray-900 dark:text-white font-medium">Carrinho</span>
         </nav>
         <div className="flex flex-col items-center justify-center py-16 text-center">
           <div className="mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gray-100">
             <ShoppingBag className="h-12 w-12 text-gray-400" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">O seu carrinho esta vazio</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">O seu carrinho esta vazio</h1>
           <p className="text-gray-500 mb-6">Adicione produtos ao carrinho para continuar a comprar.</p>
           <Link href="/produtos">
             <Button size="lg">
@@ -47,11 +47,11 @@ export default function CartPage() {
       <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-emerald-600 transition-colors">Inicio</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Carrinho</span>
+        <span className="text-gray-900 dark:text-white font-medium">Carrinho</span>
       </nav>
 
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Carrinho ({items.length} itens)</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Carrinho ({items.length} itens)</h1>
         <button onClick={clearCart} className="text-sm text-red-600 hover:text-red-700 font-medium">
           Limpar carrinho
         </button>
@@ -60,9 +60,9 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           {Object.entries(itemsByStore).map(([storeName, storeItems]) => (
-            <div key={storeName} className="rounded-xl border border-gray-200 bg-white overflow-hidden">
-              <div className="flex items-center gap-2 border-b border-gray-100 px-4 py-3 bg-gray-50">
-                <span className="text-sm font-semibold text-gray-900">{storeName}</span>
+            <div key={storeName} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+              <div className="flex items-center gap-2 border-b border-gray-200 dark:border-gray-700 px-4 py-3 bg-gray-100 dark:bg-gray-800">
+                <span className="text-sm font-semibold text-gray-900 dark:text-white">{storeName}</span>
               </div>
               <div className="divide-y divide-gray-100">
                 {storeItems.map((item) => (
@@ -79,7 +79,7 @@ export default function CartPage() {
                       />
                     </Link>
                     <div className="flex-1 min-w-0">
-                      <Link href={`/produtos/${item.id}`} className="text-sm font-medium text-gray-900 hover:text-emerald-700 line-clamp-2">
+                      <Link href={`/produtos/${item.id}`} className="text-sm font-medium text-gray-900 dark:text-white hover:text-emerald-700 line-clamp-2">
                         {item.name}
                       </Link>
                       <p className="text-lg font-bold text-emerald-700 mt-1">{formatPrice(item.price)}</p>
@@ -116,13 +116,13 @@ export default function CartPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Resumo</h2>
+          <div className="sticky top-24 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resumo</h2>
             <div className="space-y-3 mb-4">
               {Object.entries(itemsByStore).map(([storeName, storeItems]) => (
                 <div key={storeName} className="flex justify-between text-sm">
                   <span className="text-gray-600">{storeName}</span>
-                  <span className="font-medium text-gray-900">
+                  <span className="font-medium text-gray-900 dark:text-white">
                     {formatPrice(storeItems.reduce((s, i) => s + i.price * i.quantity, 0))}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export default function CartPage() {
             </div>
             <hr className="my-4 border-gray-100" />
             <div className="flex justify-between mb-6">
-              <span className="text-base font-semibold text-gray-900">Total</span>
+              <span className="text-base font-semibold text-gray-900 dark:text-white">Total</span>
               <span className="text-xl font-bold text-emerald-700">{formatPrice(total())}</span>
             </div>
             <Link href="/checkout">

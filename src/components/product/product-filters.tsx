@@ -15,15 +15,15 @@ const conditions = [
 
 const sortOptions = [
   { value: 'recent', label: 'Mais recente' },
-  { value: 'price_asc', label: 'Menor preço' },
-  { value: 'price_desc', label: 'Maior preço' },
+  { value: 'price_asc', label: 'Menor preco' },
+  { value: 'price_desc', label: 'Maior preco' },
   { value: 'popular', label: 'Mais popular' },
 ]
 
 const provinces = [
-  'Bengo', 'Benguela', 'Bié', 'Cabinda', 'Cuando-Cubango', 'Cuanza Norte',
-  'Cuanza Sul', 'Cunene', 'Huambo', 'Huíla', 'Icolo e Bengo', 'Luanda',
-  'Lunda Norte', 'Lunda Sul', 'Malanje', 'Moxico', 'Namibe', 'Uíge', 'Zaire',
+  'Bengo', 'Benguela', 'Bie', 'Cabinda', 'Cuando-Cubango', 'Cuanza Norte',
+  'Cuanza Sul', 'Cunene', 'Huambo', 'Huila', 'Icolo e Bengo', 'Luanda',
+  'Lunda Norte', 'Lunda Sul', 'Malanje', 'Moxico', 'Namibe', 'Uige', 'Zaire',
 ]
 
 interface ProductFiltersProps {
@@ -89,26 +89,26 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
   return (
     <div className={cn('space-y-6', className)}>
       <div className="flex items-center justify-between">
-        <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+        <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
           <SlidersHorizontal className="h-4 w-4" />
           Filtros
         </h3>
         {onMobileClose && (
-          <button onClick={onMobileClose} className="rounded-md p-1 text-gray-400 hover:text-gray-600 md:hidden">
+          <button onClick={onMobileClose} className="rounded-md p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
             <X className="h-5 w-5" />
           </button>
         )}
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Preço (Kz)</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">Preco (Kz)</label>
         <div className="flex items-center gap-2">
           <input
             type="number"
             placeholder="Min"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
-            className="h-9 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="h-9 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
           <span className="text-gray-400">-</span>
           <input
@@ -116,7 +116,7 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
             placeholder="Max"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
-            className="h-9 w-full rounded-lg border border-gray-300 px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="h-9 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
         </div>
         <Button size="sm" variant="outline" className="mt-2 w-full" onClick={updateParams}>
@@ -125,7 +125,7 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Condição</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">Condicao</label>
         <div className="space-y-2">
           {conditions.map((c) => (
             <label key={c.value} className="flex items-center gap-2 cursor-pointer">
@@ -133,9 +133,9 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
                 type="checkbox"
                 checked={selectedConditions.includes(c.value)}
                 onChange={() => toggleCondition(c.value)}
-                className="h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-emerald-600 focus:ring-emerald-500"
               />
-              <span className="text-sm text-gray-700">{c.label}</span>
+              <span className="text-sm text-gray-700 dark:text-gray-100">{c.label}</span>
             </label>
           ))}
         </div>
@@ -149,11 +149,11 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
       />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">Província</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">Provincia</label>
         <select
           value={province}
           onChange={(e) => setProvince(e.target.value)}
-          className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+          className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
         >
           <option value="">Todas</option>
           {provinces.map((p) => (

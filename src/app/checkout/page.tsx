@@ -82,7 +82,7 @@ export default function CheckoutPage() {
         <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
           <Link href="/" className="hover:text-emerald-600 transition-colors">Inicio</Link>
           <ChevronRight className="h-3.5 w-3.5" />
-          <span className="text-gray-900 font-medium">Checkout</span>
+          <span className="text-gray-900 dark:text-white font-medium">Checkout</span>
         </nav>
         <div className="text-center py-16">
           <p className="text-gray-500 mb-4">O seu carrinho esta vazio.</p>
@@ -101,15 +101,15 @@ export default function CheckoutPage() {
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/carrinho" className="hover:text-emerald-600 transition-colors">Carrinho</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Checkout</span>
+        <span className="text-gray-900 dark:text-white font-medium">Checkout</span>
       </nav>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-8">Finalizar Compra</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-8">Finalizar Compra</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Informações de Envio</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informações de Envio</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="Nome completo"
@@ -139,7 +139,7 @@ export default function CheckoutPage() {
                 <select
                   value={form.province}
                   onChange={(e) => updateForm('province', e.target.value)}
-                  className="h-11 w-full rounded-lg border border-gray-300 bg-white px-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 dark:text-white px-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 >
                   {provinces.map((p) => <option key={p} value={p}>{p}</option>)}
                 </select>
@@ -153,8 +153,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Metodo de Pagamento</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Metodo de Pagamento</h2>
             <div className="space-y-3">
               {paymentMethods.map((method) => {
                 const Icon = method.icon
@@ -165,19 +165,19 @@ export default function CheckoutPage() {
                     className={cn(
                       'flex items-center gap-4 w-full rounded-xl border-2 p-4 text-left transition-all',
                       paymentMethod === method.id
-                        ? 'border-emerald-500 bg-emerald-50'
-                        : 'border-gray-200 hover:border-gray-300'
+                        ? 'border-emerald-500 bg-gray-100 dark:bg-gray-800'
+                        : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
                     )}
                   >
                     <div className={cn(
                       'flex h-10 w-10 items-center justify-center rounded-lg',
-                      paymentMethod === method.id ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-500'
+                      paymentMethod === method.id ? 'bg-emerald-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-300'
                     )}>
                       <Icon className="h-5 w-5" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{method.name}</p>
-                      <p className="text-sm text-gray-500">{method.description}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{method.name}</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-300">{method.description}</p>
                     </div>
                     {paymentMethod === method.id && (
                       <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600">
@@ -192,17 +192,17 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Resumo do Pedido</h2>
+          <div className="sticky top-24 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resumo do Pedido</h2>
             <div className="space-y-3 mb-4 max-h-48 overflow-y-auto">
               {items.map((item) => (
                 <div key={item.id} className="flex items-center gap-3">
                   <Image src={item.image} alt={item.name} width={48} height={48} unoptimized loading="lazy" className="rounded-lg object-cover" />
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">{item.name}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
                     <p className="text-xs text-gray-500">Qtd: {item.quantity}</p>
                   </div>
-                  <span className="text-sm font-medium text-gray-900">{formatPrice(item.price * item.quantity)}</span>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">{formatPrice(item.price * item.quantity)}</span>
                 </div>
               ))}
             </div>

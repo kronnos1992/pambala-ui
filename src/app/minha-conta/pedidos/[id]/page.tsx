@@ -46,12 +46,12 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           <div className="h-8 bg-gray-100 rounded w-40 mb-8" />
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 h-64" />
-              <div className="rounded-xl border border-gray-200 bg-white p-6 h-48" />
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 h-64" />
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 h-48" />
             </div>
             <div className="space-y-6">
-              <div className="rounded-xl border border-gray-200 bg-white p-6 h-40" />
-              <div className="rounded-xl border border-gray-200 bg-white p-6 h-32" />
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 h-40" />
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 h-32" />
             </div>
           </div>
         </div>
@@ -62,7 +62,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   if (!order) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 text-center py-16">
-        <h1 className="text-2xl font-bold text-gray-900">Pedido nao encontrado</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pedido nao encontrado</h1>
         <Link href="/minha-conta/pedidos" className="text-emerald-600 hover:text-emerald-700 mt-4 inline-block">Voltar aos pedidos</Link>
       </div>
     )
@@ -87,11 +87,11 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/minha-conta/pedidos" className="hover:text-emerald-600 transition-colors">Pedidos</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">{order.id}</span>
+        <span className="text-gray-900 dark:text-white font-medium">{order.id}</span>
       </nav>
 
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Pedido {order.id}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Pedido {order.id}</h1>
         <Link href="/minha-conta/pedidos">
           <Button variant="outline" size="sm">Voltar</Button>
         </Link>
@@ -99,8 +99,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-6">Estado do Pedido</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">Estado do Pedido</h2>
             <div className="space-y-0">
               {statusSteps.map((step, i) => {
                 const label = statusLabelsMap[step]
@@ -122,7 +122,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                       )}
                     </div>
                     <div className="pb-6">
-                      <p className={cn('font-medium', completed ? 'text-gray-900' : 'text-gray-400')}>{label}</p>
+                      <p className={cn('font-medium', completed ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>{label}</p>
                       {isCurrent && (
                         <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString('pt-AO')}</p>
                       )}
@@ -133,18 +133,18 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Itens do Pedido</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Itens do Pedido</h2>
             {items.length > 0 ? (
               <div className="space-y-3">
                 {items.map((item, i) => (
                   <div key={i} className="flex items-center gap-3">
                     <Image src={item.image} alt={item.name} width={64} height={64} unoptimized loading="lazy" className="rounded-lg object-cover" />
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900">{item.name}</p>
+                      <p className="font-medium text-gray-900 dark:text-white">{item.name}</p>
                       <p className="text-sm text-gray-500">Qtd: {item.quantity}</p>
                     </div>
-                    <span className="font-semibold text-gray-900">{new Intl.NumberFormat('pt-AO', { style: 'decimal' }).format(item.price)} Kz</span>
+                    <span className="font-semibold text-gray-900 dark:text-white">{new Intl.NumberFormat('pt-AO', { style: 'decimal' }).format(item.price)} Kz</span>
                   </div>
                 ))}
               </div>
@@ -155,8 +155,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Resumo</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Resumo</h2>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
@@ -174,10 +174,10 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             </div>
           </div>
 
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Envio</h2>
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Envio</h2>
             <div className="text-sm space-y-1">
-              <p className="font-medium text-gray-900">{order.shippingName || 'N/A'}</p>
+              <p className="font-medium text-gray-900 dark:text-white">{order.shippingName || 'N/A'}</p>
               <p className="text-gray-600 flex items-start gap-1">
                 <MapPin className="h-4 w-4 shrink-0 mt-0.5" />
                 {order.shippingAddress}{order.shippingDistrict ? `, ${order.shippingDistrict}` : ''}, {order.shippingProvince}

@@ -44,15 +44,15 @@ const iconMap = {
 }
 
 const colorMap = {
-  success: 'bg-emerald-50 border-emerald-200 text-emerald-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
+  success: 'bg-emerald-50 dark:bg-emerald-900/60 border-emerald-200 dark:border-emerald-700 text-emerald-800 dark:text-emerald-200',
+  error: 'bg-red-50 dark:bg-red-900/60 border-red-200 dark:border-red-700 text-red-800 dark:text-red-200',
+  info: 'bg-blue-50 dark:bg-blue-900/60 border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200',
 }
 
 const iconColorMap = {
-  success: 'text-emerald-500',
-  error: 'text-red-500',
-  info: 'text-blue-500',
+  success: 'text-emerald-500 dark:text-emerald-400',
+  error: 'text-red-500 dark:text-red-400',
+  info: 'text-blue-500 dark:text-blue-400',
 }
 
 function ToastProvider() {
@@ -66,7 +66,7 @@ function ToastProvider() {
           <div
             key={toast.id}
             className={cn(
-              'flex items-center gap-3 rounded-lg border p-4 shadow-lg animate-in slide-in-from-right-full duration-300',
+              'flex items-center gap-3 rounded-lg border p-4 shadow-lg backdrop-blur-md animate-in slide-in-from-right-full duration-300',
               colorMap[toast.type]
             )}
           >
@@ -74,7 +74,7 @@ function ToastProvider() {
             <p className="text-sm font-medium flex-1">{toast.message}</p>
             <button
               onClick={() => removeToast(toast.id)}
-              className="shrink-0 rounded-md p-1 hover:bg-black/5 transition-colors"
+              className="shrink-0 rounded-md p-1 hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>

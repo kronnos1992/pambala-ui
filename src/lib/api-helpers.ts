@@ -473,6 +473,46 @@ export async function fetchAdminStats() {
   return data
 }
 
+export async function fetchAdminOrdersStats() {
+  const { data } = await api.get('/admin/stats/orders')
+  return data
+}
+
+export async function fetchAdminUsersStats() {
+  const { data } = await api.get('/admin/stats/users')
+  return data
+}
+
+export async function fetchAdminStoresStats() {
+  const { data } = await api.get('/admin/stats/stores')
+  return data
+}
+
+export async function fetchAdminProductsStats() {
+  const { data } = await api.get('/admin/stats/products')
+  return data
+}
+
+export async function fetchAdminCategoriesStats() {
+  const { data } = await api.get('/admin/stats/categories')
+  return data
+}
+
+export async function fetchAdminReviewsStats() {
+  const { data } = await api.get('/admin/stats/reviews')
+  return data
+}
+
+export async function fetchAdminRevenueChart(days = 30) {
+  const { data } = await api.get(`/admin/stats/charts/revenue?days=${days}`)
+  return data.data
+}
+
+export async function fetchAdminUsersChart(days = 30) {
+  const { data } = await api.get(`/admin/stats/charts/users?days=${days}`)
+  return data.data
+}
+
 export async function fetchAdminUsers(params: { page?: number; limit?: number; role?: string; q?: string } = {}) {
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))

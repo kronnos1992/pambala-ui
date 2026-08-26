@@ -54,19 +54,19 @@ export default function AdminPedidosPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Gerir Pedidos</h1>
-        <span className="text-sm text-gray-500">{pagination.total} pedidos</span>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gerir Pedidos</h1>
+        <span className="text-sm text-gray-500 dark:text-gray-300">{pagination.total} pedidos</span>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
         <form onSubmit={handleSearch} className="flex gap-2 flex-1">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-gray-400" />
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Pesquisar por nr. pedido ou nome..."
-              className="h-10 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="h-10 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
             />
           </div>
           <Button type="submit" size="sm">Pesquisar</Button>
@@ -78,7 +78,7 @@ export default function AdminPedidosPage() {
               onClick={() => { setStatus(s); setPage(1) }}
               className={cn(
                 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
-                status === s ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                status === s ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
               )}
             >
               {statusLabels[s]}
@@ -87,16 +87,16 @@ export default function AdminPedidosPage() {
         </div>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />)}
+            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />)}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <th className="px-4 py-3">Nr Pedido</th>
                   <th className="px-4 py-3">Cliente</th>
                   <th className="px-4 py-3">Valor</th>
@@ -106,14 +106,14 @@ export default function AdminPedidosPage() {
                   <th className="px-4 py-3">Data</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{order.orderNumber || order.id}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{order.shippingName || order.user?.name || 'N/A'}</td>
-                    <td className="px-4 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{order.paymentMethod}</td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{order.shippingProvince || '-'}</td>
+                  <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{order.orderNumber || order.id}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-200">{order.shippingName || order.user?.name || 'N/A'}</td>
+                    <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{formatPrice(order.total)}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{order.paymentMethod}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{order.shippingProvince || '-'}</td>
                     <td className="px-4 py-3">
                       <select
                         value={order.status}
@@ -126,11 +126,11 @@ export default function AdminPedidosPage() {
                         ))}
                       </select>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(order.createdAt).toLocaleDateString('pt-AO')}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{new Date(order.createdAt).toLocaleDateString('pt-AO')}</td>
                   </tr>
                 ))}
                 {orders.length === 0 && (
-                  <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500 text-sm">Nenhum pedido encontrado.</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">Nenhum pedido encontrado.</td></tr>
                 )}
               </tbody>
             </table>
@@ -140,7 +140,7 @@ export default function AdminPedidosPage() {
 
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">Pagina {pagination.page} de {pagination.totalPages}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-200">Pagina {pagination.page} de {pagination.totalPages}</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
               <ChevronLeft className="h-4 w-4" />

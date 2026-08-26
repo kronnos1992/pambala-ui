@@ -54,7 +54,7 @@ const DialogContent = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      'rounded-xl bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200',
+      'rounded-2xl glass-strong p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-200',
       className
     )}
     {...props}
@@ -62,7 +62,7 @@ const DialogContent = React.forwardRef<
     {onClose && (
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 rounded-md p-1 text-gray-400 hover:text-gray-600 transition-colors"
+        className="absolute right-4 top-4 rounded-md p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
       >
         <X className="h-5 w-5" />
       </button>
@@ -90,7 +90,7 @@ function DialogTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h2
-      className={cn('text-lg font-semibold leading-none tracking-tight text-gray-900', className)}
+      className={cn('text-lg font-semibold leading-none tracking-tight text-gray-950 dark:text-white', className)}
       {...props}
     />
   )
@@ -101,7 +101,7 @@ function DialogDescription({
   ...props
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
-    <p className={cn('text-sm text-gray-500', className)} {...props} />
+    <p className={cn('text-sm text-gray-700 dark:text-gray-200', className)} {...props} />
   )
 }
 

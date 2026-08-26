@@ -37,20 +37,20 @@ export default function AdminReviewsPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Gerir Avaliacoes</h1>
-        <span className="text-sm text-gray-500">{pagination.total} avaliacoes</span>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Gerir Avaliacoes</h1>
+        <span className="text-sm text-gray-500 dark:text-gray-300">{pagination.total} avaliacoes</span>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
         {loading ? (
           <div className="p-6 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />)}
+            {Array.from({ length: 5 }).map((_, i) => <div key={i} className="h-12 bg-gray-100 dark:bg-gray-800 rounded animate-pulse" />)}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <th className="px-4 py-3">Utilizador</th>
                   <th className="px-4 py-3">Produto</th>
                   <th className="px-4 py-3">Loja</th>
@@ -60,30 +60,30 @@ export default function AdminReviewsPage() {
                   <th className="px-4 py-3">Acoes</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
                 {reviews.map((review) => (
-                  <tr key={review.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-sm text-gray-900">{review.user?.name || 'N/A'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600 max-w-[150px] truncate">{review.product?.name || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{review.store?.name || '-'}</td>
+                  <tr key={review.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                    <td className="px-4 py-3 text-sm text-gray-900 dark:text-white">{review.user?.name || 'N/A'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-200 max-w-[150px] truncate">{review.product?.name || '-'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-200">{review.store?.name || '-'}</td>
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-0.5">
                         {Array.from({ length: 5 }).map((_, i) => (
                           <Star
                             key={i}
-                            className={cn('h-3.5 w-3.5', i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200')}
+                            className={cn('h-3.5 w-3.5', i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-200 dark:text-gray-400')}
                           />
                         ))}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500 max-w-[200px] truncate">
-                      {review.comment || <span className="italic">Sem comentario</span>}
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300 max-w-[200px] truncate">
+                      {review.comment || <span className="italic dark:text-gray-400">Sem comentario</span>}
                     </td>
-                    <td className="px-4 py-3 text-xs text-gray-500">{new Date(review.createdAt).toLocaleDateString('pt-AO')}</td>
+                    <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{new Date(review.createdAt).toLocaleDateString('pt-AO')}</td>
                     <td className="px-4 py-3">
                       <button
                         onClick={() => handleDelete(review.id)}
-                        className="rounded-md p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                        className="rounded-md p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-red-900/30"
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -91,7 +91,7 @@ export default function AdminReviewsPage() {
                   </tr>
                 ))}
                 {reviews.length === 0 && (
-                  <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500 text-sm">Nenhuma avaliacao encontrada.</td></tr>
+                  <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">Nenhuma avaliacao encontrada.</td></tr>
                 )}
               </tbody>
             </table>
@@ -101,7 +101,7 @@ export default function AdminReviewsPage() {
 
       {pagination.totalPages > 1 && (
         <div className="flex items-center justify-between">
-          <p className="text-sm text-gray-500">Pagina {pagination.page} de {pagination.totalPages}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-200">Pagina {pagination.page} de {pagination.totalPages}</p>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage((p) => p - 1)}>
               <ChevronLeft className="h-4 w-4" />

@@ -31,11 +31,11 @@ export default function SellerProductsPage() {
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/vendedor" className="hover:text-emerald-600 transition-colors">Vendedor</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Produtos</span>
+        <span className="text-gray-900 dark:text-white font-medium">Produtos</span>
       </nav>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Os Meus Produtos</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Os Meus Produtos</h1>
         <Link href="/vendedor/produtos/novo">
           <Button>
             <Plus className="h-4 w-4 mr-2" />
@@ -52,13 +52,13 @@ export default function SellerProductsPage() {
             placeholder="Pesquisar produtos..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="h-10 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="h-10 w-full rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
         </div>
       </div>
 
       {loading ? (
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
+        <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
           <div className="space-y-3">
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="h-16 bg-gray-100 rounded-lg animate-pulse" />
@@ -66,7 +66,7 @@ export default function SellerProductsPage() {
           </div>
         </div>
       ) : (
-        <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+        <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -85,12 +85,12 @@ export default function SellerProductsPage() {
                     <td className="px-6 py-3">
                       <div className="flex items-center gap-3">
                         <Image src={product.image} alt={product.name} width={48} height={48} unoptimized loading="lazy" className="rounded-lg object-cover" />
-                        <span className="text-sm font-medium text-gray-900 max-w-[250px] truncate">{product.name}</span>
+                        <span className="text-sm font-medium text-gray-900 dark:text-white max-w-[250px] truncate">{product.name}</span>
                       </div>
                     </td>
-                    <td className="px-6 py-3 text-sm font-medium text-gray-900">{formatPrice(product.price)}</td>
+                    <td className="px-6 py-3 text-sm font-medium text-gray-900 dark:text-white">{formatPrice(product.price)}</td>
                     <td className="px-6 py-3">
-                      <span className={cn('text-sm font-medium', (product.stock || 0) > 0 ? 'text-gray-900' : 'text-red-600')}>
+                      <span className={cn('text-sm font-medium', (product.stock || 0) > 0 ? 'text-gray-900 dark:text-white' : 'text-red-600')}>
                         {product.stock || 0} unidades
                       </span>
                     </td>

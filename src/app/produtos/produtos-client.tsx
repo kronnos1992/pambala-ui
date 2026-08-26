@@ -57,18 +57,18 @@ export default function ProdutosClient() {
       <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-emerald-600 transition-colors">Inicio</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Produtos</span>
+        <span className="text-gray-900 dark:text-white font-medium">Produtos</span>
         {category && (
           <>
             <ChevronRight className="h-3.5 w-3.5" />
-            <span className="text-gray-900 font-medium">{category}</span>
+            <span className="text-gray-900 dark:text-white font-medium">{category}</span>
           </>
         )}
       </nav>
 
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
             {category || q ? `Resultados para "${category || q}"` : 'Todos os Produtos'}
           </h1>
           <p className="text-sm text-gray-500 mt-1">
@@ -97,7 +97,7 @@ export default function ProdutosClient() {
           {loading ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+                <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 animate-pulse">
                   <div className="aspect-square rounded-lg bg-gray-100 mb-3" />
                   <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
                   <div className="h-4 bg-gray-100 rounded w-1/2" />
@@ -136,7 +136,7 @@ export default function ProdutosClient() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900">Nenhum produto encontrado</h3>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Nenhum produto encontrado</h3>
               <p className="mt-1 text-sm text-gray-500">Tente ajustar os filtros ou pesquisar por algo diferente.</p>
             </div>
           )}
@@ -146,9 +146,9 @@ export default function ProdutosClient() {
       {mobileFilters && (
         <div className="fixed inset-0 z-50 md:hidden">
           <div className="fixed inset-0 bg-black/50" onClick={() => setMobileFilters(false)} />
-          <div className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white shadow-xl overflow-y-auto">
+          <div className="fixed inset-y-0 left-0 w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-xl overflow-y-auto">
             <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3">
-              <h2 className="font-semibold text-gray-900">Filtros</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Filtros</h2>
               <button onClick={() => setMobileFilters(false)} className="rounded-md p-1.5 text-gray-400 hover:text-gray-600">
                 <X className="h-5 w-5" />
               </button>

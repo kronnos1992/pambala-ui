@@ -44,8 +44,8 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 shadow-sm">
-      <h2 className="text-xl font-bold text-gray-900 mb-1">Entrar na sua conta</h2>
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 sm:p-8 shadow-sm">
+      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-1">Entrar na sua conta</h2>
       <p className="text-sm text-gray-500 mb-6">
         Bem-vindo de volta ao Pambala
       </p>

@@ -84,7 +84,7 @@ export default function ComoFuncionaPage() {
 
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-4">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white text-center mb-4">
             3 Passos Simples
           </h2>
           <p className="text-center text-gray-500 mb-12 max-w-lg mx-auto">
@@ -101,7 +101,7 @@ export default function ComoFuncionaPage() {
                   <div className="mb-2 inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-sm font-bold text-emerald-700">
                     {i + 1}
                   </div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">{step.title}</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{step.title}</h3>
                   <p className="text-sm text-gray-500 max-w-xs mx-auto leading-relaxed">{step.description}</p>
                 </div>
               )
@@ -110,9 +110,9 @@ export default function ComoFuncionaPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-white">
+      <section className="py-16 bg-white dark:bg-[#111827]">
         <div className="mx-auto max-w-7xl px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
             Por que escolher o Pambala?
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -123,7 +123,7 @@ export default function ComoFuncionaPage() {
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 mb-4">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{benefit.title}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-2">{benefit.title}</h3>
                   <p className="text-sm text-gray-500 leading-relaxed">{benefit.description}</p>
                 </div>
               )
@@ -134,13 +134,13 @@ export default function ComoFuncionaPage() {
 
       <section className="py-16">
         <div className="mx-auto max-w-3xl px-4 sm:px-6">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white text-center mb-12">
             Perguntas Frequentes
           </h2>
           <div className="space-y-4">
             {faq.map((item, i) => (
-              <details key={i} className="group rounded-xl border border-gray-200 bg-white overflow-hidden">
-                <summary className="flex items-center justify-between px-6 py-4 cursor-pointer text-sm font-semibold text-gray-900 hover:bg-gray-50 transition-colors">
+              <details key={i} className="group rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+                <summary className="flex items-center justify-between px-6 py-4 cursor-pointer text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 transition-colors">
                   {item.question}
                   <span className="ml-4 shrink-0 text-gray-400 group-open:rotate-180 transition-transform">
                     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" /></svg>
@@ -161,7 +161,7 @@ export default function ComoFuncionaPage() {
           <p className="text-emerald-100 mb-6">Junte-se a milhares de angolanos que ja compram e vendem no Pambala.</p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <Link href="/register">
-              <button className="h-12 px-8 rounded-xl bg-white text-emerald-700 font-semibold hover:bg-gray-100 transition-colors w-full sm:w-auto">
+              <button className="h-12 px-8 rounded-xl bg-white dark:bg-gray-800 text-emerald-700 dark:text-emerald-400 font-semibold hover:bg-gray-100 transition-colors w-full sm:w-auto">
                 Criar Conta Gratis
               </button>
             </Link>

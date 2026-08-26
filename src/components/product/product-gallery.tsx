@@ -32,7 +32,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
             key={i}
             onClick={() => setSelectedIndex(i)}
             className={cn(
-              'shrink-0 h-16 w-16 sm:h-20 sm:w-20 rounded-lg overflow-hidden border-2 transition-all',
+              'shrink-0 h-16 w-16 sm:h-20 sm:w-20 relative rounded-lg overflow-hidden border-2 transition-all',
               selectedIndex === i
                 ? 'border-emerald-500'
                 : 'border-gray-200 hover:border-gray-300 opacity-70 hover:opacity-100'

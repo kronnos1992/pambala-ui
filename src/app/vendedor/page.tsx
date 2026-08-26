@@ -41,11 +41,11 @@ export default function VendedorPage() {
       <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-emerald-600 transition-colors">Inicio</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Painel do Vendedor</span>
+        <span className="text-gray-900 dark:text-white font-medium">Painel do Vendedor</span>
       </nav>
 
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Painel do Vendedor</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Painel do Vendedor</h1>
         <div className="flex gap-2">
           <Link href="/vendedor/produtos">
             <Button variant="outline" size="sm">
@@ -79,7 +79,7 @@ export default function VendedorPage() {
                     </span>
                   )}
                 </div>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-2xl font-bold text-gray-900 dark:text-white">{stat.value}</p>
                 <p className="text-sm text-gray-500">{stat.label}</p>
               </CardContent>
             </Card>
@@ -89,9 +89,9 @@ export default function VendedorPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
-          <div className="rounded-xl border border-gray-200 bg-white">
+          <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-              <h2 className="font-semibold text-gray-900">Pedidos Recentes</h2>
+              <h2 className="font-semibold text-gray-900 dark:text-white">Pedidos Recentes</h2>
               <Link href="/minha-conta/pedidos" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                 Ver todos
               </Link>
@@ -117,10 +117,10 @@ export default function VendedorPage() {
                   <tbody className="divide-y divide-gray-100">
                     {recentOrders.map((order) => (
                       <tr key={order.id} className="hover:bg-gray-50 transition-colors">
-                        <td className="px-6 py-3 text-sm font-medium text-gray-900">{order.id}</td>
+                        <td className="px-6 py-3 text-sm font-medium text-gray-900 dark:text-white">{order.id}</td>
                         <td className="px-6 py-3 text-sm text-gray-600">{order.shippingName || 'N/A'}</td>
                         <td className="px-6 py-3 text-sm text-gray-600">{order.items} {order.items === 1 ? 'item' : 'itens'}</td>
-                        <td className="px-6 py-3 text-sm font-medium text-gray-900">{formatPrice(order.total)}</td>
+                        <td className="px-6 py-3 text-sm font-medium text-gray-900 dark:text-white">{formatPrice(order.total)}</td>
                         <td className="px-6 py-3">
                           <span className={cn('px-2 py-0.5 rounded-full text-xs font-semibold', getStatusColor(order.status))}>
                             {getStatusLabel(order.status)}
@@ -143,15 +143,15 @@ export default function VendedorPage() {
         </div>
 
         <div className="space-y-6">
-          <div className="rounded-xl border border-gray-200 bg-white p-6">
-            <h2 className="font-semibold text-gray-900 mb-4">Acoes Rapidas</h2>
+          <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
+            <h2 className="font-semibold text-gray-900 dark:text-white mb-4">Acoes Rapidas</h2>
             <div className="space-y-2">
               <Link href="/vendedor/produtos/novo" className="flex items-center gap-3 rounded-lg p-3 hover:bg-gray-50 transition-colors">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
                   <Plus className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Adicionar Produto</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Adicionar Produto</p>
                   <p className="text-xs text-gray-500">Criar novo anuncio</p>
                 </div>
               </Link>
@@ -160,7 +160,7 @@ export default function VendedorPage() {
                   <Package className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Gerir Produtos</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Gerir Produtos</p>
                   <p className="text-xs text-gray-500">Editar ou remover anuncios</p>
                 </div>
               </Link>
@@ -169,7 +169,7 @@ export default function VendedorPage() {
                   <Eye className="h-4 w-4" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">Ver Pedidos</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Ver Pedidos</p>
                   <p className="text-xs text-gray-500">Acompanhar vendas</p>
                 </div>
               </Link>

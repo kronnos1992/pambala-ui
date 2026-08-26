@@ -26,7 +26,7 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
 
   return (
     <nav className={cn('space-y-1', className)}>
-      <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-3 px-3">
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3 px-3">
         Categorias
       </h3>
       <Link
@@ -34,8 +34,8 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
         className={cn(
           'flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
           !activeCategory
-            ? 'bg-emerald-50 text-emerald-700'
-            : 'text-gray-700 hover:bg-gray-50'
+            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+            : 'text-gray-700 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
         )}
       >
         Todos
@@ -53,8 +53,8 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
                 className={cn(
                   'flex-1 flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
                   isActive
-                    ? 'bg-emerald-50 text-emerald-700 font-medium'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 font-medium'
+                    : 'text-gray-700 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
                 )}
               >
                 <ChevronRight className={cn('h-3.5 w-3.5 transition-transform', isActive && 'text-emerald-500')} />
@@ -64,7 +64,7 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
               {hasSub && (
                 <button
                   onClick={() => toggle(cat.name)}
-                  className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                  className="p-1.5 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   <ChevronDown className={cn('h-3.5 w-3.5 transition-transform', isExpanded && 'rotate-180')} />
                 </button>
@@ -76,7 +76,7 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
                   <Link
                     key={sub.name}
                     href={`/produtos?category=${encodeURIComponent(sub.name)}`}
-                    className="flex items-center justify-between rounded-lg px-3 py-1.5 text-sm text-gray-500 hover:bg-gray-50 hover:text-gray-700 transition-colors"
+                    className="flex items-center justify-between rounded-lg px-3 py-1.5 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
                   >
                     <span>{sub.name}</span>
                     <span className="text-xs text-gray-400">{sub.count}</span>

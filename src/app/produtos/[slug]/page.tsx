@@ -65,7 +65,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
   if (!product) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 text-center py-16">
-        <h1 className="text-2xl font-bold text-gray-900">Produto nao encontrado</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Produto nao encontrado</h1>
         <Link href="/produtos" className="text-emerald-600 hover:text-emerald-700 mt-4 inline-block">Voltar aos produtos</Link>
       </div>
     )
@@ -98,7 +98,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/produtos" className="hover:text-emerald-600 transition-colors">Produtos</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium truncate max-w-[200px]">{product.name}</span>
+        <span className="text-gray-900 dark:text-white font-medium truncate max-w-[200px]">{product.name}</span>
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
@@ -109,7 +109,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             <Badge variant="secondary" className="mb-2">
               {condLabel}
             </Badge>
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{product.name}</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{product.name}</h1>
           </div>
 
           <div className="flex items-center gap-3">
@@ -179,21 +179,21 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
             <div className="flex items-center gap-3">
               <Truck className="h-5 w-5 text-emerald-600" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Entrega disponivel</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Entrega disponivel</p>
                 <p className="text-xs text-gray-500">Envio para todo o pais</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Shield className="h-5 w-5 text-emerald-600" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Compra protegida</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Compra protegida</p>
                 <p className="text-xs text-gray-500">Devolucao em 7 dias</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <RotateCcw className="h-5 w-5 text-emerald-600" />
               <div>
-                <p className="text-sm font-medium text-gray-900">Devolucao gratuita</p>
+                <p className="text-sm font-medium text-gray-900 dark:text-white">Devolucao gratuita</p>
                 <p className="text-xs text-gray-500">Se nao estiver satisfeito</p>
               </div>
             </div>
@@ -204,7 +204,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
               <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
                 <Avatar fallback={product.store.name} size="lg" />
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{product.store.name}</p>
+                  <p className="font-semibold text-gray-900 dark:text-white">{product.store.name}</p>
                   <div className="flex items-center gap-2 text-sm text-gray-500">
                     <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                     <span>{avgRating.toFixed(1)}</span>
@@ -256,7 +256,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           <div className="space-y-6">
             <div className="flex items-center gap-4 rounded-xl bg-gray-50 p-4">
               <div className="text-center">
-                <p className="text-3xl font-bold text-gray-900">{avgRating.toFixed(1)}</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-white">{avgRating.toFixed(1)}</p>
                 <div className="flex gap-0.5 my-1">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} className={cn('h-4 w-4', i < Math.round(avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300')} />
@@ -272,7 +272,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
                     <div className="flex items-center gap-3 mb-2">
                       <Avatar fallback={review.user?.name || 'U'} size="sm" />
                       <div>
-                        <p className="text-sm font-medium text-gray-900">{review.user?.name || 'Anonimo'}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white">{review.user?.name || 'Anonimo'}</p>
                         <div className="flex items-center gap-2">
                           <div className="flex gap-0.5">
                             {Array.from({ length: 5 }).map((_, j) => (
@@ -296,7 +296,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
 
       {relatedProducts.length > 0 && (
         <section>
-          <h2 className="text-xl font-bold text-gray-900 mb-6">Produtos Relacionados</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Produtos Relacionados</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {relatedProducts.map((p) => (
               <ProductCard key={p.id} product={p} />

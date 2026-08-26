@@ -30,11 +30,11 @@ export default function LojasPage() {
       <nav className="flex items-center gap-1.5 text-sm text-gray-500 mb-6">
         <Link href="/" className="hover:text-emerald-600 transition-colors">Inicio</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Lojas</span>
+        <span className="text-gray-900 dark:text-white font-medium">Lojas</span>
       </nav>
 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Lojas</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Lojas</h1>
         <div className="flex items-center gap-3">
           <div className="relative flex-1 sm:w-72">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -43,7 +43,7 @@ export default function LojasPage() {
               placeholder="Pesquisar lojas..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-10 w-full rounded-lg border border-gray-300 bg-white pl-10 pr-4 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+              className="h-10 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-10 pr-4 text-sm dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
             />
           </div>
           <div className="hidden sm:flex items-center rounded-lg border border-gray-200">
@@ -73,7 +73,7 @@ export default function LojasPage() {
       ) : loading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+            <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 animate-pulse">
               <div className="flex items-center gap-3">
                 <div className="h-14 w-14 rounded-full bg-gray-100" />
                 <div className="flex-1">

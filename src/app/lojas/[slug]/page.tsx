@@ -47,7 +47,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
           <div className="h-8 bg-gray-100 rounded w-48 mb-4" />
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Array.from({ length: 4 }).map((_, i) => (
-              <div key={i} className="rounded-xl border border-gray-200 bg-white p-4 animate-pulse">
+              <div key={i} className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4 animate-pulse">
                 <div className="aspect-square rounded-lg bg-gray-100 mb-3" />
                 <div className="h-4 bg-gray-100 rounded w-3/4 mb-2" />
                 <div className="h-4 bg-gray-100 rounded w-1/2" />
@@ -62,7 +62,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
   if (!store) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6 text-center py-16">
-        <h1 className="text-2xl font-bold text-gray-900">Loja nao encontrada</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Loja nao encontrada</h1>
         <Link href="/lojas" className="text-emerald-600 hover:text-emerald-700 mt-4 inline-block">Voltar as lojas</Link>
       </div>
     )
@@ -75,7 +75,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/lojas" className="hover:text-emerald-600 transition-colors">Lojas</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">{store.name}</span>
+        <span className="text-gray-900 dark:text-white font-medium">{store.name}</span>
       </nav>
 
       <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-emerald-600 to-green-500 h-40 sm:h-52 mb-[-40px] sm:mb-[-52px]" />
@@ -83,7 +83,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
       <div className="relative z-10 flex flex-col sm:flex-row items-end gap-4 mb-8 px-4">
         <Avatar fallback={store.name} size="lg" className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-white shadow-lg text-2xl" />
         <div className="flex-1 pb-1">
-          <h1 className="text-2xl font-bold text-gray-900">{store.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{store.name}</h1>
           <div className="flex flex-wrap items-center gap-3 mt-1">
             <div className="flex items-center gap-1">
               <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
@@ -135,7 +135,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
         <div className="space-y-4 max-w-2xl">
           <div className="flex items-center gap-4 rounded-xl bg-gray-50 p-4">
             <div className="text-center">
-              <p className="text-3xl font-bold text-gray-900">{avgRating.toFixed(1)}</p>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{avgRating.toFixed(1)}</p>
               <div className="flex gap-0.5 my-1">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className={cn('h-4 w-4', i < Math.round(avgRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300')} />
@@ -149,7 +149,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
               <div className="flex items-center gap-3 mb-2">
                 <Avatar fallback={review.user?.name || 'U'} size="sm" />
                 <div>
-                  <p className="text-sm font-medium text-gray-900">{review.user?.name || 'Anonimo'}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">{review.user?.name || 'Anonimo'}</p>
                   <div className="flex items-center gap-2">
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, j) => (

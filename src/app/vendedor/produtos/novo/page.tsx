@@ -95,14 +95,14 @@ export default function NewProductPage() {
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/vendedor/produtos" className="hover:text-emerald-600 transition-colors">Produtos</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 font-medium">Novo Produto</span>
+        <span className="text-gray-900 dark:text-white font-medium">Novo Produto</span>
       </nav>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Novo Produto</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Novo Produto</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Imagens do Produto</h2>
+        <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Imagens do Produto</h2>
           <div className="flex flex-wrap gap-3">
             {images.map((img, i) => (
               <div key={i} className="relative h-24 w-24 rounded-lg overflow-hidden border border-gray-200">
@@ -129,8 +129,8 @@ export default function NewProductPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Informações Básicas</h2>
+        <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informações Básicas</h2>
           <div className="space-y-4">
             <Input
               label="Nome do Produto"
@@ -146,7 +146,7 @@ export default function NewProductPage() {
                 onChange={(e) => updateForm('description', e.target.value)}
                 rows={4}
                 placeholder="Descreva o produto em detalhe..."
-                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 resize-none"
+                className="w-full rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white px-4 py-2.5 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 resize-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -155,7 +155,7 @@ export default function NewProductPage() {
                 <select
                   value={form.category}
                   onChange={(e) => updateForm('category', e.target.value)}
-                  className="h-11 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  className="h-11 w-full rounded-lg border border-gray-300 bg-white dark:bg-gray-800 dark:border-gray-600 dark:text-white px-3 text-sm focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
                 >
                   <option value="">Selecione...</option>
                   {categories.map((cat) => (
@@ -187,8 +187,8 @@ export default function NewProductPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-gray-200 bg-white p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Preço e Estoque</h2>
+        <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Preço e Estoque</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <Input
               label="Preço (Kz)"
