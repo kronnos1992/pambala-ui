@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { ChevronRight, CreditCard, Banknote, Truck, Check } from 'lucide-react'
+import { ChevronRight, CreditCard, Banknote, Truck, Check, Smartphone, FileText } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -11,7 +11,7 @@ import { useCartStore } from '@/store/cart-store'
 import { useAuthStore } from '@/store/auth-store'
 import { formatPrice, cn } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
-import { createOrder } from '@/lib/api-helpers'
+import { createOrder, createAppyPayCharge } from '@/lib/api-helpers'
 
 const provinces = [
   'Bengo', 'Benguela', 'Bié', 'Cabinda', 'Cuando-Cubango', 'Cuanza Norte',
@@ -20,8 +20,9 @@ const provinces = [
 ]
 
 const paymentMethods = [
-  { id: 'MULTICAIXA', name: 'Multicaixa Express', icon: CreditCard, description: 'Pagamento rapido e seguro via Multicaixa Express' },
-  { id: 'TRANSFER', name: 'Transferência Bancária', icon: Banknote, description: 'Transferência para conta bancária do vendedor' },
+  { id: 'APPY_PAY_GPO', name: 'Multicaixa Express', icon: Smartphone, description: 'Pagamento rapido via Multicaixa Express - recebera um pedido no telemovel' },
+  { id: 'APPY_PAY_REF', name: 'Pagamento por Referencia', icon: FileText, description: 'Gere uma referencia de pagamento para efectuar no multicaixa ou banco' },
+  { id: 'TRANSFER', name: 'Transferencia Bancaria', icon: Banknote, description: 'Transferencia para conta bancaria do vendedor' },
   { id: 'CASH_ON_DELIVERY', name: 'Pagamento na Entrega', icon: Truck, description: 'Pague quando receber o produto' },
 ]
 
@@ -30,7 +31,8 @@ export default function CheckoutPage() {
   const { items, total, clearCart } = useCartStore()
   const user = useAuthStore((s) => s.user)
   const [loading, setLoading] = React.useState(false)
-  const [paymentMethod, setPaymentMethod] = React.useState('MULTICAIXA')
+  const [paymentMethod, setPaymentMethod] = React.useState('APPY_PAY_GPO')
+  const [paymentPhone, setPaymentPhone] = React.useState(user?.phone || '')
   const [form, setForm] = React.useState({
     name: user?.name || '',
     phone: user?.phone || '',
@@ -50,6 +52,9 @@ export default function CheckoutPage() {
     if (!form.phone.trim()) errs.phone = 'Telefone obrigatorio'
     if (!form.address.trim()) errs.address = 'Endereco obrigatorio'
     if (!form.district.trim()) errs.district = 'Distrito/bairro obrigatorio'
+    if ((paymentMethod === 'APPY_PAY_GPO') && !paymentPhone.trim()) {
+      errs.paymentPhone = 'Telefone de pagamento obrigatorio'
+    }
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -58,14 +63,28 @@ export default function CheckoutPage() {
     if (!validateShipping()) return
     setLoading(true)
     try {
-      await createOrder({
+      const order = await createOrder({
         shippingName: form.name,
         shippingPhone: form.phone,
         shippingAddress: form.address,
         shippingProvince: form.province,
         shippingDistrict: form.district,
-        paymentMethod: paymentMethod as 'MULTICAIXA' | 'TRANSFER' | 'CASH_ON_DELIVERY',
+        paymentMethod: paymentMethod as any,
       })
+
+      if (paymentMethod === 'APPY_PAY_GPO' || paymentMethod === 'APPY_PAY_REF') {
+        try {
+          const charge = await createAppyPayCharge(order.id, paymentPhone || undefined)
+          await clearCart()
+          router.push(`/pagamento/${order.orderNumber}?chargeId=${charge.chargeId}&method=${paymentMethod}`)
+          return
+        } catch (chargeErr: any) {
+          toast(chargeErr?.message || 'Erro ao criar cobranca AppyPay', 'error')
+          setLoading(false)
+          return
+        }
+      }
+
       await clearCart()
       toast('Pedido realizado com sucesso!', 'success')
       router.push('/minha-conta/pedidos')
@@ -109,7 +128,7 @@ export default function CheckoutPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informações de Envio</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Informacoes de Envio</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input
                 label="Nome completo"
@@ -135,7 +154,7 @@ export default function CheckoutPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Provincia</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Provincia</label>
                 <select
                   value={form.province}
                   onChange={(e) => updateForm('province', e.target.value)}
@@ -188,6 +207,33 @@ export default function CheckoutPage() {
                 )
               })}
             </div>
+
+            {paymentMethod === 'APPY_PAY_GPO' && (
+              <div className="mt-4 p-4 rounded-lg bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800">
+                <p className="text-sm font-medium text-emerald-800 dark:text-emerald-300 mb-3">
+                  Numero para receber o pedido de pagamento
+                </p>
+                <Input
+                  label="Telemovel Multicaixa Express"
+                  type="tel"
+                  placeholder="+244 923 000 000"
+                  value={paymentPhone}
+                  onChange={(e) => setPaymentPhone(e.target.value)}
+                  error={errors.paymentPhone}
+                />
+                <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-2">
+                  Recebera um pedido de pagamento no numero indicado. Confirme com a sua senha no Multicaixa Express.
+                </p>
+              </div>
+            )}
+
+            {paymentMethod === 'APPY_PAY_REF' && (
+              <div className="mt-4 p-4 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-800 dark:text-blue-300">
+                  Sera gerada uma referencia de pagamento unica. Utilize essa referencia no Multicaixa Express, no ATM ou na app do banco para efectuar o pagamento.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -206,24 +252,24 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
-            <hr className="my-4 border-gray-100" />
+            <hr className="my-4 border-gray-100 dark:border-gray-700" />
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Subtotal</span>
-                <span className="font-medium">{formatPrice(total())}</span>
+                <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
+                <span className="font-medium text-gray-900 dark:text-white">{formatPrice(total())}</span>
               </div>
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Envio</span>
-                <span className="font-medium text-emerald-600">Grátis</span>
+                <span className="text-gray-600 dark:text-gray-400">Envio</span>
+                <span className="font-medium text-emerald-600">Gratis</span>
               </div>
             </div>
-            <hr className="my-4 border-gray-100" />
+            <hr className="my-4 border-gray-100 dark:border-gray-700" />
             <div className="flex justify-between mb-6">
-              <span className="text-base font-semibold">Total</span>
+              <span className="text-base font-semibold text-gray-900 dark:text-white">Total</span>
               <span className="text-xl font-bold text-emerald-700">{formatPrice(total())}</span>
             </div>
             <Button className="w-full h-12 text-base" onClick={handleSubmit} disabled={loading}>
-              {loading ? 'A processar...' : 'Confirmar Pedido'}
+              {loading ? 'A processar...' : (paymentMethod === 'APPY_PAY_GPO' || paymentMethod === 'APPY_PAY_REF') ? 'Efectuar Pagamento' : 'Confirmar Pedido'}
             </Button>
           </div>
         </div>
