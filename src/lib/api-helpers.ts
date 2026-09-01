@@ -70,9 +70,7 @@ export interface ApiOrder {
   orderNumber: string
   total: number
   status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
-  paymentMethod: 'MULTICAIXA' | 'TRANSFER' | 'CASH_ON_DELIVERY' | 'APPY_PAY_GPO' | 'APPY_PAY_REF'
-  paymentStatus?: string
-  paymentRef?: string
+  paymentMethod: 'MULTICAIXA' | 'TRANSFER' | 'CASH_ON_DELIVERY'
   shippingName: string
   shippingPhone: string
   shippingAddress: string
@@ -620,30 +618,4 @@ export async function fetchAdminReviews(params: { page?: number; limit?: number 
 export async function deleteReview(reviewId: string) {
   const { data } = await api.delete(`/admin/reviews/${reviewId}`)
   return data
-}
-
-// --- AppyPay Payment ---
-export async function createAppyPayCharge(orderId: string, phoneNumber?: string) {
-  const { data } = await api.post('/payments/appypay/create', { orderId, phoneNumber })
-  return data as {
-    chargeId: string
-    status: string
-    referenceNumber?: string
-    ussdCode?: string
-    amount: number
-    currency: string
-    expiresAt?: string
-    orderNumber: string
-  }
-}
-
-export async function getAppyPayStatus(orderNumber: string) {
-  const { data } = await api.get(`/payments/appypay/status/${orderNumber}`)
-  return data as {
-    paymentStatus: string
-    chargeStatus?: string
-    referenceNumber?: string
-    ussdCode?: string
-    chargeId?: string
-  }
 }
