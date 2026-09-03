@@ -3,11 +3,13 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { use } from 'react'
-import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin } from 'lucide-react'
+import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin, CreditCard, Upload, FileCheck } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
-import { fetchOrderById, getStatusLabel, getStatusColor, mapStatus, type ApiOrder } from '@/lib/api-helpers'
+import { toast } from '@/components/ui/toast'
+import { fetchOrderById, getStatusLabel, getStatusColor, mapStatus, uploadOrderReceipt, uploadFile, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
 
 const timelineIcons: Record<string, React.ElementType> = {
   'Pedido realizado': Clock,
@@ -30,6 +32,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const { id } = use(params)
   const [order, setOrder] = React.useState<ApiOrder | null>(null)
   const [loading, setLoading] = React.useState(true)
+  const [uploading, setUploading] = React.useState(false)
+  const fileRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
     fetchOrderById(id)
@@ -37,6 +41,28 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [id])
+
+  const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !order) return
+    setUploading(true)
+    try {
+      const { url } = await uploadFile(file)
+      const updated = await uploadOrderReceipt(order.id, url)
+      setOrder(updated)
+      toast('Comprovativo enviado! Aguarde a confirmação.', 'success')
+    } catch {
+      toast('Erro ao enviar comprovativo', 'error')
+    } finally {
+      setUploading(false)
+      e.target.value = ''
+    }
+  }
+
+  const paymentDetails = React.useMemo(() => {
+    if (!order?.paymentDetails) return null
+    try { return JSON.parse(order.paymentDetails) } catch { return null }
+  }, [order?.paymentDetails])
 
   if (loading) {
     return (
@@ -185,8 +211,92 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
               <p className="text-gray-600">{order.shippingPhone}</p>
             </div>
           </div>
+
+          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+              <CreditCard className="h-5 w-5 text-emerald-600" />
+              Pagamento
+            </h2>
+            <div className="text-sm space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600 dark:text-gray-400">Método</span>
+                <span className="font-medium text-gray-900 dark:text-white">{paymentLabels[order.paymentMethod] || order.paymentMethod}</span>
+              </div>
+              {paymentDetails && paymentDetails.type !== 'CASH_ON_DELIVERY' && (
+                <div className="mt-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 space-y-1">
+                  {paymentDetails.phone && <PaymentRow label="Telefone" value={paymentDetails.phone} />}
+                  {paymentDetails.ownerName && <PaymentRow label="Titular" value={paymentDetails.ownerName} />}
+                  {paymentDetails.bankName && <PaymentRow label="Banco" value={paymentDetails.bankName} />}
+                  {paymentDetails.iban && <PaymentRow label="IBAN" value={paymentDetails.iban} />}
+                  {paymentDetails.bankAccount && <PaymentRow label="Nº de conta" value={paymentDetails.bankAccount} />}
+                  {paymentDetails.entity && <PaymentRow label="Entidade" value={paymentDetails.entity} />}
+                  {paymentDetails.reference && <PaymentRow label="Referência" value={paymentDetails.reference} />}
+                </div>
+              )}
+
+              <div className="flex justify-between pt-2">
+                <span className="text-gray-600 dark:text-gray-400">Estado</span>
+                <PaymentStatusBadge status={order.paymentStatus || 'PENDING'} />
+              </div>
+
+              {order.paymentMethod !== 'CASH_ON_DELIVERY' && order.paymentStatus !== 'PAID' && (
+                <div className="mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+                  {order.receiptImage ? (
+                    <div className="space-y-2">
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Comprovativo enviado</p>
+                      <a href={order.receiptImage} target="_blank" rel="noreferrer" className="inline-flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700">
+                        <FileCheck className="h-4 w-4" />
+                        Ver comprovativo
+                      </a>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        Após efectuar o pagamento, faça o upload do comprovativo.
+                      </p>
+                      <input
+                        ref={fileRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handleReceiptUpload}
+                      />
+                      <Button variant="outline" size="sm" className="w-full" onClick={() => fileRef.current?.click()} disabled={uploading}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        {uploading ? 'A enviar...' : 'Enviar comprovativo'}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>
+  )
+}
+
+function PaymentRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="flex justify-between text-sm">
+      <span className="text-gray-500 dark:text-gray-400">{label}</span>
+      <span className="font-medium text-gray-900 dark:text-white">{value}</span>
+    </div>
+  )
+}
+
+function PaymentStatusBadge({ status }: { status: string }) {
+  const map: Record<string, { label: string; cls: string }> = {
+    PENDING: { label: 'Aguardando pagamento', cls: 'bg-amber-100 text-amber-700' },
+    AWAITING_PAYMENT: { label: 'Aguardando confirmação', cls: 'bg-blue-100 text-blue-700' },
+    PAID: { label: 'Pago', cls: 'bg-emerald-100 text-emerald-700' },
+    CANCELLED: { label: 'Cancelado', cls: 'bg-red-100 text-red-700' },
+  }
+  const st = map[status] || { label: status, cls: 'bg-gray-100 text-gray-700' }
+  return (
+    <span className={cn('px-2 py-0.5 rounded-full text-xs font-semibold', st.cls)}>
+      {st.label}
+    </span>
   )
 }

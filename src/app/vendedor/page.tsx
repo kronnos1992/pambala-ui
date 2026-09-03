@@ -4,7 +4,7 @@ import * as React from 'react'
 import Link from 'next/link'
 import {
   TrendingUp, ShoppingCart, DollarSign, Star, Package, Plus,
-  ChevronRight, Eye, Clock, ArrowUpRight
+  ChevronRight, Eye, Clock, ArrowUpRight, CreditCard
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -57,6 +57,18 @@ export default function VendedorPage() {
             <Button size="sm">
               <Plus className="h-4 w-4 mr-2" />
               Novo Produto
+            </Button>
+          </Link>
+          <Link href="/vendedor/pagamento">
+            <Button variant="outline" size="sm">
+              <CreditCard className="h-4 w-4 mr-2" />
+              Formas de Pagamento
+            </Button>
+          </Link>
+          <Link href="/vendedor/pedidos">
+            <Button variant="outline" size="sm">
+              <ShoppingCart className="h-4 w-4 mr-2" />
+              Gerir Pedidos
             </Button>
           </Link>
         </div>

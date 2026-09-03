@@ -39,8 +39,23 @@ export interface ApiStore {
   longitude?: number
   userId: string
   createdAt: string
+  paymentMethods?: PaymentMethod[]
   _count?: { products: number; reviews: number }
   user?: { id: string; name: string; avatar?: string }
+}
+
+export type PaymentType = 'EXPRESS' | 'TRANSFER' | 'REFERENCE' | 'CASH_ON_DELIVERY'
+
+export interface PaymentMethod {
+  type: PaymentType
+  enabled?: boolean
+  phone?: string
+  bankName?: string
+  bankAccount?: string
+  iban?: string
+  entity?: string
+  reference?: string
+  ownerName?: string
 }
 
 export interface ApiCategory {
@@ -70,7 +85,10 @@ export interface ApiOrder {
   orderNumber: string
   total: number
   status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
-  paymentMethod: 'MULTICAIXA' | 'TRANSFER' | 'CASH_ON_DELIVERY'
+  paymentMethod: PaymentType
+  paymentStatus?: 'PENDING' | 'AWAITING_PAYMENT' | 'PAID' | 'CANCELLED'
+  receiptImage?: string
+  paymentDetails?: string
   shippingName: string
   shippingPhone: string
   shippingAddress: string
@@ -154,6 +172,10 @@ export interface UiOrder {
   shippingPhone?: string
   shippingAddress?: string
   shippingProvince?: string
+  paymentMethod?: string
+  paymentStatus?: string
+  receiptImage?: string
+  paymentDetails?: string
   orderItems?: { name: string; price: number; quantity: number; image: string }[]
 }
 
@@ -244,6 +266,8 @@ export function mapApiStore(s: ApiStore): UiStore {
 
 export function mapApiOrder(o: ApiOrder): UiOrder {
   const itemCount = o.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
+  let pd: any = null
+  if (o.paymentDetails) { try { pd = JSON.parse(o.paymentDetails) } catch { pd = null } }
   return {
     id: o.orderNumber || o.id.slice(0, 8),
     date: new Date(o.createdAt).toLocaleDateString('pt-AO'),
@@ -255,6 +279,10 @@ export function mapApiOrder(o: ApiOrder): UiOrder {
     shippingPhone: o.shippingPhone,
     shippingAddress: o.shippingAddress,
     shippingProvince: o.shippingProvince,
+    paymentMethod: o.paymentMethod,
+    paymentStatus: o.paymentStatus,
+    receiptImage: o.receiptImage,
+    paymentDetails: pd,
     orderItems: o.items?.map((item) => ({
       name: item.product?.name || 'Produto',
       price: item.price,
@@ -264,6 +292,14 @@ export function mapApiOrder(o: ApiOrder): UiOrder {
         : '',
     })),
   }
+}
+
+export const paymentLabels: Record<string, string> = {
+  EXPRESS: 'Multicaixa Express',
+  TRANSFER: 'Transferência Bancária',
+  REFERENCE: 'Pagamento por Referência',
+  CASH_ON_DELIVERY: 'Pagamento na Entrega',
+  MULTICAIXA: 'Multicaixa Express',
 }
 
 // --- API Calls ---
@@ -383,11 +419,39 @@ export async function createOrder(orderData: {
   shippingAddress: string
   shippingProvince: string
   shippingDistrict?: string
-  paymentMethod: 'MULTICAIXA' | 'TRANSFER' | 'CASH_ON_DELIVERY'
+  storeId: string
+  paymentMethod: PaymentType
   notes?: string
 }) {
   const { data } = await api.post('/orders', orderData)
   return data.order as ApiOrder
+}
+
+export async function uploadOrderReceipt(orderId: string, receiptImage: string) {
+  const { data } = await api.post(`/orders/${orderId}/receipt`, { receiptImage })
+  return data.order as ApiOrder
+}
+
+export async function updateOrderPaymentStatus(orderId: string, paymentStatus: string) {
+  const { data } = await api.put(`/orders/${orderId}/payment-status`, { paymentStatus })
+  return data.order as ApiOrder
+}
+
+export async function fetchStorePaymentMethods() {
+  const { data } = await api.get('/stores/payment-methods')
+  return data.paymentMethods as PaymentMethod[]
+}
+
+export async function updateStorePaymentMethods(paymentMethods: PaymentMethod[]) {
+  const { data } = await api.put('/stores/payment-methods', { paymentMethods })
+  return data.paymentMethods as PaymentMethod[]
+}
+
+export async function uploadFile(file: File) {
+  const formData = new FormData()
+  formData.append('file', file)
+  const { data } = await api.post('/uploads', formData)
+  return data as { url: string; filename: string }
 }
 
 export async function fetchCart() {
