@@ -453,7 +453,11 @@ export async function uploadFile(file: File) {
   const { data } = await api.post('/uploads', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   })
-  return data as { url: string; filename: string }
+  const url = data.url as string
+  return {
+    url: url.startsWith('http') ? url : `http://localhost:3001${url}`,
+    filename: data.filename as string,
+  }
 }
 
 export async function fetchCart() {
