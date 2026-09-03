@@ -450,7 +450,9 @@ export async function updateStorePaymentMethods(paymentMethods: PaymentMethod[])
 export async function uploadFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
-  const { data } = await api.post('/uploads', formData)
+  const { data } = await api.post('/uploads', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
   return data as { url: string; filename: string }
 }
 
