@@ -7,3 +7,7 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+# Regra do projeto
+
+**Separar as alterações de código das alterações de documentação em commits distintos.** Sempre que mudar código/estrutura/endpoints/variáveis de ambiente, atualize o `README.md` (e docs relacionados: `E2E_ENCRYPTION.md`, `TRADUCAO_DINAMICA.md`, etc.) no mesmo fluxo de trabalho e commite a documentação separadamente.
