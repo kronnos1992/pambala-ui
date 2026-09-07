@@ -39,7 +39,7 @@ export function StoreCard({ store, highlight = false }: StoreCardProps) {
             {t('mostVisited')}
           </span>
         )}
-        <div className="flex items-center gap-3 mt-1">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
           <div className="flex items-center gap-1">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
             <span className="text-xs font-medium text-gray-700 dark:text-gray-100">{store.rating.toFixed(1)}</span>

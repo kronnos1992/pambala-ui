@@ -75,8 +75,23 @@ export default function HomePage() {
   }, [locale])
 
   const carouselProducts = featuredProducts.slice(0, 6)
-  const slidesPerView = typeof window !== 'undefined' && window.innerWidth >= 1024 ? 3 : typeof window !== 'undefined' && window.innerWidth >= 640 ? 2 : 1
+  const [slidesPerView, setSlidesPerView] = React.useState(1)
   const maxSlide = Math.max(0, carouselProducts.length - slidesPerView)
+
+  React.useEffect(() => {
+    const lg = window.matchMedia('(min-width: 1024px)')
+    const md = window.matchMedia('(min-width: 640px)')
+    const update = () => {
+      setSlidesPerView(lg.matches ? 3 : md.matches ? 2 : 1)
+    }
+    update()
+    lg.addEventListener('change', update)
+    md.addEventListener('change', update)
+    return () => {
+      lg.removeEventListener('change', update)
+      md.removeEventListener('change', update)
+    }
+  }, [])
 
   React.useEffect(() => {
     if (carouselProducts.length === 0) return

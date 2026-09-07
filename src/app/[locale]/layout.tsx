@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
@@ -28,6 +28,16 @@ const ogLocale: Record<string, string> = {
 type LocaleLayoutProps = {
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#059669" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0f1a" },
+  ],
 };
 
 export function generateStaticParams() {

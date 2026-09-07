@@ -81,7 +81,7 @@ export default function VendorOrdersPage() {
           ))}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
+        <div className="overflow-x-auto overflow-y-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900">
           <table className="w-full">
             <thead>
               <tr className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider border-b border-gray-100 dark:border-gray-700">
