@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import Link from 'next/link'
-import { Heart, ShoppingCart, Star, MapPin } from 'lucide-react'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { Heart, ShoppingCart, Star, MapPin, Flame } from 'lucide-react'
 import Image from 'next/image'
 import { motion } from 'framer-motion'
 import { cn, formatPrice, truncate } from '@/lib/utils'
@@ -25,6 +26,7 @@ interface ProductCardProps {
     rating: number
     reviewCount: number
     stock: number
+    salesCount?: number
   }
   index?: number
 }
@@ -42,6 +44,7 @@ const conditionColors = {
 }
 
 export function ProductCard({ product, index = 0 }: ProductCardProps) {
+  const t = useTranslations('productCard')
   const [isHovered, setIsHovered] = React.useState(false)
   const [liked, setLiked] = React.useState(false)
   const addItem = useCartStore((s) => s.addItem)
@@ -59,7 +62,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
       storeName: product.storeName,
       maxQuantity: product.stock,
     })
-    toast(`${product.name} adicionado ao carrinho!`, 'success')
+    toast(t('addedToCartToast', { name: product.name }), 'success')
   }
 
   return (
@@ -89,6 +92,12 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           )}>
             {conditionLabels[product.condition]}
           </div>
+          {product.salesCount && product.salesCount > 0 && (
+            <div className="absolute top-10 left-2 px-2 py-0.5 rounded-md text-xs font-semibold bg-amber-500/90 text-white backdrop-blur-sm">
+              <Flame className="h-3 w-3 inline -mt-0.5 mr-1" />
+              {t('bestSeller')}
+            </div>
+          )}
           <button
             onClick={(e) => {
               e.preventDefault()
@@ -114,7 +123,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           )}
           {product.stock <= 0 && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-              <span className="rounded-lg bg-white/90 dark:bg-gray-800/90 px-3 py-1 text-sm font-medium text-gray-900 dark:text-white">Esgotado</span>
+              <span className="rounded-lg bg-white/90 dark:bg-gray-800/90 px-3 py-1 text-sm font-medium text-gray-900 dark:text-white">{t('outOfStock')}</span>
             </div>
           )}
         </div>

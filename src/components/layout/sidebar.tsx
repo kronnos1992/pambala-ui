@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { ChevronRight, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +19,8 @@ interface SidebarProps {
 }
 
 export function Sidebar({ categories, activeCategory, className }: SidebarProps) {
+  const t = useTranslations('sidebar')
+  const tc = useTranslations('common')
   const [expanded, setExpanded] = React.useState<Record<string, boolean>>({})
 
   const toggle = (name: string) => {
@@ -27,7 +30,7 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
   return (
     <nav className={cn('space-y-1', className)}>
       <h3 className="text-sm font-semibold text-gray-900 dark:text-white uppercase tracking-wider mb-3 px-3">
-        Categorias
+        {t('title')}
       </h3>
       <Link
         href="/produtos"
@@ -38,7 +41,7 @@ export function Sidebar({ categories, activeCategory, className }: SidebarProps)
             : 'text-gray-700 dark:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-800'
         )}
       >
-        Todos
+        {tc('all')}
       </Link>
       {categories.map((cat) => {
         const isActive = activeCategory === cat.name

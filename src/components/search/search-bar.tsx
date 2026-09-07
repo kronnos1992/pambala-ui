@@ -1,7 +1,8 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
 import { Search as SearchIcon } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -18,6 +19,8 @@ interface SearchBarProps {
 
 export function SearchBar({ className, placeholder, defaultValue = '' }: SearchBarProps) {
   const router = useRouter()
+  const t = useTranslations('searchBar')
+  const tc = useTranslations('common')
   const [query, setQuery] = React.useState(defaultValue)
   const [showSuggestions, setShowSuggestions] = React.useState(false)
   const wrapperRef = React.useRef<HTMLDivElement>(null)
@@ -68,7 +71,7 @@ export function SearchBar({ className, placeholder, defaultValue = '' }: SearchB
               setShowSuggestions(true)
             }}
             onFocus={() => setShowSuggestions(true)}
-            placeholder={placeholder || 'Pesquisar produtos, lojas e mais...'}
+            placeholder={placeholder || t('placeholder')}
             className="h-12 w-full rounded-l-xl border border-r-0 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 pl-12 pr-4 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 transition-colors"
           />
         </div>
@@ -76,7 +79,7 @@ export function SearchBar({ className, placeholder, defaultValue = '' }: SearchB
           type="submit"
           className="h-12 px-8 rounded-r-xl bg-gradient-to-r from-emerald-600 to-green-500 text-white font-semibold hover:from-emerald-700 hover:to-green-600 transition-all shadow-md"
         >
-          Pesquisar
+          {tc('search')}
         </button>
       </form>
       {showSuggestions && filteredSuggestions.length > 0 && (

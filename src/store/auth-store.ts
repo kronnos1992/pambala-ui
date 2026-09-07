@@ -9,6 +9,7 @@ interface User {
   phone?: string
   role: 'buyer' | 'seller' | 'admin'
   avatar?: string
+  aiValidationConsent?: boolean
 }
 
 interface AuthState {
@@ -16,7 +17,7 @@ interface AuthState {
   token: string | null
   login: (user: User, token: string) => void
   loginWithApi: (email: string, password: string) => Promise<void>
-  registerWithApi: (data: { name: string; email: string; password: string; phone?: string; role?: 'BUYER' | 'SELLER' }) => Promise<void>
+  registerWithApi: (data: { name: string; email: string; password: string; phone?: string; role?: 'BUYER' | 'SELLER'; aiValidationConsent?: boolean }) => Promise<void>
   refreshUser: () => Promise<void>
   logout: () => void
   setUser: (user: User) => void
@@ -32,7 +33,7 @@ function mapRole(role: string): User['role'] {
 
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       user: null,
       token: null,
       login: (user, token) => set({ user, token }),
@@ -47,6 +48,7 @@ export const useAuthStore = create<AuthState>()(
             phone: data.user.phone,
             role: mapRole(data.user.role),
             avatar: data.user.avatar,
+            aiValidationConsent: data.user.aiValidationConsent === true,
           },
         })
         // Sync local cart to API after login
@@ -62,6 +64,7 @@ export const useAuthStore = create<AuthState>()(
           password: regData.password,
           phone: regData.phone,
           role: regData.role,
+          aiValidationConsent: regData.aiValidationConsent,
         })
         set({
           token: data.token,
@@ -72,6 +75,7 @@ export const useAuthStore = create<AuthState>()(
             phone: data.user.phone,
             role: mapRole(data.user.role),
             avatar: data.user.avatar,
+            aiValidationConsent: data.user.aiValidationConsent === true,
           },
         })
         // Sync local cart to API after register
@@ -91,6 +95,7 @@ export const useAuthStore = create<AuthState>()(
               phone: u.phone,
               role: mapRole(u.role),
               avatar: u.avatar,
+              aiValidationConsent: u.aiValidationConsent === true,
             },
           })
         } catch {

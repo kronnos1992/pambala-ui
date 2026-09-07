@@ -1,0 +1,19 @@
+{
+  "cartDrawer": {
+    "title": "Carrinho ({count})",
+    "emptyTitle": "Carrinho vazio",
+    "emptyMessage": "Adicione produtos ao seu carrinho.",
+    "continueShopping": "Continuar a comprar",
+    "subtotal": "Subtotal",
+    "viewCart": "Ver carrinho"
+  },
+  "input": {
+    "field": "Campo"
+  },
+  "select": {
+    "placeholder": "Selecione..."
+  },
+  "themeToggle": {
+    "toggleTheme": "Alternar tema"
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "myAccount": {
+    "logout": "Sair",
+    "fallbackName": "Utilizador",
+    "tabs": {
+      "profile": "Perfil",
+      "orders": "Pedidos",
+      "addresses": "Endereços",
+      "favorites": "Favoritos"
+    },
+    "profileTitle": "Meu Perfil",
+    "changePhoto": "Alterar foto",
+    "formName": "Nome",
+    "formEmail": "Email",
+    "formPhone": "Telefone",
+    "saveChanges": "Guardar Alterações",
+    "profileUpdated": "Perfil atualizado com sucesso!",
+    "profileUpdateError": "Erro ao atualizar perfil",
+    "myOrders": "Os Meus Pedidos",
+    "orderMeta": "{date} · {count, plural, one {# item} other {# itens}}",
+    "noOrders": "Nenhum pedido ainda.",
+    "addressesTitle": "Endereços de Entrega",
+    "noAddresses": "Nenhum endereço registrado.",
+    "addAddress": "Adicionar Endereço",
+    "favoritesTitle": "Favoritos",
+    "noFavorites": "Nenhum favorito ainda.",
+    "exploreProducts": "Explorar Produtos"
+  },
+  "orderList": {
+    "title": "Os Meus Pedidos",
+    "filterPending": "Pendente",
+    "filterProcessing": "Processando",
+    "filterShipped": "Enviado",
+    "filterDelivered": "Entregue",
+    "filterCancelled": "Cancelado",
+    "orderMeta": "{date} · {count, plural, one {# item} other {# itens}}",
+    "noOrders": "Nenhum pedido encontrado."
+  },
+  "orderDetail": {
+    "title": "Pedido {id}",
+    "notFound": "Pedido não encontrado",
+    "backToOrders": "Voltar aos pedidos",
+    "statusTitle": "Estado do Pedido",
+    "status": {
+      "pending": "Pedido realizado",
+      "confirmed": "Pagamento confirmado",
+      "processing": "Em preparação",
+      "shipped": "Enviado",
+      "delivered": "Entregue"
+    },
+    "itemsTitle": "Itens do Pedido",
+    "productFallback": "Produto",
+    "quantity": "Qtd: {quantity}",
+    "noItems": "Detalhes do pedido não disponíveis.",
+    "summaryTitle": "Resumo",
+    "subtotal": "Subtotal",
+    "shipping": "Envio",
+    "shippingFree": "Grátis",
+    "paymentTitle": "Pagamento",
+    "paymentMethod": "Método",
+    "paymentState": "Estado",
+    "payment": {
+      "phone": "Telefone",
+      "ownerName": "Titular",
+      "bankName": "Banco",
+      "iban": "IBAN",
+      "accountNumber": "Nº de conta",
+      "entity": "Entidade",
+      "reference": "Referência"
+    },
+    "paymentStatus": {
+      "pending": "Aguardando pagamento",
+      "awaiting": "Aguardando confirmação",
+      "received": "Recebido pelo vendedor",
+      "paid": "Pago",
+      "rejected": "Rejeitado",
+      "cancelled": "Cancelado"
+    },
+    "receiptSent": "Comprovativo enviado",
+    "viewReceipt": "Ver comprovativo",
+    "receiptRejected": "O seu comprovativo foi rejeitado. Envie um novo comprovativo válido.",
+    "receiptHint": "Após efectuar o pagamento, faça o upload do comprovativo.",
+    "uploading": "A enviar...",
+    "sendReceipt": "Enviar comprovativo",
+    "resendReceipt": "Enviar novo comprovativo",
+    "receiptUploaded": "Comprovativo enviado! Aguarde a confirmação.",
+    "receiptError": "Erro ao enviar comprovativo",
+    "validation": {
+      "pass": "Comprovativo válido",
+      "review": "Necessita revisão manual",
+      "fail": "Comprovativo suspeito",
+      "error": "Não foi possível validar"
+    },
+    "receiptImageAlt": "Comprovativo de pagamento"
+  },
+  "sidebar": {
+    "title": "Categorias"
+  }
+}

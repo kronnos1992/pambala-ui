@@ -1,3 +1,4 @@
+import axios from 'axios'
 import api from './api'
 
 // --- Types ---
@@ -13,6 +14,7 @@ export interface ApiProduct {
   stock: number
   isActive: boolean
   views: number
+  salesCount?: number
   categoryId: string
   storeId: string
   createdAt: string
@@ -35,6 +37,7 @@ export interface ApiStore {
   district?: string
   rating: number
   isVerified: boolean
+  views?: number
   latitude?: number
   longitude?: number
   userId: string
@@ -65,6 +68,7 @@ export interface ApiCategory {
   icon?: string
   parentId?: string
   _count?: { products: number }
+  translations?: { locale: string; name?: string }[]
   children?: ApiCategory[]
 }
 
@@ -78,6 +82,7 @@ export interface ApiReview {
   createdAt: string
   user?: { id: string; name: string; avatar?: string }
   product?: { id: string; name: string; slug: string }
+  store?: { id: string; name: string }
 }
 
 export interface ApiOrder {
@@ -86,9 +91,12 @@ export interface ApiOrder {
   total: number
   status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
   paymentMethod: PaymentType
-  paymentStatus?: 'PENDING' | 'AWAITING_PAYMENT' | 'PAID' | 'CANCELLED'
+  paymentStatus?: 'PENDING' | 'AWAITING_PAYMENT' | 'PAYMENT_RECEIVED' | 'PAID' | 'REJECTED'
   receiptImage?: string
   paymentDetails?: string
+  validationStatus?: 'PENDING' | 'AQUEUE' | 'PASS' | 'REVIEW' | 'FAIL' | 'ERROR'
+  validationResult?: string
+  paymentHistory?: string
   shippingName: string
   shippingPhone: string
   shippingAddress: string
@@ -124,7 +132,7 @@ export interface ApiCartItem {
   product: ApiProduct
 }
 
-export interface PaginatedResponse<T> {
+export interface PaginatedResponse {
   pagination: { page: number; limit: number; total: number; totalPages: number }
   [key: string]: unknown
 }
@@ -145,6 +153,7 @@ export interface UiProduct {
   rating: number
   reviewCount: number
   stock: number
+  salesCount?: number
   description?: string
   categoryId?: string
 }
@@ -158,6 +167,7 @@ export interface UiStore {
   productCount: number
   location: string
   description?: string
+  views?: number
 }
 
 export interface UiOrder {
@@ -175,7 +185,7 @@ export interface UiOrder {
   paymentMethod?: string
   paymentStatus?: string
   receiptImage?: string
-  paymentDetails?: string
+  paymentDetails?: Record<string, unknown> | null
   orderItems?: { name: string; price: number; quantity: number; image: string }[]
 }
 
@@ -244,8 +254,9 @@ export function mapApiProduct(p: ApiProduct): UiProduct {
     province: p.store?.province || 'Luanda',
     condition: mapCondition(p.condition),
     rating: p.avgRating || 0,
-    reviewCount: 0,
+    reviewCount: p.reviews?.length || 0,
     stock: p.stock,
+    salesCount: p.salesCount || 0,
     description: p.description,
     categoryId: p.categoryId,
   }
@@ -261,12 +272,13 @@ export function mapApiStore(s: ApiStore): UiStore {
     productCount: s._count?.products || 0,
     location: s.province || 'Luanda',
     description: s.description,
+    views: s.views,
   }
 }
 
 export function mapApiOrder(o: ApiOrder): UiOrder {
   const itemCount = o.items?.reduce((sum, item) => sum + item.quantity, 0) || 0
-  let pd: any = null
+  let pd: Record<string, unknown> | null = null
   if (o.paymentDetails) { try { pd = JSON.parse(o.paymentDetails) } catch { pd = null } }
   return {
     id: o.orderNumber || o.id.slice(0, 8),
@@ -303,6 +315,28 @@ export const paymentLabels: Record<string, string> = {
 }
 
 // --- API Calls ---
+export function getApiErrorMessage(error: unknown): string | null {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as { error?: string; message?: string } | undefined
+    if (typeof data?.error === 'string') return data.error
+    if (typeof data?.message === 'string') return data.message
+  }
+  return null
+}
+
+export function getRetryAfterSeconds(error: unknown): number | null {
+  if (axios.isAxiosError(error)) {
+    const data = error.response?.data as { retryAfter?: number } | undefined
+    if (typeof data?.retryAfter === 'number' && data.retryAfter > 0) return Math.ceil(data.retryAfter)
+    const header = error.response?.headers?.['retry-after']
+    if (typeof header === 'string') {
+      const n = parseInt(header, 10)
+      if (!Number.isNaN(n) && n > 0) return n
+    }
+  }
+  return null
+}
+
 export async function fetchProducts(params: {
   page?: number
   limit?: number
@@ -314,6 +348,7 @@ export async function fetchProducts(params: {
   maxPrice?: number
   condition?: string
   sort?: string
+  locale?: string
 } = {}) {
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))
@@ -326,6 +361,7 @@ export async function fetchProducts(params: {
   if (params.maxPrice) query.set('maxPrice', String(params.maxPrice))
   if (params.condition) query.set('condition', params.condition)
   if (params.sort) query.set('sort', params.sort)
+  if (params.locale) query.set('locale', params.locale)
 
   const { data } = await api.get(`/products?${query.toString()}`)
   return {
@@ -334,25 +370,36 @@ export async function fetchProducts(params: {
   }
 }
 
-export async function fetchFeaturedProducts() {
-  const { data } = await api.get('/products/featured')
+export async function fetchFeaturedProducts(locale?: string) {
+  const query = new URLSearchParams()
+  if (locale) query.set('locale', locale)
+
+  const { data } = await api.get(`/products/featured?${query.toString()}`)
   return (data.products || []).map(mapApiProduct)
 }
 
-export async function fetchProductBySlug(slug: string) {
-  const { data } = await api.get(`/products/${slug}`)
+export async function fetchProductBySlug(slug: string, locale?: string) {
+  const query = new URLSearchParams()
+  if (locale) query.set('locale', locale)
+
+  const { data } = await api.get(`/products/${slug}?${query.toString()}`)
   return data.product as ApiProduct
 }
 
-export async function fetchCategories() {
-  const { data } = await api.get('/categories')
+export async function fetchCategories(locale?: string) {
+  const query = new URLSearchParams()
+  if (locale) query.set('locale', locale)
+
+  const { data } = await api.get(`/categories?${query.toString()}`)
   return data.categories as ApiCategory[]
 }
 
-export async function fetchStores(params: { page?: number; limit?: number } = {}) {
+export async function fetchStores(params: { page?: number; limit?: number; sort?: string; locale?: string } = {}) {
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))
   if (params.limit) query.set('limit', String(params.limit))
+  if (params.sort) query.set('sort', params.sort)
+  if (params.locale) query.set('locale', params.locale)
 
   const { data } = await api.get(`/stores?${query.toString()}`)
   return {
@@ -361,15 +408,19 @@ export async function fetchStores(params: { page?: number; limit?: number } = {}
   }
 }
 
-export async function fetchStoreBySlug(slug: string) {
-  const { data } = await api.get(`/stores/${slug}`)
+export async function fetchStoreBySlug(slug: string, locale?: string) {
+  const query = new URLSearchParams()
+  if (locale) query.set('locale', locale)
+
+  const { data } = await api.get(`/stores/${slug}?${query.toString()}`)
   return data.store as ApiStore
 }
 
-export async function fetchStoreProducts(slug: string, params: { page?: number; limit?: number } = {}) {
+export async function fetchStoreProducts(slug: string, params: { page?: number; limit?: number; locale?: string } = {}) {
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))
   if (params.limit) query.set('limit', String(params.limit))
+  if (params.locale) query.set('locale', params.locale)
 
   const { data } = await api.get(`/stores/${slug}/products?${query.toString()}`)
   return {
@@ -394,6 +445,16 @@ export async function fetchStoreReviews(storeId: string) {
     avgRating: data.avgRating as number,
     totalReviews: data.totalReviews as number,
   }
+}
+
+export async function createReview(data: {
+  rating: number
+  comment?: string
+  productId?: string
+  storeId?: string
+}) {
+  const { data: res } = await api.post('/reviews', data)
+  return res.review as ApiReview
 }
 
 export async function fetchOrders(params: { page?: number; limit?: number } = {}) {
@@ -487,7 +548,7 @@ export async function clearCartApi() {
 
 export async function loginApi(email: string, password: string) {
   const { data } = await api.post('/auth/login', { email, password })
-  return data as { token: string; user: { id: string; name: string; email: string; phone?: string; role: string; avatar?: string } }
+  return data as { token: string; user: { id: string; name: string; email: string; phone?: string; role: string; avatar?: string; aiValidationConsent?: boolean } }
 }
 
 export async function registerApi(payload: {
@@ -496,9 +557,10 @@ export async function registerApi(payload: {
   password: string
   phone?: string
   role?: 'BUYER' | 'SELLER'
+  aiValidationConsent?: boolean
 }) {
   const { data } = await api.post('/auth/register', payload)
-  return data as { token: string; user: { id: string; name: string; email: string; phone?: string; role: string; avatar?: string } }
+  return data as { token: string; user: { id: string; name: string; email: string; phone?: string; role: string; avatar?: string; aiValidationConsent?: boolean } }
 }
 
 export async function fetchMe() {
@@ -506,7 +568,7 @@ export async function fetchMe() {
   return data.user
 }
 
-export async function updateProfile(payload: { name?: string; phone?: string; avatar?: string }) {
+export async function updateProfile(payload: { name?: string; phone?: string; avatar?: string; aiValidationConsent?: boolean }) {
   const { data } = await api.put('/auth/me', payload)
   return data.user
 }
@@ -520,6 +582,7 @@ export async function createProduct(productData: {
   condition?: string
   stock: number
   categoryId: string
+  translations?: { locale: string; name?: string; description?: string }[]
 }) {
   const { data } = await api.post('/products', productData)
   return data.product as ApiProduct
@@ -618,6 +681,11 @@ export async function updateOrderStatus(orderId: string, status: string) {
   return data.order
 }
 
+export async function updateAdminPaymentStatus(orderId: string, paymentStatus: string, note?: string) {
+  const { data } = await api.put(`/admin/orders/${orderId}/payment`, { paymentStatus, note })
+  return data.order
+}
+
 export async function fetchAdminStores(params: { page?: number; limit?: number; q?: string; verified?: string } = {}) {
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))
@@ -662,12 +730,12 @@ export async function deleteProduct(productId: string) {
   return data
 }
 
-export async function createCategory(data: { name: string; slug?: string; icon?: string; image?: string; parentId?: string }) {
+export async function createCategory(data: { name: string; slug?: string; icon?: string; image?: string; parentId?: string; translations?: { locale: string; name?: string }[] }) {
   const { data: result } = await api.post('/admin/categories', data)
   return result.category as ApiCategory
 }
 
-export async function updateCategory(categoryId: string, data: { name?: string; slug?: string; icon?: string; image?: string }) {
+export async function updateCategory(categoryId: string, data: { name?: string; slug?: string; icon?: string; image?: string; translations?: { locale: string; name?: string }[] }) {
   const { data: result } = await api.put(`/admin/categories/${categoryId}`, data)
   return result.category as ApiCategory
 }
@@ -675,6 +743,40 @@ export async function updateCategory(categoryId: string, data: { name?: string; 
 export async function deleteCategory(categoryId: string) {
   const { data } = await api.delete(`/admin/categories/${categoryId}`)
   return data
+}
+
+export async function fetchAdminCategories(): Promise<ApiCategory[]> {
+  const { data } = await api.get('/admin/categories')
+  return (data.categories || []).map((cat: RawAdminCategory) => mapApiCategory(cat))
+}
+
+interface RawAdminTranslation {
+  locale: string
+  name?: string | null
+}
+
+interface RawAdminCategory {
+  id: string
+  name: string
+  slug: string
+  icon?: string | null
+  parentId?: string | null
+  _count?: { products: number }
+  translations?: RawAdminTranslation[]
+  children?: RawAdminCategory[]
+}
+
+function mapApiCategory(cat: RawAdminCategory): ApiCategory {
+  return {
+    id: cat.id,
+    name: cat.name,
+    slug: cat.slug,
+    icon: cat.icon ?? undefined,
+    parentId: cat.parentId ?? undefined,
+    _count: cat._count,
+    translations: (cat.translations || []).map((tr) => ({ locale: tr.locale, name: tr.name ?? undefined })),
+    children: (cat.children || []).map(mapApiCategory),
+  }
 }
 
 export async function fetchAdminReviews(params: { page?: number; limit?: number } = {}) {

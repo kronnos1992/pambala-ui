@@ -1,3 +1,6 @@
+'use client'
+
+import { useTranslations } from 'next-intl'
 import { ProductCard } from './product-card'
 
 interface Product {
@@ -22,6 +25,8 @@ interface ProductGridProps {
 }
 
 export function ProductGrid({ products }: ProductGridProps) {
+  const t = useTranslations('productGrid')
+
   if (products.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -30,8 +35,8 @@ export function ProductGrid({ products }: ProductGridProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
         </div>
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Nenhum produto encontrado</h3>
-        <p className="mt-1 text-sm text-gray-500">Tente ajustar os filtros ou pesquisar por algo diferente.</p>
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('emptyTitle')}</h3>
+        <p className="mt-1 text-sm text-gray-500">{t('emptyText')}</p>
       </div>
     )
   }

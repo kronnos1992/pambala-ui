@@ -1,20 +1,24 @@
 'use client'
 
-import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { Link, usePathname } from '@/i18n/navigation'
 import { Send } from 'lucide-react'
-
-const quickLinks = [
-  { label: 'Como Funciona', href: '/como-funciona' },
-  { label: 'Seguranca', href: '/como-funciona' },
-  { label: 'Termos de Uso', href: '/como-funciona' },
-  { label: 'Contacto', href: '/contacto' },
-]
-
-const categoryLinks = [
-  'Tecnologia', 'Moda', 'Casa & Jardim', 'Veiculos', 'Eletronicos', 'Beleza',
-]
+import { LanguageSwitcher } from '@/components/layout/language-switcher'
 
 export function Footer() {
+  const t = useTranslations('footer')
+  const pathname = usePathname()
+  if (['/login', '/register'].includes(pathname)) return null
+
+  const quickLinks = [
+    { key: 'howItWorks', href: '/como-funciona' },
+    { key: 'security', href: '/como-funciona' },
+    { key: 'terms', href: '/como-funciona' },
+    { key: 'contact', href: '/contacto' },
+  ]
+
+  const categoryKeys = ['technology', 'fashion', 'homeGarden', 'vehicles', 'electronics', 'beauty']
+
   return (
     <footer className="bg-gray-900 dark:bg-[#060a13] text-gray-300 transition-colors">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-12">
@@ -43,12 +47,12 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Links Rapidos</h3>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">{t('quickLinks')}</h3>
             <ul className="space-y-2.5">
               {quickLinks.map((link) => (
-                <li key={link.href + link.label}>
+                <li key={link.href + link.key}>
                   <Link href={link.href} className="text-sm text-gray-300 hover:text-emerald-400 transition-colors">
-                    {link.label}
+                    {t(link.key)}
                   </Link>
                 </li>
               ))}
@@ -56,12 +60,12 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Categorias</h3>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">{t('categories')}</h3>
             <ul className="space-y-2.5">
-              {categoryLinks.map((cat) => (
-                <li key={cat}>
-                  <Link href={`/produtos?category=${encodeURIComponent(cat)}`} className="text-sm text-gray-300 hover:text-emerald-400 transition-colors">
-                    {cat}
+              {categoryKeys.map((key) => (
+                <li key={key}>
+                  <Link href={`/produtos?category=${encodeURIComponent(t(key))}`} className="text-sm text-gray-300 hover:text-emerald-400 transition-colors">
+                    {t(key)}
                   </Link>
                 </li>
               ))}
@@ -69,12 +73,12 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">Newsletter</h3>
-            <p className="text-sm text-gray-300 mb-3">Receba ofertas e novidades no seu email.</p>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">{t('newsletter')}</h3>
+            <p className="text-sm text-gray-300 mb-3">{t('newsletterText')}</p>
             <form className="flex" onSubmit={(e) => e.preventDefault()}>
               <input
                 type="email"
-                placeholder="Seu email"
+                placeholder={t('emailPlaceholder')}
                 className="h-10 flex-1 rounded-l-lg bg-gray-800 border border-gray-700 px-3 text-sm text-white placeholder:text-gray-500 focus:border-emerald-500 focus:outline-none"
               />
               <button className="h-10 px-4 rounded-r-lg bg-gradient-to-r from-emerald-600 to-green-500 text-white hover:from-emerald-700 hover:to-green-600 transition-all shadow-md">
@@ -86,11 +90,14 @@ export function Footer() {
 
         <div className="mt-10 pt-8 border-t border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-500">
-            &copy; {new Date().getFullYear()} Pambala. Todos os direitos reservados.
+            &copy; {new Date().getFullYear()} Pambala. {t('rights')}
           </p>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700">
-            <span className="text-sm">AO</span>
-            <span className="text-xs font-medium text-gray-300">Feito em Angola</span>
+          <div className="flex items-center gap-3">
+            <LanguageSwitcher />
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-800 border border-gray-700">
+              <span className="text-sm">AO</span>
+              <span className="text-xs font-medium text-gray-300">{t('madeInAngola')}</span>
+            </div>
           </div>
         </div>
       </div>

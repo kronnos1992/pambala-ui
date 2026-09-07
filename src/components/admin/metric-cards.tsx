@@ -1,5 +1,6 @@
 'use client'
 
+import { useTranslations } from 'next-intl'
 import { cn } from '@/lib/utils'
 import { LucideIcon } from 'lucide-react'
 
@@ -19,6 +20,7 @@ interface MetricCardsProps {
 }
 
 export function MetricCards({ metrics, className }: MetricCardsProps) {
+  const t = useTranslations('metricCards')
   return (
     <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
       {metrics.map((metric) => {
@@ -36,7 +38,7 @@ export function MetricCards({ metrics, className }: MetricCardsProps) {
                   metric.trend === 'down' && 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300',
                   metric.trend === 'neutral' && 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-200',
                 )}>
-                  {metric.trend === 'up' && '↑'}{metric.trend === 'down' && '↓'} {metric.trendValue}
+                  {metric.trend === 'up' && t('trendUp')}{metric.trend === 'down' && t('trendDown')} {metric.trendValue}
                 </span>
               )}
             </div>

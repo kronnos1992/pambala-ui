@@ -1,8 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import Link from 'next/link'
 import Image from 'next/image'
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
 import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react'
 import { useCartStore } from '@/store/cart-store'
 import { formatPrice } from '@/lib/utils'
@@ -15,6 +16,8 @@ interface CartDrawerProps {
 
 export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, total } = useCartStore()
+  const t = useTranslations('cartDrawer')
+  const tr = useTranslations('routes')
 
   React.useEffect(() => {
     if (open) {
@@ -33,7 +36,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
       <div className="fixed inset-y-0 right-0 w-full max-w-md glass-strong flex flex-col animate-in slide-in-from-right duration-300">
         <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-700 px-6 py-4">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-            Carrinho ({items.length})
+            {t('title', { count: items.length })}
           </h2>
           <button
             onClick={onClose}
@@ -49,9 +52,9 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
                 <ShoppingBag className="h-10 w-10 text-gray-400" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Carrinho vazio</h3>
-              <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">Adicione produtos ao seu carrinho.</p>
-              <Button onClick={onClose} className="mt-4">Continuar a comprar</Button>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{t('emptyTitle')}</h3>
+              <p className="mt-1 text-sm text-gray-700 dark:text-gray-200">{t('emptyMessage')}</p>
+              <Button onClick={onClose} className="mt-4">{t('continueShopping')}</Button>
             </div>
           ) : (
             <div className="space-y-4">
@@ -104,12 +107,12 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
         {items.length > 0 && (
           <div className="border-t border-gray-100 dark:border-gray-700 px-6 py-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-700 dark:text-gray-200">Subtotal</span>
+              <span className="text-sm text-gray-700 dark:text-gray-200">{t('subtotal')}</span>
               <span className="text-lg font-bold text-gray-900 dark:text-white">{formatPrice(total())}</span>
             </div>
             <Link href="/checkout" onClick={onClose}>
               <Button className="w-full h-12 text-base">
-                Finalizar Compra
+                {tr('checkout')}
               </Button>
             </Link>
             <Link
@@ -117,7 +120,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
               onClick={onClose}
               className="block text-center text-sm text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 font-medium"
             >
-              Ver carrinho
+              {t('viewCart')}
             </Link>
           </div>
         )}

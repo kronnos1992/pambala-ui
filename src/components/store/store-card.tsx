@@ -1,5 +1,8 @@
-import Link from 'next/link'
-import { Star, MapPin, Package } from 'lucide-react'
+'use client'
+
+import { useTranslations } from 'next-intl'
+import { Link } from '@/i18n/navigation'
+import { Star, MapPin, Package, Eye } from 'lucide-react'
 import { Avatar } from '@/components/ui/avatar'
 
 interface StoreCardProps {
@@ -12,10 +15,14 @@ interface StoreCardProps {
     productCount: number
     location: string
     description?: string
+    views?: number
   }
+  highlight?: boolean
 }
 
-export function StoreCard({ store }: StoreCardProps) {
+export function StoreCard({ store, highlight = false }: StoreCardProps) {
+  const t = useTranslations('storeCard')
+
   return (
     <Link
       href={`/lojas/${store.slug}`}
@@ -26,6 +33,12 @@ export function StoreCard({ store }: StoreCardProps) {
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors truncate">
           {store.name}
         </h3>
+        {highlight && (
+          <span className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300">
+            <Star className="h-2.5 w-2.5 fill-current" />
+            {t('mostVisited')}
+          </span>
+        )}
         <div className="flex items-center gap-3 mt-1">
           <div className="flex items-center gap-1">
             <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
@@ -33,11 +46,15 @@ export function StoreCard({ store }: StoreCardProps) {
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-200">
             <Package className="h-3 w-3" />
-            <span>{store.productCount} produtos</span>
+            <span>{t('productsCount', { count: store.productCount })}</span>
           </div>
           <div className="flex items-center gap-1 text-xs text-gray-700 dark:text-gray-200">
             <MapPin className="h-3 w-3" />
             <span>{store.location}</span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+            <Eye className="h-3 w-3" />
+            <span>{t('visitsCount', { count: store.views ?? 0 })}</span>
           </div>
         </div>
         {store.description && (

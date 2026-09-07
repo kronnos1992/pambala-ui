@@ -13,6 +13,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { fetchCategories, type ApiCategory } from '@/lib/api-helpers'
+import { getCategoryIcon } from '@/lib/category-icons'
 
 export function Header() {
   const router = useRouter()
@@ -112,16 +113,20 @@ export function Header() {
             </button>
             {categoriesOpen && (
               <div className="absolute left-0 top-full mt-1 w-56 rounded-xl glass-card py-2 z-[60]">
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.id}
-                    href={`/produtos?category=${cat.slug}`}
-                    className="block px-4 py-2.5 text-sm text-gray-700 dark:text-gray-100 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
-                    onClick={() => setCategoriesOpen(false)}
-                  >
-                    {cat.name}
-                  </Link>
-                ))}
+                {categories.map((cat) => {
+                  const Icon = getCategoryIcon(cat.icon)
+                  return (
+                    <Link
+                      key={cat.id}
+                      href={`/produtos?category=${cat.slug}`}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-100 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 hover:text-emerald-700 dark:hover:text-emerald-400 transition-colors"
+                      onClick={() => setCategoriesOpen(false)}
+                    >
+                      <Icon className="h-4 w-4 shrink-0" />
+                      {cat.name}
+                    </Link>
+                  )
+                })}
               </div>
             )}
           </div>

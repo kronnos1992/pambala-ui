@@ -1,7 +1,9 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { useRouter } from '@/i18n/navigation'
+import { useSearchParams } from 'next/navigation'
 import { X, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
@@ -11,13 +13,6 @@ const conditions = [
   { value: 'novo', label: 'Novo' },
   { value: 'usado', label: 'Usado' },
   { value: 'recondicionado', label: 'Recondicionado' },
-]
-
-const sortOptions = [
-  { value: 'recent', label: 'Mais recente' },
-  { value: 'price_asc', label: 'Menor preco' },
-  { value: 'price_desc', label: 'Maior preco' },
-  { value: 'popular', label: 'Mais popular' },
 ]
 
 const provinces = [
@@ -32,8 +27,18 @@ interface ProductFiltersProps {
 }
 
 export function ProductFilters({ className, onMobileClose }: ProductFiltersProps) {
+  const t = useTranslations('productFilters')
+  const tc = useTranslations('common')
   const router = useRouter()
   const searchParams = useSearchParams()
+
+  const sortOptions = [
+    { value: 'recent', label: t('sort.recent') },
+    { value: 'price_asc', label: t('sort.priceAsc') },
+    { value: 'price_desc', label: t('sort.priceDesc') },
+    { value: 'popular', label: t('sort.popular') },
+    { value: 'best_sellers', label: t('sort.bestSellers') },
+  ]
 
   const [minPrice, setMinPrice] = React.useState(searchParams.get('min') || '')
   const [maxPrice, setMaxPrice] = React.useState(searchParams.get('max') || '')
@@ -91,7 +96,7 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
           <SlidersHorizontal className="h-4 w-4" />
-          Filtros
+          {t('filters')}
         </h3>
         {onMobileClose && (
           <button onClick={onMobileClose} className="rounded-md p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 md:hidden">
@@ -101,11 +106,11 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">Preco (Kz)</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">{t('priceLabel', { currency: tc('currency') })}</label>
         <div className="flex items-center gap-2">
           <input
             type="number"
-            placeholder="Min"
+            placeholder={t('min')}
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
             className="h-9 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
@@ -113,19 +118,19 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
           <span className="text-gray-400">-</span>
           <input
             type="number"
-            placeholder="Max"
+            placeholder={t('max')}
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
             className="h-9 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
           />
         </div>
         <Button size="sm" variant="outline" className="mt-2 w-full" onClick={updateParams}>
-          Aplicar
+          {t('apply')}
         </Button>
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">Condicao</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">{t('conditionLabel')}</label>
         <div className="space-y-2">
           {conditions.map((c) => (
             <label key={c.value} className="flex items-center gap-2 cursor-pointer">
@@ -142,20 +147,20 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
       </div>
 
       <Select
-        label="Ordenar por"
+        label={t('sortLabel')}
         options={sortOptions}
         value={sort}
         onValueChange={setSort}
       />
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">Provincia</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-100 mb-2">{t('provinceLabel')}</label>
         <select
           value={province}
           onChange={(e) => setProvince(e.target.value)}
           className="h-11 w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-3 text-sm text-gray-900 dark:text-white focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
         >
-          <option value="">Todas</option>
+          <option value="">{t('allProvinces')}</option>
           {provinces.map((p) => (
             <option key={p} value={p}>{p}</option>
           ))}
@@ -164,7 +169,7 @@ export function ProductFilters({ className, onMobileClose }: ProductFiltersProps
 
       {hasFilters && (
         <Button variant="outline" size="sm" className="w-full" onClick={clearFilters}>
-          Limpar Filtros
+          {t('clearFilters')}
         </Button>
       )}
     </div>

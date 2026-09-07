@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import { useTranslations } from 'next-intl'
 import { ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
@@ -19,6 +20,7 @@ interface SelectProps {
 }
 
 function Select({ options, value, onValueChange, placeholder, className, label }: SelectProps) {
+  const t = useTranslations('select')
   const [isOpen, setIsOpen] = React.useState(false)
   const [selectedValue, setSelectedValue] = React.useState(value || '')
   const containerRef = React.useRef<HTMLDivElement>(null)
@@ -56,7 +58,7 @@ function Select({ options, value, onValueChange, placeholder, className, label }
             className
           )}
         >
-          <span>{selectedLabel || placeholder || 'Selecione...'}</span>
+          <span>{selectedLabel || placeholder || t('placeholder')}</span>
           <ChevronDown className={cn('h-4 w-4 text-gray-400 transition-transform', isOpen && 'rotate-180')} />
         </button>
         {isOpen && (

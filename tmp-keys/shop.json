@@ -1,0 +1,129 @@
+{
+  "home": {
+    "heroTitle": "Compra e Venda",
+    "heroTitleAccent": "em Angola",
+    "heroSubtitle": "O maior marketplace angolano. Milhares de produtos e lojas ao alcance da sua mao.",
+    "heroSearchPlaceholder": "Pesquisar smartphones, roupas, mobilia...",
+    "exploreProducts": "Explorar Produtos",
+    "becomeSeller": "Tornar-se Vendedor",
+    "mostVisited": "Mais Visitados",
+    "categoriesTitle": "Categorias Populares",
+    "howItWorksTitle": "Como Funciona",
+    "howItWorksSubtitle": "Comprar no Pambala e simples, seguro e rapido",
+    "steps": {
+      "find": {
+        "title": "Encontre",
+        "description": "Pesquise entre milhares de produtos de lojas e vendedores verificados em toda Angola."
+      },
+      "buy": {
+        "title": "Compre",
+        "description": "Escolha o metodo de pagamento ideal: Multicaixa Express, transferencia ou pagamento na entrega."
+      },
+      "receive": {
+        "title": "Receba",
+        "description": "Receba o seu produto em casa com seguranca ou retire na loja mais proxima."
+      }
+    },
+    "featuredProductsTitle": "Produtos em Destaque",
+    "featuredViewAll": "Ver todos",
+    "topStoresTitle": "Melhores Lojas",
+    "topStoresViewAll": "Ver todas",
+    "testimonialsTitle": "O que dizem os nossos utilizadores",
+    "testimonials": {
+      "buyerRole": "Compradora",
+      "sellerRole": "Vendedor",
+      "1": { "text": "Pambala mudou a forma como compro online em Angola. Seguro, rapido e com excelentes precos!" },
+      "2": { "text": "Como vendedor, o Pambala aumentou muito as minhas vendas. A plataforma e facil de usar." },
+      "3": { "text": "Adoro a variedade de produtos disponiveis. Ja comprei varias vezes e sempre fui bem atendida." }
+    },
+    "ctaTitle": "Compre de qualquer lugar de Angola",
+    "ctaText": "Aceda a milhares de produtos de lojas e vendedores de todas as provincias. Entrega segura em todo o pais.",
+    "appStoreButton": "Em Breve no App Store",
+    "googlePlayButton": "Em Breve no Google Play",
+    "secureTitle": "100% Seguro",
+    "secureText": "Compras protegidas",
+    "newsletterTitle": "Fique por dentro",
+    "newsletterText": "Receba ofertas exclusivas e novidades direto no seu email.",
+    "newsletterPlaceholder": "Seu melhor email"
+  },
+  "productsPage": {
+    "loading": "A carregar produtos…"
+  },
+  "productsClient": {
+    "resultsFor": "Resultados para \"{query}\"",
+    "allProducts": "Todos os Produtos",
+    "resultsCount": "{count, plural, one {# produto encontrado} other {# produtos encontrados}}",
+    "loading": "A carregar...",
+    "filters": "Filtros",
+    "noProductsTitle": "Nenhum produto encontrado",
+    "noProductsText": "Tente ajustar os filtros ou pesquisar por algo diferente."
+  },
+  "productDetail": {
+    "notFound": "Produto nao encontrado",
+    "backToProducts": "Voltar aos produtos",
+    "storeLabel": "Loja",
+    "addedToCartToast": "{name} adicionado ao carrinho!",
+    "reviewsCount": "{count, plural, one {# avaliação} other {# avaliações}}",
+    "soldCount": "{count, plural, one {# vendido} other {# vendidos}}",
+    "viewsCount": "{count} visualizações",
+    "inStock": "Em estoque ({count, plural, one {# unidade} other {# unidades}})",
+    "outOfStock": "Esgotado",
+    "addToCart": "Adicionar ao Carrinho",
+    "deliveryTitle": "Entrega disponivel",
+    "deliverySubtitle": "Envio para todo o pais",
+    "protectionTitle": "Compra protegida",
+    "protectionSubtitle": "Devolucao em 7 dias",
+    "returnsTitle": "Devolucao gratuita",
+    "returnsSubtitle": "Se nao estiver satisfeito",
+    "visitStore": "Visitar Loja",
+    "descriptionTab": "Descrição",
+    "reviewsTab": "Avaliações ({count})",
+    "noDescription": "Sem descricao disponivel.",
+    "anonymous": "Anonimo",
+    "noReviews": "Nenhuma avaliação ainda.",
+    "relatedProducts": "Produtos Relacionados"
+  },
+  "productCard": {
+    "addedToCartToast": "{name} adicionado ao carrinho!",
+    "bestSeller": "Mais vendido",
+    "outOfStock": "Esgotado"
+  },
+  "productFilters": {
+    "filters": "Filtros",
+    "priceLabel": "Preco ({currency})",
+    "min": "Min",
+    "max": "Max",
+    "apply": "Aplicar",
+    "conditionLabel": "Condicao",
+    "sortLabel": "Ordenar por",
+    "sort": {
+      "recent": "Mais recente",
+      "priceAsc": "Menor preco",
+      "priceDesc": "Maior preco",
+      "popular": "Mais popular",
+      "bestSellers": "Mais vendidos"
+    },
+    "provinceLabel": "Provincia",
+    "allProvinces": "Todas",
+    "clearFilters": "Limpar Filtros"
+  },
+  "productGallery": {},
+  "productGrid": {
+    "emptyTitle": "Nenhum produto encontrado",
+    "emptyText": "Tente ajustar os filtros ou pesquisar por algo diferente."
+  },
+  "reviewForm": {
+    "ratingRequired": "Escolha pelo menos 1 estrela",
+    "submittedToast": "Avaliação enviada! Obrigado.",
+    "submitError": "Erro ao enviar avaliação",
+    "wantToReview": "Quer avaliar?",
+    "loginPrompt": "Inicie sessão para dar estrelas e partilhar a sua opinião.",
+    "login": "Iniciar sessão",
+    "rateProduct": "Avaliar produto",
+    "rateStore": "Avaliar loja",
+    "starAriaLabel": "{count, plural, one {# estrela} other {# estrelas}}",
+    "commentPlaceholder": "Partilhe a sua experiência ({optional})...",
+    "submitting": "A enviar...",
+    "submitReview": "Enviar avaliação"
+  }
+}

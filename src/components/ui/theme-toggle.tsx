@@ -1,14 +1,16 @@
 'use client'
 
 import { useTheme } from 'next-themes'
+import { useTranslations } from 'next-intl'
 import { Moon, Sun } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme()
+  const t = useTranslations('themeToggle')
   const [mounted, setMounted] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  useEffect(() => { Promise.resolve().then(() => setMounted(true)) }, [])
 
   if (!mounted) {
     return <div className="h-9 w-9" />
@@ -18,7 +20,7 @@ export function ThemeToggle() {
     <button
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
       className="flex h-9 w-9 items-center justify-center rounded-lg glass-pill text-gray-700 dark:text-gray-300 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 transition-all"
-      aria-label="Toggle theme"
+      aria-label={t('toggleTheme')}
     >
       {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
