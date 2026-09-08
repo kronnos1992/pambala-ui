@@ -10,7 +10,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { useAuthStore } from '@/store/auth-store'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-import { fetchOrders, updateProfile, uploadFile, type UiOrder, getStatusLabel, getStatusColor } from '@/lib/api-helpers'
+import { fetchOrders, fetchMe, updateProfile, uploadFile, type UiOrder, getStatusLabel, getStatusColor } from '@/lib/api-helpers'
 
 export default function MinhaContaPage() {
   const t = useTranslations('myAccount')
@@ -19,16 +19,31 @@ export default function MinhaContaPage() {
   const router = useRouter()
   const { user, setUser, logout } = useAuthStore()
   const [activeTab, setActiveTab] = React.useState('profile')
-  const [form, setForm] = React.useState({
-    name: user?.name || '',
+  const [draft, setDraft] = React.useState<{ name?: string; phone?: string; consent?: boolean }>({})
+  const form = {
+    name: draft.name ?? user?.name ?? '',
     email: user?.email || '',
-    phone: user?.phone || '',
-  })
-  const [aiConsent, setAiConsent] = React.useState(user?.aiValidationConsent ?? false)
+    phone: draft.phone ?? user?.phone ?? '',
+  }
+  const effectiveConsent = draft.consent ?? user?.aiValidationConsent ?? false
   const [orders, setOrders] = React.useState<UiOrder[]>([])
   const [loadingOrders, setLoadingOrders] = React.useState(true)
   const [uploadingAvatar, setUploadingAvatar] = React.useState(false)
   const avatarInputRef = React.useRef<HTMLInputElement>(null)
+
+  React.useEffect(() => {
+    fetchOrders({ limit: 10 })
+      .then((data) => setOrders(data.orders))
+      .catch(() => {})
+      .finally(() => setLoadingOrders(false))
+    fetchMe()
+      .then((me) => {
+        const current = useAuthStore.getState().user
+        if (!current) return
+        setUser({ ...me, id: current.id } as NonNullable<typeof user>)
+      })
+      .catch(() => {})
+  }, [setUser])
 
   React.useEffect(() => {
     fetchOrders({ limit: 10 })
@@ -46,7 +61,7 @@ export default function MinhaContaPage() {
 
   const handleSaveProfile = async () => {
     try {
-      const updated = await updateProfile({ name: form.name, phone: form.phone, aiValidationConsent: aiConsent })
+      const updated = await updateProfile({ name: form.name, phone: form.phone, aiValidationConsent: effectiveConsent })
       setUser({
         ...user,
         id: updated.id,
@@ -54,8 +69,9 @@ export default function MinhaContaPage() {
         email: updated.email,
         phone: updated.phone,
         avatar: updated.avatar,
-        aiValidationConsent: aiConsent,
+        aiValidationConsent: effectiveConsent,
       } as NonNullable<typeof user>)
+      setDraft({})
       toast(t('profileUpdated'), 'success')
     } catch {
       toast(t('profileUpdateError'), 'error')
@@ -163,27 +179,26 @@ export default function MinhaContaPage() {
                 <Input
                   label={t('formName')}
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) => setDraft((d) => ({ ...d, name: e.target.value }))}
                 />
                 <Input
                   label={t('formEmail')}
                   type="email"
                   value={form.email}
-                  onChange={(e) => setForm({ ...form, email: e.target.value })}
                   disabled
                 />
                 <Input
                   label={t('formPhone')}
                   type="tel"
                   value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  onChange={(e) => setDraft((d) => ({ ...d, phone: e.target.value }))}
                 />
               </div>
               <label className="mt-6 flex cursor-pointer select-none items-start gap-3 rounded-lg border border-gray-200 dark:border-gray-700 p-4">
                 <input
                   type="checkbox"
-                  checked={aiConsent}
-                  onChange={(e) => setAiConsent(e.target.checked)}
+                  checked={effectiveConsent}
+                  onChange={(e) => setDraft((d) => ({ ...d, consent: e.target.checked }))}
                   className="mt-0.5 h-4 w-4 shrink-0 accent-emerald-600"
                 />
                 <span>

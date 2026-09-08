@@ -4,10 +4,10 @@ import * as React from 'react'
 import { use } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin, CreditCard, Upload, FileCheck, X } from 'lucide-react'
+import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin, CreditCard, Upload, FileCheck, X, Copy } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { cn, isPdfUrl, receiptDisplayUrl } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
 import { fetchOrderById, mapStatus, uploadOrderReceipt, uploadFile, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
 
@@ -20,6 +20,19 @@ const timelineIcons: Record<string, React.ElementType> = {
 }
 
 const statusSteps = ['pending', 'confirmed', 'processing', 'shipped', 'delivered']
+
+function firstImage(images: unknown): string {
+  if (Array.isArray(images) && images.length > 0) return images[0] as string
+  if (typeof images === 'string') {
+    try {
+      const parsed = JSON.parse(images)
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed[0] : ''
+    } catch {
+      return ''
+    }
+  }
+  return ''
+}
 
 export default function OrderDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const t = useTranslations('orderDetail')
@@ -98,7 +111,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     name: item.product?.name || t('productFallback'),
     price: item.price,
     quantity: item.quantity,
-    image: item.product?.images?.[0] || 'https://placehold.co/100x100/f0fdf4/166534?text=Produto',
+    image: firstImage(item.product?.images) || 'https://placehold.co/100x100/f0fdf4/166534?text=Produto',
   }))
 
   return (
@@ -231,6 +244,33 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               )}
 
+              {order.paymentCode && order.paymentStatus !== 'PAID' && (
+                <div className="mt-3 p-3.5 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/50 space-y-1.5">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-amber-900 dark:text-amber-200">
+                      {t('payment.codeLabel')}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        navigator.clipboard.writeText(order.paymentCode!)
+                        toast(t('payment.codeCopied'), 'success')
+                      }}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-amber-800 hover:text-amber-950 dark:text-amber-300 cursor-pointer"
+                      title={t('payment.copyCode')}
+                    >
+                      <span className="font-mono font-bold tracking-widest text-sm bg-white dark:bg-gray-900 px-2.5 py-0.5 rounded border border-amber-200 dark:border-amber-800 text-gray-900 dark:text-white">
+                        {order.paymentCode}
+                      </span>
+                      <Copy className="h-3.5 w-3.5 shrink-0" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-amber-800 dark:text-amber-300/90 leading-relaxed">
+                    {t('payment.codeInstruction')}
+                  </p>
+                </div>
+              )}
+
               <div className="flex justify-between pt-2">
                 <span className="text-gray-600 dark:text-gray-400">{t('paymentState')}</span>
                 <PaymentStatusBadge status={order.paymentStatus || 'PENDING'} />
@@ -268,7 +308,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                       <input
                         ref={fileRef}
                         type="file"
-                        accept="image/*"
+                        accept="image/*,application/pdf"
                         className="hidden"
                         onChange={handleReceiptUpload}
                       />
@@ -299,14 +339,22 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
             >
               <X className="h-5 w-5" />
             </button>
-            <Image
-              src={order.receiptImage}
-              alt={t('receiptImageAlt')}
-              width={1200}
-              height={900}
-              unoptimized
-              className="max-h-[90vh] w-full rounded-lg object-contain bg-white"
-            />
+            {isPdfUrl(order.receiptImage) ? (
+              <iframe
+                src={receiptDisplayUrl(order.receiptImage)}
+                title={t('receiptImageAlt')}
+                className="h-[80vh] w-full rounded-lg bg-white"
+              />
+            ) : (
+              <Image
+                src={receiptDisplayUrl(order.receiptImage)}
+                alt={t('receiptImageAlt')}
+                width={1200}
+                height={900}
+                unoptimized
+                className="max-h-[90vh] w-full rounded-lg object-contain bg-white"
+              />
+            )}
           </div>
         </div>
       )}
@@ -347,9 +395,12 @@ function ValidationBadge({ status }: { status: string }) {
   const t = useTranslations('orderDetail')
   const map: Record<string, { key: string; cls: string }> = {
     AQUEUE: { key: 'validation.aqueue', cls: 'bg-blue-100 text-blue-700' },
-    PASS: { key: 'validation.pass', cls: 'bg-emerald-100 text-emerald-700' },
-    REVIEW: { key: 'validation.review', cls: 'bg-amber-100 text-amber-700' },
-    FAIL: { key: 'validation.fail', cls: 'bg-red-100 text-red-700' },
+    PASS: { key: 'validation.proofAccepted', cls: 'bg-emerald-100 text-emerald-700' },
+    PROOF_ACCEPTED: { key: 'validation.proofAccepted', cls: 'bg-emerald-100 text-emerald-700' },
+    REVIEW: { key: 'validation.manualReview', cls: 'bg-amber-100 text-amber-700' },
+    MANUAL_REVIEW: { key: 'validation.manualReview', cls: 'bg-amber-100 text-amber-700' },
+    FAIL: { key: 'validation.proofRejected', cls: 'bg-red-100 text-red-700' },
+    PROOF_REJECTED: { key: 'validation.proofRejected', cls: 'bg-red-100 text-red-700' },
     ERROR: { key: 'validation.error', cls: 'bg-gray-100 text-gray-700' },
   }
   const st = map[status]

@@ -528,7 +528,11 @@
       "iban": "IBAN",
       "accountNumber": "Nº de conta",
       "entity": "Entidade",
-      "reference": "Referência"
+      "reference": "Referência",
+      "codeLabel": "Código de Validação do Pedido",
+      "copyCode": "Copiar código",
+      "codeCopied": "Código copiado para a área de transferência!",
+      "codeInstruction": "Ao realizar o pagamento por Multicaixa Express ou transferência bancária, insira este código de 8 dígitos no descritivo/mensagem para validação imediata do seu comprovativo."
     },
     "paymentStatus": {
       "pending": "Aguardando pagamento",
@@ -549,8 +553,11 @@
     "receiptError": "Erro ao enviar comprovativo",
     "validation": {
       "pass": "Comprovativo válido",
+      "proofAccepted": "Comprovativo aceite",
       "review": "Necessita revisão manual",
+      "manualReview": "Necessita revisão manual",
       "fail": "Comprovativo suspeito",
+      "proofRejected": "Comprovativo rejeitado",
       "error": "Não foi possível validar",
       "aqueue": "Validação em análise"
     },
@@ -664,6 +671,7 @@
     "method": "Método",
     "amount": "Valor",
     "status": "Estado",
+    "paymentCodeExpected": "Código esperado no comprovativo",
     "paymentStatus": {
       "awaitingPayment": "Aguardando pagamento",
       "awaitingConfirmation": "Aguardando confirmação",
@@ -676,12 +684,16 @@
       "customerReceipt": "Comprovativo do cliente",
       "open": "Abrir comprovativo",
       "alt": "Comprovativo",
-      "lightboxAlt": "Comprovativo de pagamento"
+      "lightboxAlt": "Comprovativo de pagamento",
+      "aiReportTitle": "Relatório Anti-Fraude (IA / Forense)"
     },
     "validation": {
       "pass": "Validação: comprovativo válido",
+      "proofAccepted": "Validação: comprovativo aceite",
       "review": "Validação: necessita revisão",
+      "manualReview": "Validação: necessita revisão manual",
       "fail": "Validação: comprovativo suspeito",
+      "proofRejected": "Validação: comprovativo rejeitado",
       "error": "Validação: não foi possível validar",
       "aqueue": "Validação em análise"
     },
@@ -713,7 +725,10 @@
     "status": {
       "active": "Ativo",
       "inactive": "Inativo"
-    }
+    },
+    "deleteConfirm": "Apagar \"{name}\"?",
+    "deleteSuccess": "Produto apagado com sucesso!",
+    "deleteError": "Erro ao apagar o produto"
   },
   "sellerProductForm": {
     "title": "Novo Produto",
@@ -725,6 +740,8 @@
       "priceStock": "Preço e Estoque"
     },
     "addImage": "Adicionar",
+    "uploading": "A enviar...",
+    "uploadError": "Erro ao enviar a imagem",
     "fields": {
       "name": "Nome do Produto",
       "description": "Descrição",
@@ -751,7 +768,14 @@
     "creating": "A criar...",
     "createProduct": "Criar Produto",
     "createSuccess": "Produto criado com sucesso!",
-    "createError": "Erro ao criar produto"
+    "createError": "Erro ao criar produto",
+    "editTitle": "Editar Produto",
+    "updating": "A atualizar...",
+    "updateProduct": "Guardar Alterações",
+    "updateSuccess": "Produto atualizado com sucesso!",
+    "updateError": "Erro ao atualizar produto",
+    "notFound": "Produto não encontrado",
+    "loadError": "Erro ao carregar o produto. Verifique a ligação ao servidor."
   },
   "sellerStore": {
     "title": "Minha Loja",
@@ -784,7 +808,11 @@
     "changeLogo": "Alterar logótipo",
     "changeCapa": "Alterar capa",
     "removePhoto": "Remover foto",
-    "photoError": "Ficheiro inválido. Envia uma imagem."
+    "photoError": "Ficheiro inválido. Envia uma imagem.",
+    "storeCategories": "Categorias que vendes",
+    "categoriesHint": "Seleciona as categorias de produtos da tua loja",
+    "categoriesRequired": "Seleciona pelo menos uma categoria",
+    "categoriesLoading": "A carregar categorias…"
   },
   "adminLayout": {
     "restrictedAccess": "Acesso Restrito",
@@ -951,7 +979,20 @@
     "valReview": "IA: revisão",
     "valSuspected": "IA: suspeito",
     "valError": "IA: erro",
-    "valAqueue": "IA: em análise"
+    "valAqueue": "IA: em análise",
+    "store": "Loja",
+    "storeRevenueTitle": "Receita por loja",
+    "topProductsTitle": "Top produtos por loja",
+    "kpiConfirmedRevenue": "Receita confirmada",
+    "kpiDeclaredRevenue": "Declarada",
+    "kpiUnits": "Unidades vendidas",
+    "kpiPaidOrders": "Pedidos pagos",
+    "kpiStoresCount": "Lojas",
+    "confirmed": "Confirmado",
+    "declared": "Declarado",
+    "ordersColumn": "Pedidos",
+    "product": "Produto",
+    "units": "Unid."
   },
   "adminReviews": {
     "title": "Gerir Avaliacoes",

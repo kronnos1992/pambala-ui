@@ -8,6 +8,7 @@ export class E2EClient {
   private keyPair: nacl.BoxKeyPair | null = null
   private serverPublicKey: string | null = null
   private sessionId: string | null = null
+  private initPromise: Promise<string> | null = null
   private apiUrl: string
 
   constructor(apiUrl: string = 'http://localhost:3001/api') {
@@ -16,21 +17,70 @@ export class E2EClient {
   }
 
   /**
-   * Carrega session ID do localStorage (se existir)
+   * Carrega session ID e keypair persistidos do localStorage (se existirem).
+   * O keypair é persistido para garantir que encrypção/descriptografação
+   * continuam consistentes entre recargas e handshakes concorrentes.
    */
   private loadFromStorage() {
     if (typeof window === 'undefined') return
 
-    const saved = localStorage.getItem('e2e_session_id')
-    if (saved) {
-      this.sessionId = saved
+    try {
+      const saved = localStorage.getItem('e2e_session_id')
+      if (saved) this.sessionId = saved
+
+      const secretB64 = localStorage.getItem('e2e_client_secret_key')
+      const publicB64 = localStorage.getItem('e2e_client_public_key')
+      if (secretB64 && publicB64) {
+        this.keyPair = {
+          publicKey: Buffer.from(publicB64, 'base64'),
+          secretKey: Buffer.from(secretB64, 'base64'),
+        }
+      }
+
+      const serverB64 = localStorage.getItem('e2e_server_public_key')
+      if (serverB64) this.serverPublicKey = serverB64
+    } catch {
+      // storage corrompido: ignora e volta a gerar na próxima init
+      this.keyPair = null
+      this.serverPublicKey = null
+      this.sessionId = null
+    }
+  }
+
+  private persist() {
+    if (typeof window === 'undefined') return
+    try {
+      if (this.keyPair) {
+        localStorage.setItem('e2e_client_secret_key', Buffer.from(this.keyPair.secretKey).toString('base64'))
+        localStorage.setItem('e2e_client_public_key', Buffer.from(this.keyPair.publicKey).toString('base64'))
+      }
+      if (this.serverPublicKey) {
+        localStorage.setItem('e2e_server_public_key', this.serverPublicKey)
+      }
+      localStorage.setItem('e2e_session_id', this.sessionId ?? '')
+    } catch {
+      // quota/privacidade: não crítico
     }
   }
 
   /**
-   * Inicializa o cliente E2E (chamado UMA VEZ na app startup)
+   * Inicializa o cliente E2E.
+   * - Idempotente e segura contra chamadas concorrentes (ex: StrictMode
+   *   double-mount): apenas um handshake é realizado.
+   * - Reutiliza o MESMO keypair persistido, para que qualquer sessão
+   *   associada a esse clientPublicKey continue a cifrar/decifrar.
    */
   async init(): Promise<string> {
+    if (this.initPromise) return this.initPromise
+
+    this.initPromise = this.doInit().finally(() => {
+      this.initPromise = null
+    })
+
+    return this.initPromise
+  }
+
+  private async doInit(): Promise<string> {
     try {
       console.log('🔐 Initializing E2E Client...')
 
@@ -42,10 +92,12 @@ export class E2EClient {
       const keyData = await keyResponse.json()
       this.serverPublicKey = keyData.publicKey
 
-      // 2. Gerar keypair do cliente
-      this.keyPair = nacl.box.keyPair()
+      // 2. Reutilizar keypair persistido (ou gerar uma única vez)
+      if (!this.keyPair) {
+        this.keyPair = nacl.box.keyPair()
+      }
 
-      // 3. Fazer handshake
+      // 3. Fazer handshake com o mesmo clientPublicKey
       const handshakeResponse = await fetch(`${this.apiUrl}/security/handshake`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -61,17 +113,16 @@ export class E2EClient {
       const handshakeData = await handshakeResponse.json()
       this.sessionId = handshakeData.sessionId ?? ''
 
-      // 4. Guardar no localStorage
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('e2e_session_id', this.sessionId as string)
-      }
+      // 4. Persistir (session + keypair)
+      this.persist()
 
       console.log(
         `✅ E2E Client initialized successfully (Session: ${this.sessionId?.slice(0, 8)}...)`
       )
-return this.sessionId ?? ''
+      return this.sessionId ?? ''
     } catch (error) {
       console.error('❌ E2E Init error:', error)
+      this.sessionId = null
       throw error
     }
   }
@@ -154,8 +205,12 @@ return this.sessionId ?? ''
   clear() {
     this.sessionId = null
     this.keyPair = null
+    this.serverPublicKey = null
     if (typeof window !== 'undefined') {
       localStorage.removeItem('e2e_session_id')
+      localStorage.removeItem('e2e_client_secret_key')
+      localStorage.removeItem('e2e_client_public_key')
+      localStorage.removeItem('e2e_server_public_key')
     }
   }
 

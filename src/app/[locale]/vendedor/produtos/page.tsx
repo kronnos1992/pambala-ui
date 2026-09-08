@@ -8,7 +8,8 @@ import { ChevronRight, Plus, Edit, Trash2, Search, Eye } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { formatPrice, cn } from '@/lib/utils'
-import { fetchProducts, type UiProduct } from '@/lib/api-helpers'
+import { toast } from '@/components/ui/toast'
+import { fetchProducts, fetchMyStore, deleteSellerProduct, type UiProduct } from '@/lib/api-helpers'
 
 export default function SellerProductsPage() {
   const t = useTranslations('sellerProducts')
@@ -17,17 +18,44 @@ export default function SellerProductsPage() {
   const [search, setSearch] = React.useState('')
   const [products, setProducts] = React.useState<UiProduct[]>([])
   const [loading, setLoading] = React.useState(true)
+  const [deleting, setDeleting] = React.useState(false)
 
-  React.useEffect(() => {
-    fetchProducts({ limit: 50, locale })
-      .then((data) => setProducts(data.products))
+  const load = React.useCallback(() => {
+    fetchMyStore()
+      .then((store) => {
+        if (!store) {
+          setProducts([])
+          return
+        }
+        return fetchProducts({ limit: 100, storeId: store.id, locale }).then((data) =>
+          setProducts(data.products)
+        )
+      })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [locale])
 
+  React.useEffect(() => {
+    load()
+  }, [load])
+
   const filtered = products.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   )
+
+  const handleDelete = async (product: UiProduct) => {
+    if (!confirm(t('deleteConfirm', { name: product.name }))) return
+    setDeleting(true)
+    try {
+      await deleteSellerProduct(product.id)
+      toast(t('deleteSuccess'), 'success')
+      setProducts((prev) => prev.filter((p) => p.id !== product.id))
+    } catch {
+      toast(t('deleteError'), 'error')
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
@@ -113,10 +141,14 @@ export default function SellerProductsPage() {
                         <Link href={`/produtos/${product.slug}`} className="rounded-md p-1.5 text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-colors">
                           <Eye className="h-4 w-4" />
                         </Link>
-                        <button className="rounded-md p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
+                        <Link href={`/vendedor/produtos/${product.id}/editar`} className="rounded-md p-1.5 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 transition-colors">
                           <Edit className="h-4 w-4" />
-                        </button>
-                        <button className="rounded-md p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors">
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(product)}
+                          disabled={deleting}
+                          className="rounded-md p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-50"
+                        >
                           <Trash2 className="h-4 w-4" />
                         </button>
                       </div>

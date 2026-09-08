@@ -2,10 +2,11 @@
 
 import * as React from 'react'
 import { useTranslations } from 'next-intl'
-import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle, Store, Package, TrendingUp } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { formatPrice, cn } from '@/lib/utils'
-import { fetchAdminOrders, updateOrderStatus, updateAdminPaymentStatus, getStatusColor, type ApiOrder } from '@/lib/api-helpers'
+import { fetchAdminOrders, fetchAdminStoreRevenue, updateOrderStatus, updateAdminPaymentStatus, getStatusColor, type ApiOrder, type AdminStoreRevenue } from '@/lib/api-helpers'
 import { toast } from '@/components/ui/toast'
 
 const statusOptions = ['', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
@@ -19,11 +20,13 @@ export default function AdminPedidosPage() {
   const [orders, setOrders] = React.useState<ApiOrder[]>([])
   const [pagination, setPagination] = React.useState({ page: 1, totalPages: 1, total: 0 })
   const [loading, setLoading] = React.useState(true)
+  const [stats, setStats] = React.useState<AdminStoreRevenue | null>(null)
   const [status, setStatus] = React.useState('')
   const [search, setSearch] = React.useState('')
   const [searchInput, setSearchInput] = React.useState('')
   const [page, setPage] = React.useState(1)
   const [updatingId, setUpdatingId] = React.useState<string | null>(null)
+  const [confirmDialog, setConfirmDialog] = React.useState<{ orderId: string; paymentStatus: string } | null>(null)
 
   const load = React.useCallback(() => {
     setLoading(true)
@@ -34,6 +37,20 @@ export default function AdminPedidosPage() {
   }, [page, status, search, t])
 
   React.useEffect(() => { Promise.resolve().then(load) }, [load])
+
+  React.useEffect(() => {
+    fetchAdminStoreRevenue()
+      .then(setStats)
+      .catch(() => setStats(null))
+  }, [])
+
+  const topProducts = React.useMemo(() => {
+    if (!stats?.stores.length) return []
+    return stats.stores
+      .flatMap((s) => s.topProducts.map((p) => ({ ...p, storeName: s.storeName })))
+      .sort((a, b) => b.revenue - a.revenue)
+      .slice(0, 10)
+  }, [stats])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,16 +71,13 @@ export default function AdminPedidosPage() {
     }
   }
 
-  const handlePaymentConfirm = async (orderId: string, paymentStatus: string) => {
-    if (paymentStatus === 'PAID') {
-      if (!window.confirm(t('confirmPaymentPrompt'))) return
-    } else {
-      if (!window.confirm(t('rejectPaymentPrompt'))) return
-    }
-    setUpdatingId(orderId)
+  const handlePaymentConfirm = async () => {
+    if (!confirmDialog) return
+    setUpdatingId(confirmDialog.orderId)
+    setConfirmDialog(null)
     try {
-      await updateAdminPaymentStatus(orderId, paymentStatus)
-      toast(paymentStatus === 'PAID' ? t('paymentConfirmed') : t('proofRejected'), 'success')
+      await updateAdminPaymentStatus(confirmDialog.orderId, confirmDialog.paymentStatus)
+      toast(confirmDialog.paymentStatus === 'PAID' ? t('paymentConfirmed') : t('proofRejected'), 'success')
       load()
     } catch {
       toast(t('paymentProcessError'), 'error')
@@ -78,6 +92,78 @@ export default function AdminPedidosPage() {
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
         <span className="text-sm text-gray-500 dark:text-gray-300">{t('ordersCount', { count: pagination.total })}</span>
       </div>
+
+      {stats && (
+        <div className="space-y-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            <KpiCard icon={TrendingUp} label={t('kpiConfirmedRevenue')} value={formatPrice(stats.totals.revenue)} />
+            <KpiCard icon={TrendingUp} label={t('kpiDeclaredRevenue')} value={formatPrice(stats.totals.declared)} />
+            <KpiCard icon={Package} label={t('kpiUnits')} value={String(stats.totals.units)} />
+            <KpiCard icon={Store} label={t('kpiPaidOrders')} value={String(stats.totals.confirmedOrders)} />
+            <KpiCard icon={Store} label={t('kpiStoresCount')} value={String(stats.totals.storesCount)} />
+          </div>
+
+          {stats.stores.length > 0 && (
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                  <h2 className="font-semibold text-gray-900 dark:text-white">{t('storeRevenueTitle')}</h2>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th className="px-4 py-2">{t('store')}</th>
+                        <th className="px-4 py-2 text-right">{t('confirmed')}</th>
+                        <th className="px-4 py-2 text-right">{t('declared')}</th>
+                        <th className="px-4 py-2 text-right">{t('ordersColumn')}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                      {stats.stores.map((s) => (
+                        <tr key={s.storeId} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                          <td className="px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white">{s.storeName}</td>
+                          <td className="px-4 py-2.5 text-sm font-semibold text-emerald-700 text-right">{formatPrice(s.revenue)}</td>
+                          <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 text-right">{formatPrice(s.declared)}</td>
+                          <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 text-right">{s.ordersCount}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 overflow-hidden">
+                <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+                  <h2 className="font-semibold text-gray-900 dark:text-white">{t('topProductsTitle')}</h2>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <th className="px-4 py-2">{t('store')}</th>
+                        <th className="px-4 py-2">{t('product')}</th>
+                        <th className="px-4 py-2 text-right">{t('units')}</th>
+                        <th className="px-4 py-2 text-right">{t('amount')}</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100 dark:divide-gray-800">
+                      {topProducts.map((p) => (
+                        <tr key={p.productId} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+                          <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300">{p.storeName}</td>
+                          <td className="px-4 py-2.5 text-sm font-medium text-gray-900 dark:text-white">{p.productName}</td>
+                          <td className="px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 text-right">{p.units}</td>
+                          <td className="px-4 py-2.5 text-sm font-semibold text-gray-900 dark:text-white text-right">{formatPrice(p.revenue)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row gap-3">
         <form onSubmit={handleSearch} className="flex gap-2 flex-1">
@@ -120,6 +206,7 @@ export default function AdminPedidosPage() {
                 <tr className="text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   <th className="px-4 py-3">{t('orderNumber')}</th>
                   <th className="px-4 py-3">{t('customer')}</th>
+                  <th className="px-4 py-3">{t('store')}</th>
                   <th className="px-4 py-3">{t('amount')}</th>
                   <th className="px-4 py-3">{t('payment')}</th>
                   <th className="px-4 py-3">{t('province')}</th>
@@ -132,6 +219,9 @@ export default function AdminPedidosPage() {
                   <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{order.orderNumber || order.id}</td>
                     <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-200">{order.shippingName || order.user?.name || 'N/A'}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-200">
+                      {order.stores?.length ? order.stores.map((s) => s.name).join(', ') : '-'}
+                    </td>
                     <td className="px-4 py-3 text-sm font-medium text-gray-900 dark:text-white">{formatPrice(order.total)}</td>
                     <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">
                       <div className="space-y-1 text-xs">
@@ -143,7 +233,7 @@ export default function AdminPedidosPage() {
                         {order.paymentStatus === 'PAYMENT_RECEIVED' && (
                           <div className="flex gap-1 pt-1">
                             <button
-                              onClick={() => handlePaymentConfirm(order.id, 'PAID')}
+                              onClick={() => setConfirmDialog({ orderId: order.id, paymentStatus: 'PAID' })}
                               disabled={updatingId === order.id}
                               title={t('confirmPaymentTitle')}
                               className="inline-flex items-center gap-1 rounded-md bg-emerald-600 px-2 py-1 text-[10px] font-semibold text-white hover:bg-emerald-700 disabled:opacity-50"
@@ -151,7 +241,7 @@ export default function AdminPedidosPage() {
                               <CheckCircle className="h-3 w-3" /> {tc('confirm')}
                             </button>
                             <button
-                              onClick={() => handlePaymentConfirm(order.id, 'REJECTED')}
+                              onClick={() => setConfirmDialog({ orderId: order.id, paymentStatus: 'REJECTED' })}
                               disabled={updatingId === order.id}
                               title={t('rejectPaymentTitle')}
                               className="inline-flex items-center gap-1 rounded-md bg-red-100 px-2 py-1 text-[10px] font-semibold text-red-700 hover:bg-red-200 disabled:opacity-50 dark:bg-red-900/40"
@@ -179,7 +269,7 @@ export default function AdminPedidosPage() {
                   </tr>
                 ))}
                 {orders.length === 0 && (
-                  <tr><td colSpan={7} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">{t('empty')}</td></tr>
+                  <tr><td colSpan={8} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">{t('empty')}</td></tr>
                 )}
               </tbody>
             </table>
@@ -200,6 +290,41 @@ export default function AdminPedidosPage() {
           </div>
         </div>
       )}
+
+      <Dialog open={!!confirmDialog} onOpenChange={(open) => { if (!open) setConfirmDialog(null) }}>
+        {confirmDialog && (
+          <DialogContent>
+            <DialogHeader>
+              <div className="flex items-center gap-3">
+                <span className={cn(
+                  'flex h-10 w-10 shrink-0 items-center justify-center rounded-full',
+                  confirmDialog.paymentStatus === 'PAID'
+                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400'
+                    : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400'
+                )}>
+                  {confirmDialog.paymentStatus === 'PAID' ? <CheckCircle className="h-5 w-5" /> : <XCircle className="h-5 w-5" />}
+                </span>
+                <DialogTitle>{confirmDialog.paymentStatus === 'PAID' ? t('confirmPaymentTitle') : t('rejectPaymentTitle')}</DialogTitle>
+              </div>
+            </DialogHeader>
+            <DialogDescription className="mt-2">
+              {confirmDialog.paymentStatus === 'PAID' ? t('confirmPaymentPrompt') : t('rejectPaymentPrompt')}
+            </DialogDescription>
+            <div className="mt-5 flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setConfirmDialog(null)} disabled={updatingId !== null}>
+                {tc('cancel')}
+              </Button>
+              <Button
+                variant={confirmDialog.paymentStatus === 'PAID' ? 'default' : 'destructive'}
+                onClick={handlePaymentConfirm}
+                disabled={updatingId !== null}
+              >
+                {confirmDialog.paymentStatus === 'PAID' ? tc('confirm') : t('reject')}
+              </Button>
+            </div>
+          </DialogContent>
+        )}
+      </Dialog>
     </div>
   )
 }
@@ -218,13 +343,28 @@ function PaymentBadge({ status }: { status: string }) {
   return <span className={cn('inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold', st.cls)}>{st.label}</span>
 }
 
+function KpiCard({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4">
+      <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+        <Icon className="h-4 w-4 text-emerald-600" />
+        <span className="text-xs font-medium uppercase tracking-wider">{label}</span>
+      </div>
+      <p className="mt-2 text-xl font-bold text-gray-900 dark:text-white">{value}</p>
+    </div>
+  )
+}
+
 function ValidationBadge({ status }: { status: string }) {
   const t = useTranslations('adminOrders')
   const map: Record<string, { label: string; cls: string }> = {
     AQUEUE: { label: t('valAqueue'), cls: 'bg-blue-100 text-blue-700' },
     PASS: { label: t('valValid'), cls: 'bg-emerald-100 text-emerald-700' },
+    PROOF_ACCEPTED: { label: t('valValid'), cls: 'bg-emerald-100 text-emerald-700' },
     REVIEW: { label: t('valReview'), cls: 'bg-amber-100 text-amber-700' },
+    MANUAL_REVIEW: { label: t('valReview'), cls: 'bg-amber-100 text-amber-700' },
     FAIL: { label: t('valSuspected'), cls: 'bg-red-100 text-red-700' },
+    PROOF_REJECTED: { label: t('valSuspected'), cls: 'bg-red-100 text-red-700' },
     ERROR: { label: t('valError'), cls: 'bg-gray-100 text-gray-700' },
   }
   const st = map[status] || { label: status, cls: 'bg-gray-100 text-gray-700' }

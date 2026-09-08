@@ -526,7 +526,11 @@
       "iban": "IBAN",
       "accountNumber": "Account number",
       "entity": "Entity",
-      "reference": "Reference"
+      "reference": "Reference",
+      "codeLabel": "Order Validation Code",
+      "copyCode": "Copy code",
+      "codeCopied": "Code copied to clipboard!",
+      "codeInstruction": "When paying via Multicaixa Express or bank transfer, please include this 8-digit code in the payment description/memo for immediate automatic validation."
     },
     "paymentStatus": {
       "pending": "Awaiting payment",
@@ -547,8 +551,11 @@
     "receiptError": "Error submitting proof",
     "validation": {
       "pass": "Valid proof",
+      "proofAccepted": "Proof accepted",
       "review": "Manual review required",
+      "manualReview": "Manual review required",
       "fail": "Suspicious proof",
+      "proofRejected": "Proof rejected",
       "error": "Unable to validate",
       "aqueue": "Validation in progress"
     },
@@ -662,6 +669,7 @@
     "method": "Method",
     "amount": "Amount",
     "status": "Status",
+    "paymentCodeExpected": "Expected verification code",
     "paymentStatus": {
       "awaitingPayment": "Awaiting payment",
       "awaitingConfirmation": "Awaiting confirmation",
@@ -674,12 +682,16 @@
       "customerReceipt": "Customer's proof",
       "open": "Open proof",
       "alt": "Proof",
-      "lightboxAlt": "Payment proof"
+      "lightboxAlt": "Payment proof",
+      "aiReportTitle": "Anti-Fraud Audit Report (AI / Forensics)"
     },
     "validation": {
       "pass": "Validation: valid proof",
+      "proofAccepted": "Validation: proof accepted",
       "review": "Validation: needs review",
+      "manualReview": "Validation: needs manual review",
       "fail": "Validation: suspicious proof",
+      "proofRejected": "Validation: proof rejected",
       "error": "Validation: unable to validate",
       "aqueue": "Validation in progress"
     },
@@ -711,7 +723,10 @@
     "status": {
       "active": "Active",
       "inactive": "Inactive"
-    }
+    },
+    "deleteConfirm": "Delete \"{name}\"?",
+    "deleteSuccess": "Product deleted successfully!",
+    "deleteError": "Error deleting product"
   },
   "sellerProductForm": {
     "title": "New Product",
@@ -723,6 +738,8 @@
       "priceStock": "Price & Stock"
     },
     "addImage": "Add",
+    "uploading": "Uploading...",
+    "uploadError": "Error uploading image",
     "fields": {
       "name": "Product Name",
       "description": "Description",
@@ -749,7 +766,14 @@
     "creating": "Creating...",
     "createProduct": "Create Product",
     "createSuccess": "Product created successfully!",
-    "createError": "Error creating product"
+    "createError": "Error creating product",
+    "editTitle": "Edit Product",
+    "updating": "Updating...",
+    "updateProduct": "Save Changes",
+    "updateSuccess": "Product updated successfully!",
+    "updateError": "Error updating product",
+    "notFound": "Product not found",
+    "loadError": "Error loading the product. Check the server connection."
   },
   "sellerStore": {
     "title": "My Store",
@@ -782,7 +806,11 @@
     "changeLogo": "Change logo",
     "changeCapa": "Change cover",
     "removePhoto": "Remove photo",
-    "photoError": "Invalid file. Please upload an image."
+    "photoError": "Invalid file. Please upload an image.",
+    "storeCategories": "Categories you sell",
+    "categoriesHint": "Select the product categories of your store",
+    "categoriesRequired": "Select at least one category",
+    "categoriesLoading": "Loading categories…"
   },
   "adminLayout": {
     "restrictedAccess": "Restricted Access",
@@ -949,7 +977,20 @@
     "valReview": "AI: review",
     "valSuspected": "AI: suspicious",
     "valError": "AI: error",
-    "valAqueue": "AI: checking"
+    "valAqueue": "AI: checking",
+    "store": "Store",
+    "storeRevenueTitle": "Revenue by store",
+    "topProductsTitle": "Top products by store",
+    "kpiConfirmedRevenue": "Confirmed revenue",
+    "kpiDeclaredRevenue": "Declared",
+    "kpiUnits": "Units sold",
+    "kpiPaidOrders": "Paid orders",
+    "kpiStoresCount": "Stores",
+    "confirmed": "Confirmed",
+    "declared": "Declared",
+    "ordersColumn": "Orders",
+    "product": "Product",
+    "units": "Units"
   },
   "adminReviews": {
     "title": "Manage Reviews",

@@ -526,7 +526,11 @@
       "iban": "آيبان",
       "accountNumber": "رقم الحساب",
       "entity": "الجهة",
-      "reference": "المرجع"
+      "reference": "المرجع",
+      "codeLabel": "رمز التحقق من الطلب",
+      "copyCode": "نسخ الرمز",
+      "codeCopied": "تم نسخ الرمز إلى الحافظة!",
+      "codeInstruction": "عند الدفع عبر Multicaixa Express أو التحويل المصرفي، يرجى وضع هذا الرمز المكون من 8 أرقام في وصف/ملاحظة التحويل للتحقق الفوري."
     },
     "paymentStatus": {
       "pending": "بانتظار الدفع",
@@ -547,8 +551,11 @@
     "receiptError": "خطأ في إرسال الإثبات",
     "validation": {
       "pass": "إثبات صالح",
+      "proofAccepted": "تم قبول الإثبات",
       "review": "يتطلب مراجعة يدوية",
+      "manualReview": "يتطلب مراجعة يدوية",
       "fail": "إثبات مشبوه",
+      "proofRejected": "تم رفض الإثبات",
       "error": "تعذر التحقق",
       "aqueue": "جاري التحقق"
     },
@@ -662,6 +669,7 @@
     "method": "الطريقة",
     "amount": "المبلغ",
     "status": "الحالة",
+    "paymentCodeExpected": "الرمز المتوقع في الإثبات",
     "paymentStatus": {
       "awaitingPayment": "بانتظار الدفع",
       "awaitingConfirmation": "بانتظار التأكيد",
@@ -674,12 +682,16 @@
       "customerReceipt": "إثبات العميل",
       "open": "فتح الإثبات",
       "alt": "الإثبات",
-      "lightboxAlt": "إثبات الدفع"
+      "lightboxAlt": "إثبات الدفع",
+      "aiReportTitle": "تقرير مكافحة الاحتيال (ذكاء اصطناعي / تدقيق)"
     },
     "validation": {
       "pass": "التحقق: إثبات صالح",
+      "proofAccepted": "التحقق: تم قبول الإثبات",
       "review": "التحقق: يتطلب مراجعة",
+      "manualReview": "التحقق: يتطلب مراجعة يدوية",
       "fail": "التحقق: إثبات مشبوه",
+      "proofRejected": "التحقق: تم رفض الإثبات",
       "error": "التحقق: تعذر التحقق",
       "aqueue": "جاري التحقق"
     },
@@ -711,7 +723,10 @@
     "status": {
       "active": "نشط",
       "inactive": "غير نشط"
-    }
+    },
+    "deleteConfirm": "حذف \"{name}\"؟",
+    "deleteSuccess": "تم حذف المنتج بنجاح!",
+    "deleteError": "خطأ في حذف المنتج"
   },
   "sellerProductForm": {
     "title": "منتج جديد",
@@ -723,6 +738,8 @@
       "priceStock": "السعر والمخزون"
     },
     "addImage": "إضافة",
+    "uploading": "جارٍ الإرسال...",
+    "uploadError": "خطأ في إرسال الصورة",
     "fields": {
       "name": "اسم المنتج",
       "description": "الوصف",
@@ -749,7 +766,14 @@
     "creating": "جارٍ الإنشاء...",
     "createProduct": "إنشاء منتج",
     "createSuccess": "تم إنشاء المنتج بنجاح!",
-    "createError": "خطأ في إنشاء المنتج"
+    "createError": "خطأ في إنشاء المنتج",
+    "editTitle": "تعديل المنتج",
+    "updating": "جارٍ التحديث...",
+    "updateProduct": "حفظ التغييرات",
+    "updateSuccess": "تم تحديث المنتج بنجاح!",
+    "updateError": "خطأ في تحديث المنتج",
+    "notFound": "المنتج غير موجود",
+    "loadError": "خطأ في تحميل المنتج. تحقق من الاتصال بالخادم."
   },
   "sellerStore": {
     "title": "متجري",
@@ -782,7 +806,11 @@
     "changeLogo": "تغيير الشعار",
     "changeCapa": "تغيير الغلاف",
     "removePhoto": "إزالة الصورة",
-    "photoError": "ملف غير صالح، يرجى رفع صورة."
+    "photoError": "ملف غير صالح، يرجى رفع صورة.",
+    "storeCategories": "الفئات التي تبيعها",
+    "categoriesHint": "اختر فئات المنتجات لمتجرك",
+    "categoriesRequired": "اختر فئة واحدة على الأقل",
+    "categoriesLoading": "جارٍ تحميل الفئات…"
   },
   "adminLayout": {
     "restrictedAccess": "وصول مقيد",
@@ -949,7 +977,20 @@
     "valReview": "الذكاء الاصطناعي: مراجعة",
     "valSuspected": "الذكاء الاصطناعي: مشبوه",
     "valError": "الذكاء الاصطناعي: خطأ",
-    "valAqueue": "الذكاء الاصطناعي: جاري التحقق"
+    "valAqueue": "الذكاء الاصطناعي: جاري التحقق",
+    "store": "المتجر",
+    "storeRevenueTitle": "الإيرادات حسب المتجر",
+    "topProductsTitle": "أفضل المنتجات حسب المتجر",
+    "kpiConfirmedRevenue": "الإيرادات المؤكدة",
+    "kpiDeclaredRevenue": "المُعلنة",
+    "kpiUnits": "الوحدات المباعة",
+    "kpiPaidOrders": "الطلبات المدفوعة",
+    "kpiStoresCount": "المتاجر",
+    "confirmed": "مؤكد",
+    "declared": "مُعلن",
+    "ordersColumn": "الطلبات",
+    "product": "المنتج",
+    "units": "الوحدات"
   },
   "adminReviews": {
     "title": "إدارة التقييمات",

@@ -4,18 +4,31 @@ import * as React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link, useRouter } from '@/i18n/navigation'
-import { ChevronRight, Store, ExternalLink, ShieldCheck, ImageIcon, X, Loader2 } from 'lucide-react'
+import { ChevronRight, Store, ExternalLink, ShieldCheck, ImageIcon, X, Loader2, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { cn } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
 import { useAuthStore } from '@/store/auth-store'
-import { fetchMyStore, createStore, updateStore, uploadFile, getApiErrorMessage, type ApiStore } from '@/lib/api-helpers'
+import { fetchMyStore, createStore, updateStore, fetchCategories, uploadFile, getApiErrorMessage, type ApiStore, type ApiCategory } from '@/lib/api-helpers'
 
 const provinces = [
   'Bengo', 'Benguela', 'Bié', 'Cabinda', 'Cuando-Cubango', 'Cuanza Norte',
   'Cuanza Sul', 'Cunene', 'Huambo', 'Huíla', 'Icolo e Bengo', 'Luanda',
   'Lunda Norte', 'Lunda Sul', 'Malanje', 'Moxico', 'Namibe', 'Uíge', 'Zaire',
 ]
+
+function flattenCategories(cats: ApiCategory[]): ApiCategory[] {
+  const out: ApiCategory[] = []
+  const walk = (list: ApiCategory[]) => {
+    for (const c of list) {
+      out.push({ id: c.id, name: c.name, slug: c.slug, icon: c.icon })
+      if (c.children?.length) walk(c.children)
+    }
+  }
+  walk(cats)
+  return out
+}
 
 export default function VendedorLojaPage() {
   const t = useTranslations('sellerStore')
@@ -30,8 +43,22 @@ export default function VendedorLojaPage() {
   const [form, setForm] = React.useState({ name: '', description: '', phone: '', province: '', district: '', logo: '', banner: '' })
   const [errors, setErrors] = React.useState<Record<string, string>>({})
   const [uploadingMedia, setUploadingMedia] = React.useState<'logo' | 'banner' | null>(null)
+  const [categoryOptions, setCategoryOptions] = React.useState<ApiCategory[]>([])
+  const [selectedCategoryIds, setSelectedCategoryIds] = React.useState<string[]>([])
   const logoInputRef = React.useRef<HTMLInputElement>(null)
   const bannerInputRef = React.useRef<HTMLInputElement>(null)
+
+  React.useEffect(() => {
+    fetchCategories()
+      .then((cats) => setCategoryOptions(flattenCategories(cats)))
+      .catch(() => setCategoryOptions([]))
+  }, [])
+
+  const toggleCategory = (categoryId: string) => {
+    setSelectedCategoryIds((prev) =>
+      prev.includes(categoryId) ? prev.filter((id) => id !== categoryId) : [...prev, categoryId]
+    )
+  }
 
   React.useEffect(() => {
     let active = true
@@ -49,6 +76,7 @@ export default function VendedorLojaPage() {
             logo: data.logo || '',
             banner: data.banner || '',
           })
+          setSelectedCategoryIds((data.categories || []).map((c) => c.id))
         }
       })
       .catch((e) => toast(getApiErrorMessage(e) || t('loadError'), 'error'))
@@ -84,16 +112,20 @@ export default function VendedorLojaPage() {
     const errs: Record<string, string> = {}
     if (!form.name.trim()) errs.name = t('nameRequired')
     if (!form.province) errs.province = t('provinceRequired')
+    if (!store && selectedCategoryIds.length === 0 && categoryOptions.length > 0) {
+      errs.categories = t('categoriesRequired')
+    }
     setErrors(errs)
     if (Object.keys(errs).length > 0) return
 
     setSaving(true)
-    const payload: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string } = {
+    const payload: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string; categoryIds?: string[] } = {
       name: form.name.trim(),
       description: form.description.trim() || undefined,
       phone: form.phone.trim() || undefined,
       province: form.province,
       district: form.district.trim() || undefined,
+      categoryIds: selectedCategoryIds,
     }
     if (store) {
       payload.logo = form.logo
@@ -299,6 +331,41 @@ export default function VendedorLojaPage() {
               value={form.district}
               onChange={(e) => setForm((p) => ({ ...p, district: e.target.value }))}
             />
+
+            <div>
+              {inputLabel(t('storeCategories'))}
+              <p className="mb-2.5 text-xs text-gray-500 dark:text-gray-400">{t('categoriesHint')}</p>
+              {categoryOptions.length === 0 ? (
+                <div className="h-10 rounded-xl border border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center text-sm text-gray-400">
+                  {t('categoriesLoading')}
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {categoryOptions.map((c) => {
+                    const selected = selectedCategoryIds.includes(c.id)
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => toggleCategory(c.id)}
+                        aria-pressed={selected}
+                        className={cn(
+                          'inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors',
+                          selected
+                            ? 'border-emerald-600 bg-emerald-600 text-white shadow-sm'
+                            : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:border-emerald-500 hover:text-emerald-600 dark:hover:text-emerald-400'
+                        )}
+                      >
+                        {c.icon && <span className="text-base leading-none">{c.icon}</span>}
+                        {c.name}
+                        {selected && <CheckCircle2 className="h-3.5 w-3.5" />}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+              {errors.categories && <p className="mt-1.5 text-xs text-red-500">{errors.categories}</p>}
+            </div>
 
             <div className="pt-2">
               <Button type="submit" disabled={saving} className="w-full sm:w-auto">

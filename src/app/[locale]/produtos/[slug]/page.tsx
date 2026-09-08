@@ -223,7 +223,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ slug: 
           {product.store && (
             <Link href={`/lojas/${product.store.slug}`}>
               <div className="flex items-center gap-3 rounded-xl border border-gray-200 p-4 hover:shadow-md transition-shadow">
-                <Avatar fallback={product.store.name} size="lg" />
+                <Avatar src={product.store?.logo || undefined} fallback={product.store.name} size="lg" />
                 <div className="flex-1">
                   <p className="font-semibold text-gray-900 dark:text-white">{product.store.name}</p>
                   <div className="flex items-center gap-2 text-sm text-gray-500">

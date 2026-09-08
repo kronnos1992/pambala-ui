@@ -2,24 +2,39 @@
 
 import * as React from 'react'
 import { useTranslations } from 'next-intl'
-import { Link } from '@/i18n/navigation'
-import { useRouter } from '@/i18n/navigation'
+import { use } from 'react'
+import { Link, useRouter } from '@/i18n/navigation'
 import Image from 'next/image'
 import { ChevronRight, X, Image as ImageIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { TranslationFields, emptyTranslations, type TranslationFieldsProps } from '@/components/translation-fields'
+import { TranslationFields, emptyTranslations, TARGET_LOCALES, type TranslationFieldsProps } from '@/components/translation-fields'
 import { toast } from '@/components/ui/toast'
-import { createProduct, fetchCategories, uploadFile, type ApiCategory } from '@/lib/api-helpers'
+import axios from 'axios'
+import { updateProduct, fetchCategories, fetchProductBySlug, uploadFile, getApiErrorMessage, type ApiCategory, type ApiProduct } from '@/lib/api-helpers'
 
-export default function NewProductPage() {
+function translationsFromProduct(product: ApiProduct): Record<string, Record<string, string>> {
+  const t = emptyTranslations()
+  for (const tr of product.translations || []) {
+    if (TARGET_LOCALES.includes(tr.locale)) {
+      t[tr.locale] = { name: tr.name || '', description: tr.description || '' }
+    }
+  }
+  return t
+}
+
+export default function EditProductPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params)
   const t = useTranslations('sellerProductForm')
   const tc = useTranslations('common')
   const tt = useTranslations('translations')
   const tr = useTranslations('routes')
   const router = useRouter()
-  const [loading, setLoading] = React.useState(false)
+  const [loading, setLoading] = React.useState(true)
+  const [saving, setSaving] = React.useState(false)
   const [uploadingImages, setUploadingImages] = React.useState(false)
+  const [notFound, setNotFound] = React.useState(false)
+  const [loadError, setLoadError] = React.useState<string | null>(null)
   const [images, setImages] = React.useState<string[]>([])
   const [categories, setCategories] = React.useState<ApiCategory[]>([])
   const imageInputRef = React.useRef<HTMLInputElement>(null)
@@ -31,7 +46,6 @@ export default function NewProductPage() {
     category: '',
     condition: 'NEW',
     stock: '',
-    province: 'Luanda',
   })
   const [translations, setTranslations] = React.useState<Record<string, Record<string, string>>>(emptyTranslations())
   const [errors, setErrors] = React.useState<Record<string, string>>({})
@@ -50,9 +64,35 @@ export default function NewProductPage() {
     { value: 'REFURBISHED', label: t('conditions.refurbished') },
   ]
 
+  const load = React.useCallback(() => {
+    Promise.all([fetchProductBySlug(id), fetchCategories()])
+      .then(([product, cats]) => {
+        setCategories(cats)
+        setForm({
+          name: product.name,
+          description: product.description || '',
+          price: String(product.price),
+          comparePrice: product.comparePrice ? String(product.comparePrice) : '',
+          category: product.categoryId,
+          condition: product.condition || 'NEW',
+          stock: String(product.stock),
+        })
+        setImages(Array.isArray(product.images) ? product.images : [])
+        setTranslations(translationsFromProduct(product))
+      })
+      .catch((err: unknown) => {
+        if (axios.isAxiosError(err) && err.response?.status === 404) {
+          setNotFound(true)
+        } else {
+          setLoadError(getApiErrorMessage(err) || t('loadError'))
+        }
+      })
+      .finally(() => setLoading(false))
+  }, [id, t])
+
   React.useEffect(() => {
-    fetchCategories().then(setCategories).catch(() => {})
-  }, [])
+    load()
+  }, [load])
 
   const updateForm = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }))
@@ -94,7 +134,7 @@ export default function NewProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validate()) return
-    setLoading(true)
+    setSaving(true)
     const apiTranslations = Object.entries(translations)
       .filter(([, v]) => v.name?.trim() || v.description?.trim())
       .map(([locale, v]) => ({
@@ -103,7 +143,7 @@ export default function NewProductPage() {
         description: v.description?.trim() || undefined,
       }))
     try {
-      await createProduct({
+      await updateProduct(id, {
         name: form.name,
         description: form.description || undefined,
         price: parseFloat(form.price),
@@ -114,13 +154,50 @@ export default function NewProductPage() {
         categoryId: form.category,
         translations: apiTranslations.length > 0 ? apiTranslations : undefined,
       })
-      toast(t('createSuccess'), 'success')
+      toast(t('updateSuccess'), 'success')
       router.push('/vendedor/produtos')
-    } catch {
-      toast(t('createError'), 'error')
+    } catch (err) {
+      toast(getApiErrorMessage(err) || t('updateError'), 'error')
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
+  }
+
+  if (loading) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6">
+        <div className="animate-pulse space-y-6">
+          <div className="h-6 bg-gray-100 rounded w-48 mb-6" />
+          <div className="h-8 bg-gray-100 rounded w-40 mb-8" />
+          <div className="h-64 bg-gray-100 rounded-xl" />
+        </div>
+      </div>
+    )
+  }
+
+  if (notFound) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 text-center">
+        <p className="text-gray-600 dark:text-gray-300 mb-4">{t('notFound')}</p>
+        <Link href="/vendedor/produtos">
+          <Button variant="outline">{t('products')}</Button>
+        </Link>
+      </div>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 sm:px-6 py-6 text-center">
+        <p className="text-red-600 dark:text-red-400 mb-4">{loadError}</p>
+        <div className="flex justify-center gap-3">
+          <Button onClick={() => { setLoading(true); setNotFound(false); setLoadError(null); load() }}>{tc('retry')}</Button>
+          <Link href="/vendedor/produtos">
+            <Button variant="outline">{t('products')}</Button>
+          </Link>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -132,10 +209,10 @@ export default function NewProductPage() {
         <ChevronRight className="h-3.5 w-3.5" />
         <Link href="/vendedor/produtos" className="hover:text-emerald-600 transition-colors">{t('products')}</Link>
         <ChevronRight className="h-3.5 w-3.5" />
-        <span className="text-gray-900 dark:text-white font-medium">{t('title')}</span>
+        <span className="text-gray-900 dark:text-white font-medium">{t('editTitle')}</span>
       </nav>
 
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('title')}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">{t('editTitle')}</h1>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700 p-6">
@@ -273,8 +350,8 @@ export default function NewProductPage() {
           <Link href="/vendedor/produtos">
             <Button variant="outline" type="button">{tc('cancel')}</Button>
           </Link>
-          <Button type="submit" disabled={loading}>
-            {loading ? t('creating') : t('createProduct')}
+          <Button type="submit" disabled={saving}>
+            {saving ? t('updating') : t('updateProduct')}
           </Button>
         </div>
       </form>

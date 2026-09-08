@@ -1,5 +1,10 @@
-import axios from 'axios'
+import axios, { InternalAxiosRequestConfig } from 'axios'
 import { e2eClient } from './e2e-client'
+
+type E2ERetryConfig = InternalAxiosRequestConfig & {
+  _e2eOriginal?: unknown
+  _e2eRetried?: boolean
+}
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
@@ -44,6 +49,7 @@ api.interceptors.request.use(async (config) => {
   ) {
     try {
       const { encrypted, nonce } = e2eClient.encrypt(config.data)
+      ;(config as E2ERetryConfig)._e2eOriginal = config.data
       config.data = { encrypted, nonce }
     } catch (error) {
       console.error('Request encryption error:', error)
@@ -80,6 +86,31 @@ api.interceptors.response.use(
         window.location.href = '/login'
       }
     }
+
+    // Self-heal E2E: se a sessão foi perdida no servidor (restart/expiry),
+    // re-faz o handshake e repete o pedido uma vez, de forma transparente.
+    const retryConfig = error.config as E2ERetryConfig | undefined
+    if (
+      retryConfig &&
+      retryConfig._e2eOriginal &&
+      !retryConfig._e2eRetried &&
+      error.response?.status === 400 &&
+      typeof error.response?.data?.error === 'string' &&
+      /invalid session|session expired|decryption failed/i.test(
+        error.response.data.error
+      )
+    ) {
+      const original = retryConfig._e2eOriginal
+      retryConfig._e2eRetried = true
+      return e2eClient
+        .init()
+        .then(() => {
+          retryConfig.data = original
+          return api(retryConfig)
+        })
+        .catch(() => Promise.reject(error))
+    }
+
     return Promise.reject(error)
   }
 )

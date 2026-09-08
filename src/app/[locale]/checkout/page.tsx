@@ -41,7 +41,7 @@ export default function CheckoutPage() {
   const tr = useTranslations('routes')
   const tc = useTranslations('common')
   const locale = useLocale()
-  const { items, clearCart } = useCartStore()
+  const { items, clearCart, syncWithApi } = useCartStore()
   const user = useAuthStore((s) => s.user)
   const [loading, setLoading] = React.useState(false)
   const [groups, setGroups] = React.useState<StoreGroup[]>([])
@@ -113,6 +113,10 @@ export default function CheckoutPage() {
     }
     setLoading(true)
     try {
+      const token = useAuthStore.getState().token
+      if (token) {
+        await syncWithApi()
+      }
       for (const g of groups) {
         const method = selected[g.storeId]!
         await createOrder({

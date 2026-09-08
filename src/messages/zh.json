@@ -526,7 +526,11 @@
       "iban": "IBAN",
       "accountNumber": "账号",
       "entity": "实体",
-      "reference": "参考号"
+      "reference": "参考号",
+      "codeLabel": "订单验证码",
+      "copyCode": "复制验证码",
+      "codeCopied": "验证码已复制到剪贴板！",
+      "codeInstruction": "通过 Multicaixa Express 或银行转账付款时，请在付款附言/备注中填写此 8 位数字验证码，以便立即自动验证。"
     },
     "paymentStatus": {
       "pending": "等待付款",
@@ -547,8 +551,11 @@
     "receiptError": "上传凭证时出错",
     "validation": {
       "pass": "凭证有效",
+      "proofAccepted": "凭证已接受",
       "review": "需要人工审核",
+      "manualReview": "需要人工审核",
       "fail": "凭证可疑",
+      "proofRejected": "凭证已拒绝",
       "error": "无法验证",
       "aqueue": "验证进行中"
     },
@@ -662,6 +669,7 @@
     "method": "方式",
     "amount": "金额",
     "status": "状态",
+    "paymentCodeExpected": "凭证中预期的验证码",
     "paymentStatus": {
       "awaitingPayment": "等待付款",
       "awaitingConfirmation": "等待确认",
@@ -674,12 +682,16 @@
       "customerReceipt": "客户凭证",
       "open": "打开凭证",
       "alt": "凭证",
-      "lightboxAlt": "付款凭证"
+      "lightboxAlt": "付款凭证",
+      "aiReportTitle": "防欺诈审计报告（AI / 取证）"
     },
     "validation": {
       "pass": "验证：凭证有效",
+      "proofAccepted": "验证：凭证已接受",
       "review": "验证：需要审核",
+      "manualReview": "验证：需要人工审核",
       "fail": "验证：凭证可疑",
+      "proofRejected": "验证：凭证已拒绝",
       "error": "验证：无法验证",
       "aqueue": "验证进行中"
     },
@@ -711,7 +723,10 @@
     "status": {
       "active": "在售",
       "inactive": "下架"
-    }
+    },
+    "deleteConfirm": "删除“{name}”？",
+    "deleteSuccess": "商品删除成功！",
+    "deleteError": "删除商品时出错"
   },
   "sellerProductForm": {
     "title": "新商品",
@@ -723,6 +738,8 @@
       "priceStock": "价格与库存"
     },
     "addImage": "添加",
+    "uploading": "上传中...",
+    "uploadError": "上传图片出错",
     "fields": {
       "name": "商品名称",
       "description": "描述",
@@ -749,7 +766,14 @@
     "creating": "创建中...",
     "createProduct": "创建商品",
     "createSuccess": "商品创建成功！",
-    "createError": "创建商品时出错"
+    "createError": "创建商品时出错",
+    "editTitle": "编辑商品",
+    "updating": "更新中...",
+    "updateProduct": "保存更改",
+    "updateSuccess": "商品更新成功！",
+    "updateError": "更新商品时出错",
+    "notFound": "未找到商品",
+    "loadError": "加载商品时出错。请检查服务器连接。"
   },
   "sellerStore": {
     "title": "我的店铺",
@@ -782,7 +806,11 @@
     "changeLogo": "更换标志",
     "changeCapa": "更换封面",
     "removePhoto": "移除照片",
-    "photoError": "文件无效，请上传图片。"
+    "photoError": "文件无效，请上传图片。",
+    "storeCategories": "所售商品类别",
+    "categoriesHint": "选择你的店铺商品类别",
+    "categoriesRequired": "请至少选择一个类别",
+    "categoriesLoading": "正在加载类别…"
   },
   "adminLayout": {
     "restrictedAccess": "受限访问",
@@ -949,7 +977,20 @@
     "valReview": "AI：审核",
     "valSuspected": "AI：可疑",
     "valError": "AI：错误",
-    "valAqueue": "AI：审核中"
+    "valAqueue": "AI：审核中",
+    "store": "店铺",
+    "storeRevenueTitle": "按店铺收入",
+    "topProductsTitle": "各店铺热销产品",
+    "kpiConfirmedRevenue": "已确认收入",
+    "kpiDeclaredRevenue": "已申报",
+    "kpiUnits": "售出件数",
+    "kpiPaidOrders": "已付款订单",
+    "kpiStoresCount": "店铺数",
+    "confirmed": "已确认",
+    "declared": "已申报",
+    "ordersColumn": "订单",
+    "product": "产品",
+    "units": "件数"
   },
   "adminReviews": {
     "title": "管理评价",

@@ -23,6 +23,7 @@ export interface ApiProduct {
   category?: { id: string; name: string; slug: string }
   avgRating?: number
   reviews?: ApiReview[]
+  translations?: { locale: string; name?: string; description?: string }[]
 }
 
 export interface ApiStore {
@@ -43,6 +44,7 @@ export interface ApiStore {
   userId: string
   createdAt: string
   paymentMethods?: PaymentMethod[]
+  categories?: { id: string; name: string; slug: string; icon?: string }[]
   _count?: { products: number; reviews: number }
   user?: { id: string; name: string; avatar?: string }
 }
@@ -115,9 +117,10 @@ export interface ApiOrder {
   status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
   paymentMethod: PaymentType
   paymentStatus?: 'PENDING' | 'AWAITING_PAYMENT' | 'PAYMENT_RECEIVED' | 'PAID' | 'REJECTED'
+  paymentCode?: string
   receiptImage?: string
   paymentDetails?: string
-  validationStatus?: 'PENDING' | 'AQUEUE' | 'PASS' | 'REVIEW' | 'FAIL' | 'ERROR'
+  validationStatus?: 'PENDING' | 'AQUEUE' | 'PASS' | 'REVIEW' | 'FAIL' | 'ERROR' | 'PROOF_ACCEPTED' | 'MANUAL_REVIEW' | 'PROOF_REJECTED'
   validationResult?: string
   paymentHistory?: string
   shippingName: string
@@ -130,6 +133,7 @@ export interface ApiOrder {
   createdAt: string
   items: ApiOrderItem[]
   user?: { id: string; name: string; email: string; phone?: string }
+  stores?: { id: string; name: string; slug?: string; logo?: string }[]
 }
 
 export interface ApiOrderItem {
@@ -539,12 +543,23 @@ export async function fetchMyStore(): Promise<ApiStore | null> {
   return data.store as ApiStore
 }
 
-export async function createStore(data: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string }) {
+export type StoreInput = {
+  name: string
+  description?: string
+  phone?: string
+  logo?: string
+  banner?: string
+  province: string
+  district?: string
+  categoryIds?: string[]
+}
+
+export async function createStore(data: StoreInput) {
   const { data: result } = await api.post('/stores', data)
   return result.store as ApiStore
 }
 
-export async function updateStore(data: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string }) {
+export async function updateStore(data: StoreInput) {
   const { data: result } = await api.put('/stores', data)
   return result.store as ApiStore
 }
@@ -687,6 +702,26 @@ export async function createProduct(productData: {
   return data.product as ApiProduct
 }
 
+export async function updateProduct(id: string, productData: {
+  name: string
+  description?: string
+  price: number
+  comparePrice?: number
+  images?: string[]
+  condition?: string
+  stock: number
+  categoryId: string
+  translations?: { locale: string; name?: string; description?: string }[]
+}) {
+  const { data } = await api.put(`/products/${id}`, productData)
+  return data.product as ApiProduct
+}
+
+export async function deleteSellerProduct(id: string) {
+  const { data } = await api.delete(`/products/${id}`)
+  return data
+}
+
 export async function fetchSellerOrders(params: { page?: number; limit?: number } = {}) {
   const query = new URLSearchParams()
   if (params.page) query.set('page', String(params.page))
@@ -699,6 +734,11 @@ export async function fetchSellerOrders(params: { page?: number; limit?: number 
   }
 }
 
+export async function fetchSellerOrderById(id: string) {
+  const { data } = await api.get(`/orders/seller/orders/${encodeURIComponent(id)}`)
+  return data.order as ApiOrder
+}
+
 // --- Admin API ---
 export async function fetchAdminStats() {
   const { data } = await api.get('/admin/stats')
@@ -707,6 +747,42 @@ export async function fetchAdminStats() {
 
 export async function fetchAdminOrdersStats() {
   const { data } = await api.get('/admin/stats/orders')
+  return data
+}
+
+export interface AdminStoreRevenueProduct {
+  productId: string
+  productName: string
+  units: number
+  revenue: number
+}
+
+export interface AdminStoreRevenueRow {
+  storeId: string
+  storeName: string
+  slug: string
+  logo?: string
+  units: number
+  revenue: number
+  declared: number
+  ordersCount: number
+  topProducts: AdminStoreRevenueProduct[]
+}
+
+export interface AdminStoreRevenue {
+  totals: {
+    revenue: number
+    declared: number
+    units: number
+    confirmedOrders: number
+    declaredOrders: number
+    storesCount: number
+  }
+  stores: AdminStoreRevenueRow[]
+}
+
+export async function fetchAdminStoreRevenue(): Promise<AdminStoreRevenue> {
+  const { data } = await api.get('/admin/stats/store-revenue')
   return data
 }
 
@@ -814,7 +890,7 @@ export async function fetchAdminProducts(params: { page?: number; limit?: number
   if (params.categoryId) query.set('categoryId', params.categoryId)
   const { data } = await api.get(`/admin/products?${query.toString()}`)
   return {
-    products: (data.products || []).map(mapApiProduct),
+    products: (data.products || []) as ApiProduct[],
     pagination: data.pagination,
   }
 }

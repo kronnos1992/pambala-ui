@@ -526,7 +526,11 @@
       "iban": "IBAN",
       "accountNumber": "Nº de cuenta",
       "entity": "Entidad",
-      "reference": "Referencia"
+      "reference": "Referencia",
+      "codeLabel": "Código de Validación del Pedido",
+      "copyCode": "Copiar código",
+      "codeCopied": "¡Código copiado al portapapeles!",
+      "codeInstruction": "Al realizar el pago por Multicaixa Express o transferencia bancaria, ingrese este código de 8 dígitos en la descripción/mensaje para validación inmediata."
     },
     "paymentStatus": {
       "pending": "Esperando pago",
@@ -547,8 +551,11 @@
     "receiptError": "Error al enviar comprobante",
     "validation": {
       "pass": "Comprobante válido",
+      "proofAccepted": "Comprobante aceptado",
       "review": "Requiere revisión manual",
+      "manualReview": "Requiere revisión manual",
       "fail": "Comprobante sospechoso",
+      "proofRejected": "Comprobante rechazado",
       "error": "No fue posible validar",
       "aqueue": "Validación en curso"
     },
@@ -662,6 +669,7 @@
     "method": "Método",
     "amount": "Importe",
     "status": "Estado",
+    "paymentCodeExpected": "Código esperado en el comprobante",
     "paymentStatus": {
       "awaitingPayment": "Esperando pago",
       "awaitingConfirmation": "Esperando confirmación",
@@ -674,12 +682,16 @@
       "customerReceipt": "Comprobante del cliente",
       "open": "Abrir comprobante",
       "alt": "Comprobante",
-      "lightboxAlt": "Comprobante de pago"
+      "lightboxAlt": "Comprobante de pago",
+      "aiReportTitle": "Informe Antifraude (IA / Forense)"
     },
     "validation": {
       "pass": "Validación: comprobante válido",
+      "proofAccepted": "Validación: comprobante aceptado",
       "review": "Validación: requiere revisión",
+      "manualReview": "Validación: requiere revisión manual",
       "fail": "Validación: comprobante sospechoso",
+      "proofRejected": "Validación: comprobante rechazado",
       "error": "Validación: no fue posible validar",
       "aqueue": "Validación en curso"
     },
@@ -711,7 +723,10 @@
     "status": {
       "active": "Activo",
       "inactive": "Inactivo"
-    }
+    },
+    "deleteConfirm": "¿Eliminar \"{name}\"?",
+    "deleteSuccess": "¡Producto eliminado con éxito!",
+    "deleteError": "Error al eliminar el producto"
   },
   "sellerProductForm": {
     "title": "Nuevo Producto",
@@ -723,6 +738,8 @@
       "priceStock": "Precio y Stock"
     },
     "addImage": "Añadir",
+    "uploading": "Subiendo...",
+    "uploadError": "Error al subir la imagen",
     "fields": {
       "name": "Nombre del Producto",
       "description": "Descripción",
@@ -749,7 +766,14 @@
     "creating": "Creando...",
     "createProduct": "Crear Producto",
     "createSuccess": "¡Producto creado con éxito!",
-    "createError": "Error al crear producto"
+    "createError": "Error al crear producto",
+    "editTitle": "Editar Producto",
+    "updating": "Actualizando...",
+    "updateProduct": "Guardar Cambios",
+    "updateSuccess": "¡Producto actualizado con éxito!",
+    "updateError": "Error al actualizar el producto",
+    "notFound": "Producto no encontrado",
+    "loadError": "Error al cargar el producto. Comprueba la conexión con el servidor."
   },
   "sellerStore": {
     "title": "Mi Tienda",
@@ -782,7 +806,11 @@
     "changeLogo": "Cambiar logotipo",
     "changeCapa": "Cambiar portada",
     "removePhoto": "Quitar foto",
-    "photoError": "Archivo no válido. Sube una imagen."
+    "photoError": "Archivo no válido. Sube una imagen.",
+    "storeCategories": "Categorías que vendes",
+    "categoriesHint": "Selecciona las categorías de productos de tu tienda",
+    "categoriesRequired": "Selecciona al menos una categoría",
+    "categoriesLoading": "Cargando categorías…"
   },
   "adminLayout": {
     "restrictedAccess": "Acceso Restringido",
@@ -949,7 +977,20 @@
     "valReview": "IA: revisión",
     "valSuspected": "IA: sospechoso",
     "valError": "IA: error",
-    "valAqueue": "IA: en curso"
+    "valAqueue": "IA: en curso",
+    "store": "Tienda",
+    "storeRevenueTitle": "Ingresos por tienda",
+    "topProductsTitle": "Top productos por tienda",
+    "kpiConfirmedRevenue": "Ingresos confirmados",
+    "kpiDeclaredRevenue": "Declarados",
+    "kpiUnits": "Unidades vendidas",
+    "kpiPaidOrders": "Pedidos pagados",
+    "kpiStoresCount": "Tiendas",
+    "confirmed": "Confirmado",
+    "declared": "Declarado",
+    "ordersColumn": "Pedidos",
+    "product": "Producto",
+    "units": "Unid."
   },
   "adminReviews": {
     "title": "Gestionar Evaluaciones",

@@ -526,7 +526,11 @@
       "iban": "IBAN",
       "accountNumber": "N° de compte",
       "entity": "Entité",
-      "reference": "Référence"
+      "reference": "Référence",
+      "codeLabel": "Code de Validation de la Commande",
+      "copyCode": "Copier le code",
+      "codeCopied": "Code copié dans le presse-papiers !",
+      "codeInstruction": "Lors du paiement via Multicaixa Express ou virement bancaire, insérez ce code à 8 chiffres dans le libellé pour une validation immédiate."
     },
     "paymentStatus": {
       "pending": "En attente de paiement",
@@ -547,8 +551,11 @@
     "receiptError": "Erreur lors de l'envoi du justificatif",
     "validation": {
       "pass": "Justificatif valide",
+      "proofAccepted": "Justificatif accepté",
       "review": "Nécessite une vérification manuelle",
+      "manualReview": "Nécessite une vérification manuelle",
       "fail": "Justificatif suspect",
+      "proofRejected": "Justificatif rejeté",
       "error": "Impossible de valider",
       "aqueue": "Validation en cours"
     },
@@ -662,6 +669,7 @@
     "method": "Méthode",
     "amount": "Montant",
     "status": "État",
+    "paymentCodeExpected": "Code attendu sur le justificatif",
     "paymentStatus": {
       "awaitingPayment": "En attente de paiement",
       "awaitingConfirmation": "En attente de confirmation",
@@ -674,12 +682,16 @@
       "customerReceipt": "Justificatif du client",
       "open": "Ouvrir le justificatif",
       "alt": "Justificatif",
-      "lightboxAlt": "Justificatif de paiement"
+      "lightboxAlt": "Justificatif de paiement",
+      "aiReportTitle": "Rapport Anti-Fraude (IA / Forensique)"
     },
     "validation": {
       "pass": "Validation : justificatif valide",
+      "proofAccepted": "Validation : justificatif accepté",
       "review": "Validation : nécessite une vérification",
+      "manualReview": "Validation : nécessite une vérification manuelle",
       "fail": "Validation : justificatif suspect",
+      "proofRejected": "Validation : justificatif rejeté",
       "error": "Validation : impossible de valider",
       "aqueue": "Validation en cours"
     },
@@ -711,7 +723,10 @@
     "status": {
       "active": "Actif",
       "inactive": "Inactif"
-    }
+    },
+    "deleteConfirm": "Supprimer « {name} » ?",
+    "deleteSuccess": "Produit supprimé avec succès !",
+    "deleteError": "Erreur lors de la suppression du produit"
   },
   "sellerProductForm": {
     "title": "Nouveau Produit",
@@ -723,6 +738,8 @@
       "priceStock": "Prix et Stock"
     },
     "addImage": "Ajouter",
+    "uploading": "Téléversement...",
+    "uploadError": "Erreur lors du téléversement",
     "fields": {
       "name": "Nom du Produit",
       "description": "Description",
@@ -749,7 +766,14 @@
     "creating": "Création en cours...",
     "createProduct": "Créer le Produit",
     "createSuccess": "Produit créé avec succès !",
-    "createError": "Erreur lors de la création du produit"
+    "createError": "Erreur lors de la création du produit",
+    "editTitle": "Modifier le produit",
+    "updating": "Mise à jour...",
+    "updateProduct": "Enregistrer les modifications",
+    "updateSuccess": "Produit mis à jour avec succès !",
+    "updateError": "Erreur lors de la mise à jour du produit",
+    "notFound": "Produit introuvable",
+    "loadError": "Erreur lors du chargement du produit. Vérifiez la connexion au serveur."
   },
   "sellerStore": {
     "title": "Ma Boutique",
@@ -782,7 +806,11 @@
     "changeLogo": "Changer le logo",
     "changeCapa": "Changer la couverture",
     "removePhoto": "Retirer la photo",
-    "photoError": "Fichier invalide. Envoyez une image."
+    "photoError": "Fichier invalide. Envoyez une image.",
+    "storeCategories": "Catégories que vous vendez",
+    "categoriesHint": "Sélectionnez les catégories de produits de votre boutique",
+    "categoriesRequired": "Sélectionnez au moins une catégorie",
+    "categoriesLoading": "Chargement des catégories…"
   },
   "adminLayout": {
     "restrictedAccess": "Accès Restreint",
@@ -949,7 +977,20 @@
     "valReview": "IA : vérification",
     "valSuspected": "IA : suspect",
     "valError": "IA : erreur",
-    "valAqueue": "IA : vérification"
+    "valAqueue": "IA : vérification",
+    "store": "Boutique",
+    "storeRevenueTitle": "Revenus par boutique",
+    "topProductsTitle": "Top produits par boutique",
+    "kpiConfirmedRevenue": "Revenus confirmés",
+    "kpiDeclaredRevenue": "Déclarés",
+    "kpiUnits": "Unités vendues",
+    "kpiPaidOrders": "Commandes payées",
+    "kpiStoresCount": "Boutiques",
+    "confirmed": "Confirmé",
+    "declared": "Déclaré",
+    "ordersColumn": "Commandes",
+    "product": "Produit",
+    "units": "Unités"
   },
   "adminReviews": {
     "title": "Gérer les Avis",

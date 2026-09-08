@@ -136,7 +136,7 @@ export default function VendedorPage() {
           <div className="rounded-xl border border-gray-200 bg-white dark:bg-gray-900 dark:border-gray-700">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
               <h2 className="font-semibold text-gray-900 dark:text-white">{t('recentOrders')}</h2>
-              <Link href="/minha-conta/pedidos" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
+              <Link href="/vendedor/pedidos" className="text-sm text-emerald-600 hover:text-emerald-700 font-medium">
                 {t('viewAll')}
               </Link>
             </div>
@@ -208,7 +208,7 @@ export default function VendedorPage() {
                   <p className="text-xs text-gray-500">{t('editOrRemoveListings')}</p>
                 </div>
               </Link>
-              <Link href="/minha-conta/pedidos" className="flex items-center gap-3 rounded-lg p-3 hover:bg-gray-50 transition-colors">
+              <Link href="/vendedor/pedidos" className="flex items-center gap-3 rounded-lg p-3 hover:bg-gray-50 transition-colors">
                 <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
                   <Eye className="h-4 w-4" />
                 </div>
