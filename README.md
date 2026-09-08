@@ -111,6 +111,13 @@ Payloads sensíveis (login, perfil, pagamento) são cifrados com `tweetnacl` ent
 2. O cliente cifra os campos sensíveis e a API decifra na sessão correspondente.
 3. Detalhes em `E2E_ENCRYPTION.md`.
 
+## RBAC na UI
+
+- `/admin/roles` gere roles e responsabilidades dinâmicas (CRUD + atribuição via checkboxes). Requer `admin.roles.manage` (só ADMIN).
+- `/vendedor/loja` permite criar/editar a loja própria. Ao criar a loja, a conta passa automaticamente a `SELLER` (a API faz o `refreshUser` e o state do auth store é atualizado com a loja).
+- O dashboard do vendedor mostra um banner de onboarding quando o utilizador é vendedor e ainda não tem loja.
+- O `auth-store` armazena agora `roles` (todas as keys) e `store` (loja do `me`); `resolveUiRole` mapeia `ADMIN`→admin, `MANAGER`/`SELLER`→seller (o toggler do register continua a criar apenas `CLIENT` no backend).
+
 ## Responsividade (mobile-first)
 
 O layout é construído **mobile-first**: tamanhos base para ecrãs pequenos e breakpoints `sm`/`md`/`lg`/`xl` para ampliar.
@@ -157,6 +164,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/vendedor/pedidos` | Pedidos da loja do vendedor |
 | `/vendedor/pedidos/[id]` | Detalhe do pedido (comprovação de pagamento) |
 | `/vendedor/pagamento` | Métodos de pagamento da loja |
+| `/vendedor/loja` | Loja do vendedor (criar/editar; onboarding ao criar a loja) |
 | `/admin` | Dashboard admin (stats: receita, pedidos, users, lojas) |
 | `/admin/pedidos` | Gerir todos os pedidos (filtro + mudança de estado) |
 | `/admin/users` | Gerir utilizadores (role, eliminação) |
@@ -164,6 +172,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/admin/produtos` | Gerir todos os produtos (ativo/inativo, eliminação) |
 | `/admin/categorias` | CRUD de categorias |
 | `/admin/avaliacoes` | Gerir/eliminar avaliações |
+| `/admin/roles` | RBAC: CRUD de roles, responsabilidades e atribuição de permissões |
 | `/como-funciona` | Como funciona |
 | `/contacto` | Contacto |
 
