@@ -5,17 +5,19 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
   ShoppingCart, DollarSign, Star, Package, Plus,
-  ChevronRight, Eye, Clock, ArrowUpRight, CreditCard
+  ChevronRight, Eye, Clock, ArrowUpRight, CreditCard, Store
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { formatPrice, cn } from '@/lib/utils'
 import { fetchSellerOrders, type UiOrder, getStatusLabel, getStatusColor } from '@/lib/api-helpers'
+import { useAuthStore } from '@/store/auth-store'
 
 export default function VendedorPage() {
   const t = useTranslations('sellerDashboard')
   const tc = useTranslations('common')
   const tr = useTranslations('routes')
+  const user = useAuthStore((s) => s.user)
   const [orders, setOrders] = React.useState<UiOrder[]>([])
   const [loading, setLoading] = React.useState(true)
 
@@ -48,6 +50,26 @@ export default function VendedorPage() {
         <span className="text-gray-900 dark:text-white font-medium">{t('breadcrumb')}</span>
       </nav>
 
+      {user && user.role === 'seller' && !user.store && (
+        <div className="rounded-xl border border-emerald-200 dark:border-emerald-900 bg-emerald-50/70 dark:bg-emerald-900/20 p-5 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white">
+              <Store className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="font-semibold text-gray-900 dark:text-white">{t('noStoreTitle')}</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t('noStoreHint')}</p>
+            </div>
+          </div>
+          <Link href="/vendedor/loja">
+            <Button size="sm">
+              <Store className="h-4 w-4 mr-2" />
+              {t('createStore')}
+            </Button>
+          </Link>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('title')}</h1>
         <div className="flex gap-2">
@@ -67,6 +89,12 @@ export default function VendedorPage() {
             <Button variant="outline" size="sm">
               <CreditCard className="h-4 w-4 mr-2" />
               {t('paymentMethods')}
+            </Button>
+          </Link>
+          <Link href="/vendedor/loja">
+            <Button variant="outline" size="sm">
+              <Store className="h-4 w-4 mr-2" />
+              {t('manageStore')}
             </Button>
           </Link>
           <Link href="/vendedor/pedidos">

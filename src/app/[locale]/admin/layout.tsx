@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import {
   LayoutDashboard, Users, ShoppingCart, Store, Package, Star, FolderTree,
-  Shield, Menu, X, LogOut, ExternalLink
+  Shield, ShieldCheck, Menu, X, LogOut, ExternalLink
 } from 'lucide-react'
 import { useAuthStore } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
@@ -24,6 +24,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     { href: '/admin/produtos', label: t('navProducts'), icon: Package },
     { href: '/admin/categorias', label: t('navCategories'), icon: FolderTree },
     { href: '/admin/avaliacoes', label: t('navReviews'), icon: Star },
+    { href: '/admin/roles', label: t('navRoles'), icon: ShieldCheck },
   ]
 
   if (user?.role !== 'admin') {

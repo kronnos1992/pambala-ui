@@ -47,6 +47,29 @@ export interface ApiStore {
   user?: { id: string; name: string; avatar?: string }
 }
 
+export interface ApiResponsibility {
+  key: string
+  name: string
+  description?: string | null
+  isSystem?: boolean
+}
+
+export interface ApiRole {
+  key: string
+  name: string
+  description?: string | null
+  isSystem?: boolean
+  users?: number
+  responsibilities?: ApiResponsibility[]
+}
+
+export interface ApiMeStore {
+  id?: string
+  name?: string
+  slug?: string
+  isVerified?: boolean
+}
+
 export type PaymentType = 'EXPRESS' | 'TRANSFER' | 'REFERENCE' | 'CASH_ON_DELIVERY'
 
 export interface PaymentMethod {
@@ -508,6 +531,70 @@ export async function updateStorePaymentMethods(paymentMethods: PaymentMethod[])
   return data.paymentMethods as PaymentMethod[]
 }
 
+// --- Store (própria) ---
+export async function fetchMyStore(): Promise<ApiStore | null> {
+  const me = await fetchMe()
+  if (!me?.store?.slug) return null
+  const { data } = await api.get(`/stores/${me.store.slug}`)
+  return data.store as ApiStore
+}
+
+export async function createStore(data: { name: string; description?: string; phone?: string; province: string; district?: string }) {
+  const { data: result } = await api.post('/stores', data)
+  return result.store as ApiStore
+}
+
+export async function updateStore(data: { name: string; description?: string; phone?: string; province: string; district?: string }) {
+  const { data: result } = await api.put('/stores', data)
+  return result.store as ApiStore
+}
+
+// --- Roles (RBAC) ---
+export async function fetchRoles(): Promise<ApiRole[]> {
+  const { data } = await api.get('/roles')
+  return (data.roles || []) as ApiRole[]
+}
+
+export async function fetchResponsibilities(): Promise<ApiResponsibility[]> {
+  const { data } = await api.get('/roles/responsibilities')
+  return (data.responsibilities || []) as ApiResponsibility[]
+}
+
+export async function createRole(data: { key: string; name: string; description?: string }) {
+  const { data: result } = await api.post('/roles', data)
+  return result.role as ApiRole
+}
+
+export async function updateRole(key: string, data: { name?: string; description?: string | null }) {
+  const { data: result } = await api.put(`/roles/${key}`, data)
+  return result.role as ApiRole
+}
+
+export async function deleteRole(key: string) {
+  const { data } = await api.delete(`/roles/${key}`)
+  return data
+}
+
+export async function setRoleResponsibilities(key: string, responsibilityKeys: string[]) {
+  const { data } = await api.put(`/roles/${key}/responsibilities`, { responsibilityKeys })
+  return data
+}
+
+export async function createResponsibility(data: { key: string; name: string; description?: string }) {
+  const { data: result } = await api.post('/roles/responsibilities', data)
+  return result.responsibility as ApiResponsibility
+}
+
+export async function updateResponsibility(key: string, data: { name?: string; description?: string | null }) {
+  const { data: result } = await api.put(`/roles/responsibilities/${key}`, data)
+  return result.responsibility as ApiResponsibility
+}
+
+export async function deleteResponsibility(key: string) {
+  const { data } = await api.delete(`/roles/responsibilities/${key}`)
+  return data
+}
+
 export async function uploadFile(file: File) {
   const formData = new FormData()
   formData.append('file', file)
@@ -548,7 +635,7 @@ export async function clearCartApi() {
 
 export async function loginApi(email: string, password: string) {
   const { data } = await api.post('/auth/login', { email, password })
-  return data as { token: string; user: { id: string; name: string; email: string; phone?: string; role: string; avatar?: string; aiValidationConsent?: boolean } }
+  return data as { token: string; user: ApiAuthUser }
 }
 
 export async function registerApi(payload: {
@@ -560,10 +647,22 @@ export async function registerApi(payload: {
   aiValidationConsent?: boolean
 }) {
   const { data } = await api.post('/auth/register', payload)
-  return data as { token: string; user: { id: string; name: string; email: string; phone?: string; role: string; avatar?: string; aiValidationConsent?: boolean } }
+  return data as { token: string; user: ApiAuthUser }
 }
 
-export async function fetchMe() {
+export interface ApiAuthUser {
+  id: string
+  name: string
+  email: string
+  phone?: string
+  role: string
+  roles?: string[] | { role: { key: string } }[]
+  avatar?: string
+  aiValidationConsent?: boolean
+  store?: ApiMeStore
+}
+
+export async function fetchMe(): Promise<ApiAuthUser & { store?: ApiMeStore | null }> {
   const { data } = await api.get('/auth/me')
   return data.user
 }
