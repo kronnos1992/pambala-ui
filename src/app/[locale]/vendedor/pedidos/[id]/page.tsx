@@ -198,39 +198,12 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wider flex items-center gap-1">
                         <FileCheck className="h-4 w-4 text-emerald-600" /> {t('receipt.customerReceipt')}
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => setViewingReceipt(true)}
-                        className="block w-full overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 cursor-zoom-in hover:opacity-90 transition-opacity"
-                        title={t('receipt.open')}
-                        aria-label={t('receipt.open')}
-                      >
-                        {isPdfUrl(order.receiptImage) ? (
-                          <iframe
-                            src={receiptDisplayUrl(order.receiptImage)}
-                            title={t('receipt.lightboxAlt')}
-                            tabIndex={-1}
-                            aria-hidden
-                            className="pointer-events-none h-48 w-full bg-white"
-                          />
-                        ) : (
-                          <Image
-                            src={receiptDisplayUrl(order.receiptImage)}
-                            alt={t('receipt.alt')}
-                            width={320}
-                            height={200}
-                            unoptimized
-                            loading="lazy"
-                            className="w-full object-cover"
-                          />
-                        )}
-                      </button>
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="flex items-center gap-2 min-w-0 text-sm text-gray-600 dark:text-gray-400">
+                      <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/60">
+                        <span className="flex items-center gap-2 min-w-0 text-sm font-medium text-gray-700 dark:text-gray-200">
                           <FileText className="h-4 w-4 shrink-0 text-emerald-600" />
-                          <span className="truncate">{fileName(order.receiptImage)}</span>
+                          <span className="truncate" title={fileName(order.receiptImage)}>{fileName(order.receiptImage)}</span>
                         </span>
-                        <Button variant="outline" size="sm" onClick={() => setViewingReceipt(true)}>
+                        <Button variant="outline" size="sm" onClick={() => setViewingReceipt(true)} className="shrink-0">
                           <Eye className="h-4 w-4 mr-1.5" />
                           {t('receipt.open')}
                         </Button>
