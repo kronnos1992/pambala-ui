@@ -1,14 +1,15 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { ChevronRight, Store, ExternalLink, ShieldCheck } from 'lucide-react'
+import { ChevronRight, Store, ExternalLink, ShieldCheck, ImageIcon, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/toast'
 import { useAuthStore } from '@/store/auth-store'
-import { fetchMyStore, createStore, updateStore, getApiErrorMessage, type ApiStore } from '@/lib/api-helpers'
+import { fetchMyStore, createStore, updateStore, uploadFile, getApiErrorMessage, type ApiStore } from '@/lib/api-helpers'
 
 const provinces = [
   'Bengo', 'Benguela', 'Bié', 'Cabinda', 'Cuando-Cubango', 'Cuanza Norte',
@@ -25,8 +26,11 @@ export default function VendedorLojaPage() {
   const [store, setStore] = React.useState<ApiStore | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [saving, setSaving] = React.useState(false)
-  const [form, setForm] = React.useState({ name: '', description: '', phone: '', province: '', district: '' })
+  const [form, setForm] = React.useState({ name: '', description: '', phone: '', province: '', district: '', logo: '', banner: '' })
   const [errors, setErrors] = React.useState<Record<string, string>>({})
+  const [uploadingMedia, setUploadingMedia] = React.useState<'logo' | 'banner' | null>(null)
+  const logoInputRef = React.useRef<HTMLInputElement>(null)
+  const bannerInputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
     let active = true
@@ -41,6 +45,8 @@ export default function VendedorLojaPage() {
             phone: data.phone || '',
             province: data.province,
             district: data.district || '',
+            logo: data.logo || '',
+            banner: data.banner || '',
           })
         }
       })
@@ -53,6 +59,25 @@ export default function VendedorLojaPage() {
     }
   }, [t])
 
+  const handleMediaChange = async (field: 'logo' | 'banner', e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast(t('photoError'), 'error')
+      return
+    }
+    setUploadingMedia(field)
+    try {
+      const { url } = await uploadFile(file)
+      setForm((p) => ({ ...p, [field]: url }))
+    } catch {
+      toast(t('photoError'), 'error')
+    } finally {
+      setUploadingMedia(null)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     const errs: Record<string, string> = {}
@@ -62,12 +87,19 @@ export default function VendedorLojaPage() {
     if (Object.keys(errs).length > 0) return
 
     setSaving(true)
-    const payload = {
+    const payload: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string } = {
       name: form.name.trim(),
       description: form.description.trim() || undefined,
       phone: form.phone.trim() || undefined,
       province: form.province,
       district: form.district.trim() || undefined,
+    }
+    if (store) {
+      payload.logo = form.logo
+      payload.banner = form.banner
+    } else {
+      if (form.logo.trim()) payload.logo = form.logo.trim()
+      if (form.banner.trim()) payload.banner = form.banner.trim()
     }
     try {
       if (store) {
@@ -166,6 +198,73 @@ export default function VendedorLojaPage() {
               onChange={(e) => setForm((p) => ({ ...p, name: e.target.value }))}
               error={errors.name}
             />
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              <div className="sm:col-span-2">
+                {inputLabel(t('storeCapa'))}
+                <div className="relative h-36 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+                  {form.banner ? (
+                    <Image src={form.banner} alt="" fill unoptimized className="object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-400">
+                      <ImageIcon className="h-6 w-6" />
+                      <span className="text-xs">{t('changeCapa')}</span>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => bannerInputRef.current?.click()}
+                    disabled={!!uploadingMedia}
+                    className="absolute inset-0 cursor-pointer disabled:cursor-not-allowed"
+                    aria-label={t('changeCapa')}
+                  />
+                  {form.banner && (
+                    <button
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, banner: '' }))}
+                      className="absolute right-2 top-2 rounded-full bg-black/60 p-1 text-white hover:bg-black/80 transition-colors"
+                      aria-label={t('removePhoto')}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  )}
+                  {uploadingMedia === 'banner' && <Loader2 className="absolute right-2 bottom-2 h-5 w-5 animate-spin text-emerald-500" />}
+                </div>
+                <input ref={bannerInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleMediaChange('banner', e)} />
+              </div>
+              <div>
+                {inputLabel(t('storeLogo'))}
+                <div className="relative mx-auto h-28 w-28 overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800">
+                  {form.logo ? (
+                    <Image src={form.logo} alt="" fill unoptimized className="object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 text-gray-400">
+                      <Store className="h-6 w-6" />
+                      <span className="text-xs">{t('changeLogo')}</span>
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => logoInputRef.current?.click()}
+                    disabled={!!uploadingMedia}
+                    className="absolute inset-0 cursor-pointer disabled:cursor-not-allowed"
+                    aria-label={t('changeLogo')}
+                  />
+                  {form.logo && (
+                    <button
+                      type="button"
+                      onClick={() => setForm((p) => ({ ...p, logo: '' }))}
+                      className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white hover:bg-black/80 transition-colors"
+                      aria-label={t('removePhoto')}
+                    >
+                      <X className="h-3.5 w-3.5" />
+                    </button>
+                  )}
+                  {uploadingMedia === 'logo' && <Loader2 className="absolute right-1 bottom-1 h-5 w-5 animate-spin text-emerald-500" />}
+                </div>
+                <input ref={logoInputRef} type="file" accept="image/*" className="hidden" onChange={(e) => handleMediaChange('logo', e)} />
+              </div>
+            </div>
 
             <Input
               label={t('storeDescription')}

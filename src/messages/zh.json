@@ -481,7 +481,10 @@
     "noFavorites": "暂无收藏。",
     "exploreProducts": "浏览商品",
     "consentTitle": "凭证 AI 分析",
-    "consentText": "我授权 Pambala 使用 AI（包括外部处理器）分析我的付款凭证以验证真实性。"
+    "consentText": "我授权 Pambala 使用 AI（包括外部处理器）分析我的付款凭证以验证真实性。",
+    "changePhotoUploading": "上传中…",
+    "photoUpdated": "头像已更新",
+    "photoError": "文件无效，请上传图片。"
   },
   "orderList": {
     "title": "我的订单",
@@ -773,7 +776,13 @@
     "publicPage": "查看公开页面",
     "slug": "地址",
     "pendingVerification": "审核中",
-    "verified": "已认证"
+    "verified": "已认证",
+    "storeLogo": "标志",
+    "storeCapa": "封面照片",
+    "changeLogo": "更换标志",
+    "changeCapa": "更换封面",
+    "removePhoto": "移除照片",
+    "photoError": "文件无效，请上传图片。"
   },
   "adminLayout": {
     "restrictedAccess": "受限访问",

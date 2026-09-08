@@ -10,7 +10,7 @@ import { Avatar } from '@/components/ui/avatar'
 import { useAuthStore } from '@/store/auth-store'
 import { toast } from '@/components/ui/toast'
 import { cn } from '@/lib/utils'
-import { fetchOrders, updateProfile, type UiOrder, getStatusLabel, getStatusColor } from '@/lib/api-helpers'
+import { fetchOrders, updateProfile, uploadFile, type UiOrder, getStatusLabel, getStatusColor } from '@/lib/api-helpers'
 
 export default function MinhaContaPage() {
   const t = useTranslations('myAccount')
@@ -27,6 +27,8 @@ export default function MinhaContaPage() {
   const [aiConsent, setAiConsent] = React.useState(user?.aiValidationConsent ?? false)
   const [orders, setOrders] = React.useState<UiOrder[]>([])
   const [loadingOrders, setLoadingOrders] = React.useState(true)
+  const [uploadingAvatar, setUploadingAvatar] = React.useState(false)
+  const avatarInputRef = React.useRef<HTMLInputElement>(null)
 
   React.useEffect(() => {
     fetchOrders({ limit: 10 })
@@ -46,17 +48,41 @@ export default function MinhaContaPage() {
     try {
       const updated = await updateProfile({ name: form.name, phone: form.phone, aiValidationConsent: aiConsent })
       setUser({
+        ...user,
         id: updated.id,
         name: updated.name,
         email: updated.email,
         phone: updated.phone,
-        role: user?.role || 'buyer',
         avatar: updated.avatar,
         aiValidationConsent: aiConsent,
-      })
+      } as NonNullable<typeof user>)
       toast(t('profileUpdated'), 'success')
     } catch {
       toast(t('profileUpdateError'), 'error')
+    }
+  }
+
+  const handleChangePhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    if (!file.type.startsWith('image/')) {
+      toast(t('photoError'), 'error')
+      return
+    }
+    setUploadingAvatar(true)
+    try {
+      const { url } = await uploadFile(file)
+      const updated = await updateProfile({ avatar: url })
+      setUser({
+        ...user,
+        avatar: updated.avatar,
+      } as NonNullable<typeof user>)
+      toast(t('photoUpdated'), 'success')
+    } catch {
+      toast(t('photoError'), 'error')
+    } finally {
+      setUploadingAvatar(false)
     }
   }
 
@@ -72,7 +98,7 @@ export default function MinhaContaPage() {
         <aside className="md:col-span-1">
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 sticky top-24">
             <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-100">
-              <Avatar fallback={user?.name || 'U'} size="lg" />
+              <Avatar src={user?.avatar || undefined} fallback={user?.name || 'U'} size="lg" />
               <div className="min-w-0">
                 <p className="font-semibold text-gray-900 dark:text-white truncate">{user?.name || t('fallbackName')}</p>
                 <p className="text-xs text-gray-500 truncate">{user?.email || 'email@email.com'}</p>
@@ -114,11 +140,24 @@ export default function MinhaContaPage() {
             <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
               <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t('profileTitle')}</h2>
               <div className="flex items-center gap-4 mb-6">
-                <Avatar fallback={user?.name || 'U'} size="lg" className="h-20 w-20 text-xl" />
-                <button className="flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium">
-                  <Camera className="h-4 w-4" />
-                  {t('changePhoto')}
-                </button>
+                <Avatar src={user?.avatar || undefined} fallback={user?.name || 'U'} size="lg" className="h-20 w-20 text-xl" />
+                <div>
+                  <button
+                    onClick={() => avatarInputRef.current?.click()}
+                    disabled={uploadingAvatar}
+                    className="flex items-center gap-2 text-sm text-emerald-600 hover:text-emerald-700 font-medium disabled:opacity-50"
+                  >
+                    <Camera className="h-4 w-4" />
+                    {uploadingAvatar ? t('changePhotoUploading') : t('changePhoto')}
+                  </button>
+                  <input
+                    ref={avatarInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleChangePhoto}
+                  />
+                </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-lg">
                 <Input

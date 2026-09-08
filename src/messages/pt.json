@@ -483,7 +483,10 @@
     "noFavorites": "Nenhum favorito ainda.",
     "exploreProducts": "Explorar Produtos",
     "consentTitle": "Análise por IA de comprovativos",
-    "consentText": "Autorizo o Pambala a analisar os meus comprovativos de pagamento com IA (incluindo processador externo) para validar a autenticidade."
+    "consentText": "Autorizo o Pambala a analisar os meus comprovativos de pagamento com IA (incluindo processador externo) para validar a autenticidade.",
+    "changePhotoUploading": "A enviar…",
+    "photoUpdated": "Foto de perfil atualizada",
+    "photoError": "Ficheiro inválido. Envia uma imagem."
   },
   "orderList": {
     "title": "Os Meus Pedidos",
@@ -775,7 +778,13 @@
     "publicPage": "Ver loja pública",
     "slug": "Endereço",
     "pendingVerification": "Em análise",
-    "verified": "Verificada"
+    "verified": "Verificada",
+    "storeLogo": "Logótipo",
+    "storeCapa": "Foto de capa",
+    "changeLogo": "Alterar logótipo",
+    "changeCapa": "Alterar capa",
+    "removePhoto": "Remover foto",
+    "photoError": "Ficheiro inválido. Envia uma imagem."
   },
   "adminLayout": {
     "restrictedAccess": "Acesso Restrito",

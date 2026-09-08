@@ -481,7 +481,10 @@
     "noFavorites": "No favourites yet.",
     "exploreProducts": "Browse Products",
     "consentTitle": "AI analysis of receipts",
-    "consentText": "I authorize Pambala to analyze my payment receipts with AI (including external processor) to validate authenticity."
+    "consentText": "I authorize Pambala to analyze my payment receipts with AI (including external processor) to validate authenticity.",
+    "changePhotoUploading": "Uploading…",
+    "photoUpdated": "Profile photo updated",
+    "photoError": "Invalid file. Please upload an image."
   },
   "orderList": {
     "title": "My Orders",
@@ -773,7 +776,13 @@
     "publicPage": "View public page",
     "slug": "Address",
     "pendingVerification": "Under review",
-    "verified": "Verified"
+    "verified": "Verified",
+    "storeLogo": "Logo",
+    "storeCapa": "Cover photo",
+    "changeLogo": "Change logo",
+    "changeCapa": "Change cover",
+    "removePhoto": "Remove photo",
+    "photoError": "Invalid file. Please upload an image."
   },
   "adminLayout": {
     "restrictedAccess": "Restricted Access",

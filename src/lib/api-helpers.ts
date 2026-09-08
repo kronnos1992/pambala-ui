@@ -539,12 +539,12 @@ export async function fetchMyStore(): Promise<ApiStore | null> {
   return data.store as ApiStore
 }
 
-export async function createStore(data: { name: string; description?: string; phone?: string; province: string; district?: string }) {
+export async function createStore(data: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string }) {
   const { data: result } = await api.post('/stores', data)
   return result.store as ApiStore
 }
 
-export async function updateStore(data: { name: string; description?: string; phone?: string; province: string; district?: string }) {
+export async function updateStore(data: { name: string; description?: string; phone?: string; logo?: string; banner?: string; province: string; district?: string }) {
   const { data: result } = await api.put('/stores', data)
   return result.store as ApiStore
 }
