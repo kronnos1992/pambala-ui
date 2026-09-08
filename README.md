@@ -153,7 +153,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/produtos` | Listagem de produtos (busca, filtros por categoria/preço/condição) |
 | `/produtos/[slug]` | Detalhe do produto (galeria, reviews, loja) |
 | `/lojas` | Lojas parceiras |
-| `/lojas/[slug]` | Detalhe da loja (produtos, reviews) |
+| `/lojas/[slug]` | Detalhe da loja (banner/capa, logótipo, produtos, reviews) |
 | `/carrinho` | Carrinho de compras |
 | `/checkout` | Finalizar compra (envio + pagamento) |
 | `/minha-conta` | Perfil do utilizador (upload de foto de perfil) |
