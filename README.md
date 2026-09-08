@@ -114,6 +114,7 @@ Payloads sensíveis (login, perfil, pagamento) são cifrados com `tweetnacl` ent
 ## RBAC na UI
 
 - `/admin/roles` gere roles e responsabilidades dinâmicas (CRUD + atribuição via checkboxes). Requer `admin.roles.manage` (só ADMIN).
+- `/admin/users` lista e atribui as roles **dinamicamente** (chips de filtro e dropdown por utilizador vêm de `GET /api/roles`, incluindo `MANAGER`/Gestor e roles personalizadas).
 - `/vendedor/loja` permite criar/editar a loja própria. Ao criar a loja, a conta passa automaticamente a `SELLER` (a API faz o `refreshUser` e o state do auth store é atualizado com a loja).
 - O dashboard do vendedor mostra um banner de onboarding quando o utilizador é vendedor e ainda não tem loja.
 - O `auth-store` armazena agora `roles` (todas as keys) e `store` (loja do `me`); `resolveUiRole` mapeia `ADMIN`→admin, `MANAGER`/`SELLER`→seller (o toggler do register continua a criar apenas `CLIENT` no backend).
