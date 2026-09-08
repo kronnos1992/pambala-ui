@@ -3,7 +3,7 @@
 import * as React from 'react'
 import Image from 'next/image'
 import { useTranslations } from 'next-intl'
-import { Link } from '@/i18n/navigation'
+import { Link, useRouter } from '@/i18n/navigation'
 import { ChevronRight, Store, ExternalLink, ShieldCheck, ImageIcon, X, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -21,6 +21,7 @@ export default function VendedorLojaPage() {
   const t = useTranslations('sellerStore')
   const tDash = useTranslations('sellerDashboard')
   const tr = useTranslations('routes')
+  const router = useRouter()
   const refreshUser = useAuthStore((s) => s.refreshUser)
 
   const [store, setStore] = React.useState<ApiStore | null>(null)
@@ -105,13 +106,12 @@ export default function VendedorLojaPage() {
       if (store) {
         await updateStore(payload)
         toast(t('updateSuccess'), 'success')
-        const updated = await fetchMyStore()
-        if (updated) setStore(updated)
       } else {
         await createStore(payload)
         toast(t('createSuccess'), 'success')
         await refreshUser()
       }
+      router.push('/vendedor')
     } catch (err) {
       toast(getApiErrorMessage(err) || (store ? t('updateError') : t('createError')), 'error')
     } finally {
