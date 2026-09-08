@@ -158,12 +158,12 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/checkout` | Finalizar compra (envio + pagamento) |
 | `/minha-conta` | Perfil do utilizador (upload de foto de perfil) |
 | `/minha-conta/pedidos` | Histórico de pedidos |
-| `/minha-conta/pedidos/[id]` | Detalhe do pedido (timeline) |
+| `/minha-conta/pedidos/[id]` | Detalhe do pedido (timeline, código de validação único e upload/visualização de comprovativo com suporte Cloudinary/PDF) |
 | `/vendedor` | Dashboard do vendedor (stats + pedidos recentes) |
 | `/vendedor/produtos` | Gerir produtos do vendedor |
 | `/vendedor/produtos/novo` | Criar novo produto |
 | `/vendedor/pedidos` | Pedidos da loja do vendedor |
-| `/vendedor/pedidos/[id]` | Detalhe do pedido (comprovação de pagamento) |
+| `/vendedor/pedidos/[id]` | Detalhe do pedido (comprovação de pagamento, código esperado, visualização segura e relatório de auditoria anti-fraude) |
 | `/vendedor/pagamento` | Métodos de pagamento da loja |
 | `/vendedor/loja` | Loja do vendedor (criar/editar; logótipo + foto de capa com upload e preview; após guardar redireciona para o dashboard) |
 | `/admin` | Dashboard admin (stats: receita, pedidos, users, lojas) |

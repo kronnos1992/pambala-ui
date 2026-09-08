@@ -263,9 +263,13 @@ curl -X POST http://localhost:3001/api/security/handshake \
 
 ### Erro: "Decryption failed"
 
-**Causa**: SessionId expirado ou nonce incorreto
+**Causa**: SessionId expirado, servidor reiniciou (as sessões E2E vivem em memória na API) ou chave pública do servidor mudou.
 
-**Solução**: Página recarrega e faz novo handshake
+**Solução**: O cliente faz **self-heal automático** — ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente. Não é preciso recarregar a página.
+- Lógica: `src/lib/api.ts` (response interceptor, guard `_e2eRetried` para evitar loop) + `src/lib/e2e-client.ts`.
+- Se mesmo depois do retry continuar a falhar, recarregue a página (novo handshake) e confirme que a API está a correr.
+
+**Nota**: `GET`s não são validados por sessão (não enviam body cifrado), por isso uma página pode carregar normalmente com a sessão já morta; o erro só aparece em `POST`/`PUT`/`PATCH`.
 
 ### Erro: "Missing X-Session-ID header"
 
