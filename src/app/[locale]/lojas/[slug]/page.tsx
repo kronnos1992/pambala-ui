@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from 'react'
+import Image from 'next/image'
 import { useTranslations } from 'next-intl'
 import { useLocale } from 'next-intl'
 import { Link } from '@/i18n/navigation'
@@ -91,10 +92,21 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
         <span className="text-gray-900 dark:text-white font-medium">{store.name}</span>
       </nav>
 
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-emerald-600 to-green-500 h-40 sm:h-52 mb-[-40px] sm:mb-[-52px]" />
+      <div className="relative rounded-2xl overflow-hidden h-40 sm:h-52 mb-[-40px] sm:mb-[-52px]">
+        {store.banner ? (
+          <Image src={store.banner} alt="" fill unoptimized className="object-cover" />
+        ) : (
+          <div className="h-full w-full bg-gradient-to-r from-emerald-600 to-green-500" />
+        )}
+      </div>
 
       <div className="relative z-10 flex flex-col sm:flex-row items-end gap-4 mb-8 px-4">
-        <Avatar fallback={store.name} size="lg" className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-white shadow-lg text-2xl" />
+        <Avatar
+          src={store.logo || undefined}
+          fallback={store.name}
+          size="lg"
+          className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-white shadow-lg text-2xl"
+        />
         <div className="flex-1 pb-1">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{store.name}</h1>
           <div className="flex flex-wrap items-center gap-3 mt-1">
