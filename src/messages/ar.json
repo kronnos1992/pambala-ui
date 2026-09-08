@@ -967,6 +967,7 @@
     "roleBuyer": "مشترٍ",
     "roleSeller": "بائع",
     "roleAdmin": "مسؤول",
+    "roleManager": "مدير",
     "name": "الاسم",
     "email": "البريد الإلكتروني",
     "phone": "الهاتف",

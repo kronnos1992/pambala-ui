@@ -967,6 +967,7 @@
     "roleBuyer": "Acheteur",
     "roleSeller": "Vendeur",
     "roleAdmin": "Administrateur",
+    "roleManager": "Gestionnaire",
     "name": "Nom",
     "email": "Email",
     "phone": "Téléphone",

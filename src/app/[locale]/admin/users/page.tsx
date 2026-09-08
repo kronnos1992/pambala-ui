@@ -5,10 +5,17 @@ import { useTranslations } from 'next-intl'
 import { Search, ChevronLeft, ChevronRight, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
-import { fetchAdminUsers, updateUserRole, deleteUser } from '@/lib/api-helpers'
+import { fetchAdminUsers, updateUserRole, deleteUser, fetchRoles, type ApiRole } from '@/lib/api-helpers'
 import { toast } from '@/components/ui/toast'
 
-const roleColors: Record<string, string> = { BUYER: 'bg-blue-100 text-blue-700', SELLER: 'bg-emerald-100 text-emerald-700', ADMIN: 'bg-purple-100 text-purple-700' }
+const roleColors: Record<string, string> = {
+  BUYER: 'bg-blue-100 text-blue-700',
+  CLIENT: 'bg-blue-100 text-blue-700',
+  SELLER: 'bg-emerald-100 text-emerald-700',
+  MANAGER: 'bg-orange-100 text-orange-700',
+  ADMIN: 'bg-purple-100 text-purple-700',
+}
+const defaultRoleColor = 'bg-gray-100 text-gray-700'
 
 interface AdminUser {
   id: string
@@ -22,7 +29,24 @@ interface AdminUser {
 export default function AdminUsersPage() {
   const t = useTranslations('adminUsers')
   const tc = useTranslations('common')
-  const roleLabels: Record<string, string> = { BUYER: t('roleBuyer'), SELLER: t('roleSeller'), ADMIN: t('roleAdmin') }
+  const [roles, setRoles] = React.useState<ApiRole[]>([])
+  const roleLabels = React.useMemo<Record<string, string>>(
+    () => ({
+      BUYER: t('roleBuyer'),
+      CLIENT: t('roleBuyer'),
+      SELLER: t('roleSeller'),
+      MANAGER: t('roleManager'),
+      ADMIN: t('roleAdmin'),
+    }),
+    [t]
+  )
+  const labelFor = React.useCallback(
+    (key: string) => roleLabels[key] ?? roles.find((r) => r.key === key)?.name ?? key,
+    [roleLabels, roles]
+  )
+  const availableRoles = roles.length > 0
+    ? roles
+    : ['CLIENT', 'SELLER', 'MANAGER', 'ADMIN'].map((key) => ({ key, name: roleLabels[key] }))
   const [users, setUsers] = React.useState<AdminUser[]>([])
   const [pagination, setPagination] = React.useState({ page: 1, totalPages: 1, total: 0 })
   const [loading, setLoading] = React.useState(true)
@@ -38,6 +62,12 @@ export default function AdminUsersPage() {
       .catch(() => toast(t('loadError'), 'error'))
       .finally(() => setLoading(false))
   }, [page, role, search, t])
+
+  React.useEffect(() => {
+    fetchRoles()
+      .then(setRoles)
+      .catch(() => {})
+  }, [])
 
   React.useEffect(() => { Promise.resolve().then(load) }, [load])
 
@@ -88,17 +118,17 @@ export default function AdminUsersPage() {
           </div>
           <Button type="submit" size="sm">{tc('search')}</Button>
         </form>
-        <div className="flex gap-2">
-          {['', 'BUYER', 'SELLER', 'ADMIN'].map((r) => (
+        <div className="flex flex-wrap gap-2">
+          {[{ key: '', label: tc('all') }, ...availableRoles.map((r) => ({ key: r.key, label: labelFor(r.key) }))].map((r) => (
             <button
-              key={r}
-              onClick={() => { setRole(r); setPage(1) }}
+              key={r.key}
+              onClick={() => { setRole(r.key); setPage(1) }}
               className={cn(
                 'px-3 py-1.5 rounded-lg text-xs font-medium transition-colors',
-                role === r ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
+                role === r.key ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700'
               )}
             >
-              {r ? roleLabels[r] : tc('all')}
+              {r.label}
             </button>
           ))}
         </div>
@@ -139,11 +169,11 @@ export default function AdminUsersPage() {
                       <select
                         value={user.role}
                         onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                        className={cn('text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer', roleColors[user.role])}
+                        className={cn('text-xs font-semibold rounded-full px-2 py-1 border-0 focus:ring-2 focus:ring-emerald-500/20 cursor-pointer', roleColors[user.role] || defaultRoleColor)}
                       >
-                        <option value="BUYER">{roleLabels.BUYER}</option>
-                        <option value="SELLER">{roleLabels.SELLER}</option>
-                        <option value="ADMIN">{roleLabels.ADMIN}</option>
+                        {availableRoles.map((r) => (
+                          <option key={r.key} value={r.key}>{labelFor(r.key)}</option>
+                        ))}
                       </select>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{new Date(user.createdAt).toLocaleDateString('pt-AO')}</td>
