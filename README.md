@@ -165,7 +165,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/vendedor/pedidos` | Pedidos da loja do vendedor |
 | `/vendedor/pedidos/[id]` | Detalhe do pedido (comprovação de pagamento) |
 | `/vendedor/pagamento` | Métodos de pagamento da loja |
-| `/vendedor/loja` | Loja do vendedor (criar/editar; logótipo + foto de capa com upload e preview; onboarding ao criar a loja) |
+| `/vendedor/loja` | Loja do vendedor (criar/editar; logótipo + foto de capa com upload e preview; após guardar redireciona para o dashboard) |
 | `/admin` | Dashboard admin (stats: receita, pedidos, users, lojas) |
 | `/admin/pedidos` | Gerir todos os pedidos (filtro + mudança de estado) |
 | `/admin/users` | Gerir utilizadores (role, eliminação) |
