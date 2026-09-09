@@ -62,7 +62,8 @@
     "currency": "Kz",
     "currencyShort": "AOA",
     "items": "itens",
-    "total": "Total"
+    "total": "Total",
+    "date": "Data"
   },
   "routes": {
     "home": "Início",
@@ -1151,5 +1152,41 @@
     "attachmentError": "Erro ao carregar ficheiro",
     "statusUpdatedSuccess": "Estado da mediação atualizado",
     "statusUpdatedError": "Erro ao atualizar estado"
+  },
+  "orderAudit": {
+    "titleRejected": "Motivos da Recusa do Comprovativo",
+    "titleAccepted": "Validação do Comprovativo",
+    "titleAudit": "Auditoria Anti-Fraude do Comprovativo",
+    "subtitle": "Pedido #{orderNumber} · Análise de risco e autenticidade bancária",
+    "riskScore": "Score de Risco",
+    "rejectedNoticeTitle": "Comprovativo Rejeitado",
+    "rejectedNoticeDesc": "O documento enviado não atendeu aos critérios de validação e autenticidade bancária.",
+    "acceptedNoticeTitle": "Comprovativo Aceite",
+    "acceptedNoticeDesc": "O documento atendeu com sucesso aos critérios de validação bancária.",
+    "reviewNoticeTitle": "Necessita Revisão Manual",
+    "reviewNoticeDesc": "O documento requer verificação adicional por um mediador ou administrador.",
+    "reasonsHeader": "Justificativas identificadas:",
+    "noReasons": "Não foi possível validar os dados ou a autenticidade do documento com as informações do pedido.",
+    "flagsHeader": "Sinalizadores de risco (Flags):",
+    "detectedBankHeader": "Transação Bancária Detetada",
+    "txId": "Ref/ID",
+    "txAmount": "Valor Detetado",
+    "orderAmount": "Valor do Pedido",
+    "txDate": "Data",
+    "txBank": "Banco",
+    "txBeneficiary": "Beneficiário",
+    "txCodeFound": "Código Detetado",
+    "txCodeExpected": "Código Esperado",
+    "fingerprint": "Fingerprint",
+    "receiptTitle": "Comprovativo de Pagamento",
+    "openReceipt": "Abrir comprovativo",
+    "openChat": "Chat Tripartido / Mediação",
+    "close": "Fechar",
+    "resubmit": "Enviar novo comprovativo",
+    "attemptsRemaining": "Tentativas restantes: {remaining} de {max}",
+    "attemptsExceeded": "Limite de 3 tentativas excedido. Aguardando mediação do suporte.",
+    "viewAudit": "Auditoria",
+    "viewReasons": "Motivos da recusa",
+    "viewReport": "Ver auditoria"
   }
 }

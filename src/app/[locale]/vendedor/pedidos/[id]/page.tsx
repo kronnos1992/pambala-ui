@@ -4,13 +4,14 @@ import * as React from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { use } from 'react'
-import { ChevronRight, MapPin, CreditCard, CheckCircle, XCircle, FileCheck, User, Eye, FileText, MessageSquare } from 'lucide-react'
+import { ChevronRight, MapPin, CreditCard, CheckCircle, XCircle, FileCheck, User, Eye, FileText, MessageSquare, ShieldAlert } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn, isPdfUrl, receiptDisplayUrl } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
 import { fetchSellerOrderById, updateOrderPaymentStatus, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
+import { OrderAuditModal } from '@/components/orders/order-audit-modal'
 
 function fileName(url: string): string {
   const base = url.split(/[?#]/)[0].split('/').pop() || 'comprovativo'
@@ -26,11 +27,13 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
   const t = useTranslations('sellerOrderDetail')
   const tc = useTranslations('common')
   const tr = useTranslations('routes')
+  const ta = useTranslations('orderAudit')
   const [order, setOrder] = React.useState<ApiOrder | null>(null)
   const [loading, setLoading] = React.useState(true)
   const [acting, setActing] = React.useState(false)
   const [viewingReceipt, setViewingReceipt] = React.useState(false)
   const [viewingDisputeChat, setViewingDisputeChat] = React.useState(false)
+  const [viewingAuditModal, setViewingAuditModal] = React.useState(false)
 
   const load = React.useCallback(() => {
     fetchSellerOrderById(id)
@@ -217,91 +220,40 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
                       </div>
 
                       {order.validationStatus && order.validationStatus !== 'PENDING' && (
-                        <div className="space-y-2">
-                          <ValidationBadge status={order.validationStatus} t={t} />
-
-                          {order.validationResult && (() => {
-                            try {
-                              const vr = typeof order.validationResult === 'string' ? JSON.parse(order.validationResult) : order.validationResult
-                              if (!vr || typeof vr !== 'object') return null
-                              const isPass = vr.status === 'PROOF_ACCEPTED' || (vr.score >= 90 && vr.status !== 'PROOF_REJECTED' && vr.status !== 'MANUAL_REVIEW') || (vr.score >= 80 && vr.status === 'PASS')
-                              const isFail = vr.status === 'PROOF_REJECTED' || vr.score < 70 || vr.status === 'FAIL'
-                              const tx = vr.transaction
-                              return (
-                                <div className="mt-2 p-3 rounded-lg border text-xs space-y-2 bg-gray-50 dark:bg-gray-800/80 border-gray-200 dark:border-gray-700">
-                                  <div className="flex items-center justify-between font-semibold">
-                                    <span>{t('receipt.aiReportTitle')}</span>
-                                    <span className={cn(
-                                      'px-2 py-0.5 rounded font-mono',
-                                      isPass ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300' :
-                                      isFail ? 'bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300' :
-                                      'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300'
-                                    )}>
-                                      Score: {vr.score ?? 0}/100
-                                    </span>
-                                  </div>
-
-                                  {tx && (
-                                    <div className="p-2 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700/60 space-y-1 text-[11px]">
-                                      <div className="font-medium text-gray-700 dark:text-gray-300 pb-0.5 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
-                                        <span>Transação Bancária Detetada</span>
-                                        {tx.fingerprint && (
-                                          <span className="font-mono text-[9px] text-gray-400" title={tx.fingerprint}>
-                                            FP: {tx.fingerprint.slice(0, 10)}…
-                                          </span>
-                                        )}
-                                      </div>
-                                      <div className="grid grid-cols-2 gap-x-2 gap-y-0.5 pt-1 text-gray-600 dark:text-gray-400">
-                                        {tx.transactionId && (
-                                          <div><span className="font-semibold text-gray-700 dark:text-gray-300">Ref/ID:</span> {tx.transactionId}</div>
-                                        )}
-                                        {tx.amount != null && (
-                                          <div><span className="font-semibold text-gray-700 dark:text-gray-300">Valor:</span> {Number(tx.amount).toLocaleString('pt-AO')} Kz</div>
-                                        )}
-                                        {tx.date && (
-                                          <div><span className="font-semibold text-gray-700 dark:text-gray-300">Data:</span> {tx.date}</div>
-                                        )}
-                                        {tx.bank && (
-                                          <div><span className="font-semibold text-gray-700 dark:text-gray-300">Banco:</span> {tx.bank}</div>
-                                        )}
-                                        {tx.beneficiary && (
-                                          <div className="col-span-2"><span className="font-semibold text-gray-700 dark:text-gray-300">Beneficiário:</span> {tx.beneficiary}</div>
-                                        )}
-                                      </div>
-                                    </div>
-                                  )}
-
-                                  {Array.isArray(vr.flags) && vr.flags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 pt-1">
-                                      {vr.flags.map((f: string, idx: number) => {
-                                        const isCrit = f.includes('MISMATCH') || f.includes('DUPLICATE') || f === 'EDITED_REGIONS' || f === 'MAGIC_MISMATCH' || f === 'SUSPICIOUS_DOCUMENT'
-                                        return (
-                                          <span key={idx} className={cn(
-                                            'px-1.5 py-0.5 rounded text-[10px] font-semibold uppercase',
-                                            isCrit ?
-                                            'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300' :
-                                            'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'
-                                          )}>
-                                            {f}
-                                          </span>
-                                        )
-                                      })}
-                                    </div>
-                                  )}
-
-                                  {Array.isArray(vr.reasons) && vr.reasons.length > 0 && (
-                                    <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-300 pt-1">
-                                      {vr.reasons.map((r: string, idx: number) => (
-                                        <li key={idx} className="leading-tight">{r}</li>
-                                      ))}
-                                    </ul>
-                                  )}
-                                </div>
-                              )
-                            } catch {
-                              return null
-                            }
-                          })()}
+                        <div className="flex items-center justify-between gap-2 p-2.5 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50/80 dark:bg-gray-800/60">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <ValidationBadge status={order.validationStatus} t={t} />
+                            {(() => {
+                              try {
+                                const vr = typeof order.validationResult === 'string' ? JSON.parse(order.validationResult) : order.validationResult
+                                if (!vr || typeof vr.score !== 'number') return null
+                                const isPass = vr.status === 'PROOF_ACCEPTED' || vr.score >= 90
+                                const isFail = vr.status === 'PROOF_REJECTED' || vr.score < 70
+                                return (
+                                  <span className={cn(
+                                    'px-1.5 py-0.5 rounded font-mono text-[10px] font-bold border',
+                                    isPass ? 'bg-emerald-100 border-emerald-200 text-emerald-800 dark:bg-emerald-950/60 dark:border-emerald-800 dark:text-emerald-300' :
+                                    isFail ? 'bg-red-100 border-red-200 text-red-800 dark:bg-red-950/60 dark:border-red-800 dark:text-red-300' :
+                                    'bg-amber-100 border-amber-200 text-amber-800 dark:bg-amber-950/60 dark:border-amber-800 dark:text-amber-300'
+                                  )}>
+                                    Score: {vr.score}/100
+                                  </span>
+                                )
+                              } catch {
+                                return null
+                              }
+                            })()}
+                          </div>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setViewingAuditModal(true)}
+                            className="shrink-0 h-7 text-xs cursor-pointer border-gray-300 dark:border-gray-600 hover:bg-white dark:hover:bg-gray-700"
+                          >
+                            <ShieldAlert className="h-3.5 w-3.5 mr-1 text-indigo-600 dark:text-indigo-400" />
+                            {ta('viewAudit')}
+                          </Button>
                         </div>
                       )}
 
@@ -414,6 +366,25 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
             <OrderDisputeChat orderId={order.id} orderNumber={order.orderNumber || order.id} />
           </div>
         </div>
+      )}
+
+      {viewingAuditModal && order && (
+        <OrderAuditModal
+          open={viewingAuditModal}
+          onClose={() => setViewingAuditModal(false)}
+          orderNumber={order.orderNumber || order.id}
+          orderTotal={order.total}
+          expectedCode={order.paymentCode}
+          validationStatus={order.validationStatus}
+          validationResult={order.validationResult}
+          receiptImage={order.receiptImage}
+          receiptAttempts={order.receiptAttempts}
+          role="SELLER"
+          onOpenDispute={() => {
+            setViewingAuditModal(false)
+            setViewingDisputeChat(true)
+          }}
+        />
       )}
     </div>
   )

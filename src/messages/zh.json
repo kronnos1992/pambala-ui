@@ -62,7 +62,8 @@
     "currency": "Kz",
     "currencyShort": "AOA",
     "items": "件商品",
-    "total": "合计"
+    "total": "合计",
+    "date": "日期"
   },
   "routes": {
     "home": "首页",
@@ -1151,5 +1152,41 @@
     "attachmentError": "上传文件出错",
     "statusUpdatedSuccess": "调解状态已更新",
     "statusUpdatedError": "更新状态出错"
+  },
+  "orderAudit": {
+    "titleRejected": "付款凭证拒绝原因",
+    "titleAccepted": "付款凭证验证通过",
+    "titleAudit": "付款凭证反欺诈审核",
+    "subtitle": "订单 #{orderNumber} · 风险分析与银行真实性",
+    "riskScore": "风险评分",
+    "rejectedNoticeTitle": "付款凭证已拒绝",
+    "rejectedNoticeDesc": "提交的文件不符合银行验证和真实性标准。",
+    "acceptedNoticeTitle": "付款凭证已接受",
+    "acceptedNoticeDesc": "文件已成功通过银行验证标准。",
+    "reviewNoticeTitle": "需要人工审核",
+    "reviewNoticeDesc": "该文件需要调解员或平台管理员进行额外验证。",
+    "reasonsHeader": "发现的理由与不符之处：",
+    "noReasons": "无法将文件数据或真实性与订单信息核对匹配。",
+    "flagsHeader": "风险标记 (Flags)：",
+    "detectedBankHeader": "检测到的银行交易",
+    "txId": "参考编号/ID",
+    "txAmount": "检测金额",
+    "orderAmount": "订单金额",
+    "txDate": "日期",
+    "txBank": "银行",
+    "txBeneficiary": "收款人",
+    "txCodeFound": "检测到的验证码",
+    "txCodeExpected": "预期验证码",
+    "fingerprint": "数字指纹",
+    "receiptTitle": "付款凭证",
+    "openReceipt": "查看完整凭证",
+    "openChat": "三方调解聊天",
+    "close": "关闭",
+    "resubmit": "提交新凭证",
+    "attemptsRemaining": "剩余尝试次数：{remaining} / {max}",
+    "attemptsExceeded": "已超过 3 次上传限制。等待客服调解。",
+    "viewAudit": "审核",
+    "viewReasons": "拒绝原因",
+    "viewReport": "查看审核"
   }
 }

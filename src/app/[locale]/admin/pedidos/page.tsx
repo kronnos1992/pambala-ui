@@ -2,19 +2,21 @@
 
 import * as React from 'react'
 import { useTranslations } from 'next-intl'
-import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle, Store, Package, TrendingUp, MessageSquare } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle, Store, Package, TrendingUp, MessageSquare, ShieldAlert } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { formatPrice, cn } from '@/lib/utils'
 import { fetchAdminOrders, fetchAdminStoreRevenue, updateOrderStatus, updateAdminPaymentStatus, getStatusColor, type ApiOrder, type AdminStoreRevenue } from '@/lib/api-helpers'
 import { toast } from '@/components/ui/toast'
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
+import { OrderAuditModal } from '@/components/orders/order-audit-modal'
 
 const statusOptions = ['', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
 
 export default function AdminPedidosPage() {
   const t = useTranslations('adminOrders')
   const tc = useTranslations('common')
+  const ta = useTranslations('orderAudit')
   const statusLabels: Record<string, string> = {
     '': tc('all'), PENDING: t('statusPending'), CONFIRMED: t('statusConfirmed'), PROCESSING: t('statusProcessing'), SHIPPED: t('statusShipped'), DELIVERED: t('statusDelivered'), CANCELLED: t('statusCancelled'),
   }
@@ -29,6 +31,7 @@ export default function AdminPedidosPage() {
   const [updatingId, setUpdatingId] = React.useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = React.useState<{ orderId: string; paymentStatus: string } | null>(null)
   const [chatOrder, setChatOrder] = React.useState<ApiOrder | null>(null)
+  const [auditOrder, setAuditOrder] = React.useState<ApiOrder | null>(null)
 
   const load = React.useCallback(() => {
     setLoading(true)
@@ -229,8 +232,21 @@ export default function AdminPedidosPage() {
                       <div className="space-y-1 text-xs">
                         <div>{order.paymentMethod}</div>
                         <PaymentBadge status={order.paymentStatus || 'PENDING'} />
-                        {order.validationStatus && order.validationStatus !== 'PENDING' && (
-                          <div><ValidationBadge status={order.validationStatus} /></div>
+                        {(order.receiptImage || (order.validationStatus && order.validationStatus !== 'PENDING')) && (
+                          <div className="flex items-center gap-1 flex-wrap pt-0.5">
+                            {order.validationStatus && order.validationStatus !== 'PENDING' && (
+                              <ValidationBadge status={order.validationStatus} />
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => setAuditOrder(order)}
+                              title={ta('viewAudit')}
+                              className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800 cursor-pointer"
+                            >
+                              <ShieldAlert className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                              <span>{ta('viewAudit')}</span>
+                            </button>
+                          </div>
                         )}
                         {order.paymentStatus === 'PAYMENT_RECEIVED' && (
                           <div className="flex gap-1 pt-1">
@@ -359,6 +375,26 @@ export default function AdminPedidosPage() {
             <OrderDisputeChat orderId={chatOrder.id} orderNumber={chatOrder.orderNumber || chatOrder.id} />
           </div>
         </div>
+      )}
+
+      {auditOrder && (
+        <OrderAuditModal
+          open={!!auditOrder}
+          onClose={() => setAuditOrder(null)}
+          orderNumber={auditOrder.orderNumber || auditOrder.id}
+          orderTotal={auditOrder.total}
+          expectedCode={auditOrder.paymentCode}
+          validationStatus={auditOrder.validationStatus}
+          validationResult={auditOrder.validationResult}
+          receiptImage={auditOrder.receiptImage}
+          receiptAttempts={auditOrder.receiptAttempts}
+          role="ADMIN"
+          onOpenDispute={() => {
+            const ord = auditOrder
+            setAuditOrder(null)
+            setChatOrder(ord)
+          }}
+        />
       )}
     </div>
   )

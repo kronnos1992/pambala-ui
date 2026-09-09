@@ -62,7 +62,8 @@
     "currency": "Kz",
     "currencyShort": "Kz",
     "items": "عناصر",
-    "total": "الإجمالي"
+    "total": "الإجمالي",
+    "date": "التاريخ"
   },
   "routes": {
     "home": "الرئيسية",
@@ -1151,5 +1152,41 @@
     "attachmentError": "خطأ في تحميل الملف",
     "statusUpdatedSuccess": "تم تحديث حالة الوساطة",
     "statusUpdatedError": "خطأ في تحديث الحالة"
+  },
+  "orderAudit": {
+    "titleRejected": "أسباب رفض إيصال الدفع",
+    "titleAccepted": "التحقق من إيصال الدفع",
+    "titleAudit": "تدقيق مكافحة الاحتيال للإيصال",
+    "subtitle": "الطلب #{orderNumber} · تحليل المخاطر والمصداقية البنكية",
+    "riskScore": "درجة المخاطر",
+    "rejectedNoticeTitle": "تم رفض إيصال الدفع",
+    "rejectedNoticeDesc": "المستند المرسل لم يستوف معايير التحقق والمصداقية البنكية.",
+    "acceptedNoticeTitle": "تم قبول إيصال الدفع",
+    "acceptedNoticeDesc": "استوفى المستند بنجاح معايير التحقق البنكي.",
+    "reviewNoticeTitle": "مراجعة يدوية مطلوبة",
+    "reviewNoticeDesc": "يتطلب المستند تحققًا إضافيًا بواسطة وسيط أو مسؤول النظام.",
+    "reasonsHeader": "المبررات المحددة:",
+    "noReasons": "تعذر التحقق من بيانات المستند أو صحته مع تفاصيل الطلب.",
+    "flagsHeader": "مؤشرات المخاطر:",
+    "detectedBankHeader": "المعاملة البنكية المكتشفة",
+    "txId": "الرقم المرجعي",
+    "txAmount": "المبلغ المكتشف",
+    "orderAmount": "مبلغ الطلب",
+    "txDate": "التاريخ",
+    "txBank": "البنك",
+    "txBeneficiary": "المستفيد",
+    "txCodeFound": "الرمز المكتشف",
+    "txCodeExpected": "الرمز المتوقع",
+    "fingerprint": "البصمة الرقمية",
+    "receiptTitle": "إيصال الدفع",
+    "openReceipt": "فتح المستند",
+    "openChat": "محادثة الوساطة الثلاثية",
+    "close": "إغلاق",
+    "resubmit": "إرسال إيصال جديد",
+    "attemptsRemaining": "المحاولات المتبقية: {remaining} من {max}",
+    "attemptsExceeded": "تم تجاوز حد الـ 3 محاولات. بانتظار وساطة الدعم.",
+    "viewAudit": "تدقيق",
+    "viewReasons": "أسباب الرفض",
+    "viewReport": "عرض التدقيق"
   }
 }

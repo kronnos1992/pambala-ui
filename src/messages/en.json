@@ -62,7 +62,8 @@
     "currency": "Kz",
     "currencyShort": "AOA",
     "items": "items",
-    "total": "Total"
+    "total": "Total",
+    "date": "Date"
   },
   "routes": {
     "home": "Home",
@@ -1151,5 +1152,41 @@
     "attachmentError": "Error uploading file",
     "statusUpdatedSuccess": "Mediation status updated",
     "statusUpdatedError": "Error updating status"
+  },
+  "orderAudit": {
+    "titleRejected": "Reasons for Payment Proof Rejection",
+    "titleAccepted": "Payment Proof Validation",
+    "titleAudit": "Anti-Fraud Payment Proof Audit",
+    "subtitle": "Order #{orderNumber} · Risk analysis and bank authenticity",
+    "riskScore": "Risk Score",
+    "rejectedNoticeTitle": "Payment Proof Rejected",
+    "rejectedNoticeDesc": "The uploaded document did not meet the validation and banking authenticity criteria.",
+    "acceptedNoticeTitle": "Payment Proof Accepted",
+    "acceptedNoticeDesc": "The document successfully passed bank validation criteria.",
+    "reviewNoticeTitle": "Manual Review Required",
+    "reviewNoticeDesc": "The document requires additional verification by a mediator or administrator.",
+    "reasonsHeader": "Identified Justifications:",
+    "noReasons": "Could not validate document data or authenticity against order details.",
+    "flagsHeader": "Risk Flags:",
+    "detectedBankHeader": "Detected Bank Transaction",
+    "txId": "Ref/ID",
+    "txAmount": "Detected Amount",
+    "orderAmount": "Order Amount",
+    "txDate": "Date",
+    "txBank": "Bank",
+    "txBeneficiary": "Beneficiary",
+    "txCodeFound": "Detected Code",
+    "txCodeExpected": "Expected Code",
+    "fingerprint": "Fingerprint",
+    "receiptTitle": "Payment Proof",
+    "openReceipt": "Open proof document",
+    "openChat": "Tripartite Mediation Chat",
+    "close": "Close",
+    "resubmit": "Upload new receipt",
+    "attemptsRemaining": "Remaining attempts: {remaining} of {max}",
+    "attemptsExceeded": "Limit of 3 attempts exceeded. Awaiting support mediation.",
+    "viewAudit": "Audit",
+    "viewReasons": "Rejection reasons",
+    "viewReport": "View audit"
   }
 }

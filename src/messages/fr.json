@@ -62,7 +62,8 @@
     "currency": "Kz",
     "currencyShort": "AOA",
     "items": "articles",
-    "total": "Total"
+    "total": "Total",
+    "date": "Date"
   },
   "routes": {
     "home": "Accueil",
@@ -1151,5 +1152,41 @@
     "attachmentError": "Erreur lors du téléchargement du fichier",
     "statusUpdatedSuccess": "Statut de la médiation mis à jour",
     "statusUpdatedError": "Erreur lors de la mise à jour du statut"
+  },
+  "orderAudit": {
+    "titleRejected": "Motifs du Rejet du Reçu",
+    "titleAccepted": "Validation du Reçu",
+    "titleAudit": "Audit Anti-Fraude du Reçu",
+    "subtitle": "Commande #{orderNumber} · Analyse des risques et authenticité bancaire",
+    "riskScore": "Score de Risque",
+    "rejectedNoticeTitle": "Reçu Rejeté",
+    "rejectedNoticeDesc": "Le document envoyé n'a pas répondu aux critères de validation et d'authenticité bancaire.",
+    "acceptedNoticeTitle": "Reçu Accepté",
+    "acceptedNoticeDesc": "Le document a satisfait avec succès aux critères de validation bancaire.",
+    "reviewNoticeTitle": "Révision Manuelle Nécessaire",
+    "reviewNoticeDesc": "Le document nécessite une vérification supplémentaire par un médiateur ou un administrateur.",
+    "reasonsHeader": "Justifications identifiées :",
+    "noReasons": "Impossible de valider les données ou l'authenticité du document avec les informations de la commande.",
+    "flagsHeader": "Indicateurs de risque (Flags) :",
+    "detectedBankHeader": "Transaction Bancaire Détectée",
+    "txId": "Réf/ID",
+    "txAmount": "Montant Détecté",
+    "orderAmount": "Montant de la Commande",
+    "txDate": "Date",
+    "txBank": "Banque",
+    "txBeneficiary": "Bénéficiaire",
+    "txCodeFound": "Code Détecté",
+    "txCodeExpected": "Code Attendu",
+    "fingerprint": "Empreinte Numérique",
+    "receiptTitle": "Preuve de Paiement",
+    "openReceipt": "Ouvrir la preuve",
+    "openChat": "Chat de Médiation / Tripartite",
+    "close": "Fermer",
+    "resubmit": "Envoyer un nouveau reçu",
+    "attemptsRemaining": "Tentatives restantes : {remaining} sur {max}",
+    "attemptsExceeded": "Limite de 3 tentatives dépassée. En attente de médiation du support.",
+    "viewAudit": "Audit",
+    "viewReasons": "Motifs du rejet",
+    "viewReport": "Voir l'audit"
   }
 }
