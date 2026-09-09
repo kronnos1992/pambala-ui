@@ -11,14 +11,14 @@ import { toast } from '@/components/ui/toast'
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
 import { OrderAuditModal } from '@/components/orders/order-audit-modal'
 
-const statusOptions = ['', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+const statusOptions = ['', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'RECEIVED', 'CANCELLED']
 
 export default function AdminPedidosPage() {
   const t = useTranslations('adminOrders')
   const tc = useTranslations('common')
   const ta = useTranslations('orderAudit')
   const statusLabels: Record<string, string> = {
-    '': tc('all'), PENDING: t('statusPending'), CONFIRMED: t('statusConfirmed'), PROCESSING: t('statusProcessing'), SHIPPED: t('statusShipped'), DELIVERED: t('statusDelivered'), CANCELLED: t('statusCancelled'),
+    '': tc('all'), PENDING: t('statusPending'), CONFIRMED: t('statusConfirmed'), PROCESSING: t('statusProcessing'), SHIPPED: t('statusShipped'), DELIVERED: t('statusDelivered'), RECEIVED: t('statusReceived'), CANCELLED: t('statusCancelled'),
   }
   const [orders, setOrders] = React.useState<ApiOrder[]>([])
   const [pagination, setPagination] = React.useState({ page: 1, totalPages: 1, total: 0 })
@@ -382,6 +382,7 @@ export default function AdminPedidosPage() {
           open={!!auditOrder}
           onClose={() => setAuditOrder(null)}
           orderNumber={auditOrder.orderNumber || auditOrder.id}
+          orderId={auditOrder.id}
           orderTotal={auditOrder.total}
           expectedCode={auditOrder.paymentCode}
           validationStatus={auditOrder.validationStatus}
@@ -394,6 +395,7 @@ export default function AdminPedidosPage() {
             setAuditOrder(null)
             setChatOrder(ord)
           }}
+          onModerated={() => load()}
         />
       )}
     </div>

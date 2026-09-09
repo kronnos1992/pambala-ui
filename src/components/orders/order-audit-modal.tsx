@@ -18,15 +18,19 @@ import {
   User,
   Key,
   Fingerprint as FingerprintIcon,
-  ExternalLink
+  ExternalLink,
+  ShieldX,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn, formatPrice } from '@/lib/utils'
+import { ModerationDialog } from '@/components/orders/moderation-dialog'
+import type { DisputeModerationAction } from '@/lib/api-helpers'
 
 export interface OrderAuditModalProps {
   open: boolean
   onClose: () => void
   orderNumber: string
+  orderId?: string
   orderTotal?: number
   expectedCode?: string
   validationStatus?: string
@@ -36,6 +40,7 @@ export interface OrderAuditModalProps {
   role?: 'CLIENT' | 'SELLER' | 'ADMIN'
   onResubmit?: () => void
   onOpenDispute?: () => void
+  onModerated?: () => void
 }
 
 const receiptDisplayUrl = (url?: string) => {
@@ -55,6 +60,7 @@ export function OrderAuditModal({
   open,
   onClose,
   orderNumber,
+  orderId,
   orderTotal,
   expectedCode,
   validationStatus,
@@ -64,10 +70,13 @@ export function OrderAuditModal({
   role = 'CLIENT',
   onResubmit,
   onOpenDispute,
+  onModerated,
 }: OrderAuditModalProps) {
   const t = useTranslations('orderAudit')
   const tc = useTranslations('common')
   const [showReceiptLightbox, setShowReceiptLightbox] = React.useState(false)
+  const [moderationAction, setModerationAction] = React.useState<DisputeModerationAction | null>(null)
+  const [moderating, setModerating] = React.useState(false)
 
   const parsedResult = React.useMemo(() => {
     if (!validationResult) return null
@@ -81,6 +90,7 @@ export function OrderAuditModal({
 
   if (!open) return null
 
+  const isModerable = role === 'ADMIN' && !!orderId
   const isRejected =
     validationStatus === 'PROOF_REJECTED' ||
     validationStatus === 'FAIL' ||
@@ -415,6 +425,29 @@ export function OrderAuditModal({
           </div>
 
           <div className="flex items-center gap-2">
+            {isModerable && !moderating && (
+              <>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white cursor-pointer"
+                  onClick={() => setModerationAction('MANUAL_OVERRIDE_ACCEPT')}
+                >
+                  <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+                  {t('moderateApprove')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="text-xs cursor-pointer"
+                  onClick={() => setModerationAction('DEFINITIVE_REJECT')}
+                >
+                  <ShieldX className="h-3.5 w-3.5 mr-1" />
+                  {t('moderateReject')}
+                </Button>
+              </>
+            )}
             <Button
               type="button"
               variant="outline"
@@ -438,6 +471,19 @@ export function OrderAuditModal({
           </div>
         </div>
       </div>
+
+      <ModerationDialog
+        key={moderationAction ?? 'closed'}
+        open={moderationAction !== null}
+        orderId={orderId || ''}
+        action={moderationAction}
+        onClose={() => setModerationAction(null)}
+        onSuccess={async () => {
+          setModerating(true)
+          onModerated?.()
+          setModerating(false)
+        }}
+      />
 
       {/* Lightbox for Receipt Document */}
       {showReceiptLightbox && receiptImage && (

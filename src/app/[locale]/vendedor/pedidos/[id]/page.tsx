@@ -12,6 +12,7 @@ import { toast } from '@/components/ui/toast'
 import { fetchSellerOrderById, updateOrderPaymentStatus, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
 import { OrderAuditModal } from '@/components/orders/order-audit-modal'
+import { OrderTimeline } from '@/components/orders/order-timeline'
 
 function fileName(url: string): string {
   const base = url.split(/[?#]/)[0].split('/').pop() || 'comprovativo'
@@ -114,6 +115,8 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          <OrderTimeline orderId={order.id} onProgress={load} />
+
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('orderItems')}</h2>
             {items.length > 0 ? (

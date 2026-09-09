@@ -1,5 +1,5 @@
 import axios from 'axios'
-import api from './api'
+import api, { API_BASE_URL } from './api'
 
 // --- Types ---
 export interface ApiProduct {
@@ -114,7 +114,7 @@ export interface ApiOrder {
   id: string
   orderNumber: string
   total: number
-  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED'
+  status: 'PENDING' | 'CONFIRMED' | 'PROCESSING' | 'SHIPPED' | 'DELIVERED' | 'RECEIVED' | 'CANCELLED'
   paymentMethod: PaymentType
   paymentStatus?: 'PENDING' | 'AWAITING_PAYMENT' | 'PAYMENT_RECEIVED' | 'PAID' | 'REJECTED'
   paymentCode?: string
@@ -230,6 +230,7 @@ const statusMap: Record<string, string> = {
   PROCESSING: 'processando',
   SHIPPED: 'enviado',
   DELIVERED: 'entregue',
+  RECEIVED: 'recebido',
   CANCELLED: 'cancelado',
 }
 
@@ -239,6 +240,7 @@ const statusLabels: Record<string, string> = {
   processando: 'Processando',
   enviado: 'Enviado',
   entregue: 'Entregue',
+  recebido: 'Recebido',
   cancelado: 'Cancelado',
 }
 
@@ -248,6 +250,7 @@ const statusColors: Record<string, string> = {
   processando: 'bg-amber-100 text-amber-700',
   enviado: 'bg-blue-100 text-blue-700',
   entregue: 'bg-emerald-100 text-emerald-700',
+  recebido: 'bg-emerald-100 text-emerald-700',
   cancelado: 'bg-red-100 text-red-700',
 }
 
@@ -523,6 +526,72 @@ export async function uploadOrderReceipt(orderId: string, receiptImage: string) 
 
 export async function updateOrderPaymentStatus(orderId: string, paymentStatus: string) {
   const { data } = await api.put(`/orders/${orderId}/payment-status`, { paymentStatus })
+  return data.order as ApiOrder
+}
+
+// --- Order lifecycle / tracking timeline ---
+
+export interface OrderTimelineEvent {
+  id: string
+  kind: 'ORDER' | 'PAYMENT' | 'RECEIPT' | 'VALIDATION' | 'MODERATION' | 'TRACKING' | 'SYSTEM' | string
+  from: string | null
+  to: string | null
+  note: string | null
+  at: string
+  actorRole: string | null
+  score?: number | null
+  tracking?: {
+    carrierName?: string | null
+    trackingCode?: string | null
+    estimatedDelivery?: string | null
+  } | null
+}
+
+export interface OrderTimelineTracking {
+  carrierName: string | null
+  trackingCode: string | null
+  estimatedDelivery: string | null
+  shippedAt: string | null
+  deliveredAt: string | null
+  receivedAt: string | null
+}
+
+export interface OrderTimelineResponse {
+  orderId: string
+  orderNumber: string
+  currentStatus: ApiOrder['status']
+  paymentStatus: string
+  paymentMethod: PaymentType
+  tracking: OrderTimelineTracking
+  capabilities: {
+    role: 'BUYER' | 'SELLER' | 'ADMIN'
+    canConfirmReceipt: boolean
+    canShip: boolean
+    canDeliver: boolean
+  }
+  events: OrderTimelineEvent[]
+}
+
+export async function fetchOrderTimeline(orderId: string) {
+  const { data } = await api.get(`/orders/${orderId}/timeline`)
+  return data as OrderTimelineResponse
+}
+
+export async function shipOrder(
+  orderId: string,
+  data: { carrierName: string; trackingCode: string; estimatedDelivery?: string }
+) {
+  const res = await api.post(`/orders/${orderId}/ship`, data)
+  return res.data.order as ApiOrder
+}
+
+export async function markOrderDelivered(orderId: string, note?: string) {
+  const { data } = await api.put(`/orders/${orderId}/delivered`, { note })
+  return data.order as ApiOrder
+}
+
+export async function confirmOrderReceipt(orderId: string) {
+  const { data } = await api.put(`/orders/${orderId}/received`)
   return data.order as ApiOrder
 }
 
@@ -1033,6 +1102,237 @@ export async function updateOrderDisputeStatus(
   status: 'OPEN' | 'RESOLVED' | 'CLOSED'
 ): Promise<{ dispute: OrderDispute }> {
   const { data } = await api.put(`/orders/${orderId}/dispute/status`, { status })
+  return data
+}
+
+export interface OrderDisputeStreamHandlers {
+  onUpdate: (snapshot: DisputeDetailsResponse) => void
+  onError?: (error: unknown) => void
+}
+
+/**
+ * Subscreve ao stream SSE do chat tripartido em tempo real.
+ * Usa fetch + ReadableStream (e não EventSource) porque o EventSource nativo
+ * não permite enviar o cabeçalho Authorization com o token JWT.
+ * Reconecta automaticamente com backoff; retorna a função para cancelar.
+ */
+export function subscribeOrderDispute(
+  orderId: string,
+  handlers: OrderDisputeStreamHandlers
+): () => void {
+  let cancelled = false
+  let retryDelay = 1000
+  const controller = new AbortController()
+  let timeoutId: number | undefined
+
+  let token: string | null = null
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = localStorage.getItem('pambala-auth')
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        token = parsed?.state?.token ?? null
+      }
+    } catch {}
+  }
+
+  const headers: Record<string, string> = {}
+  if (token) headers.Authorization = `Bearer ${token}`
+
+  const handleBlock = (block: string) => {
+    let data = ''
+    for (const line of block.split('\n')) {
+      if (line.startsWith('data:')) {
+        data += (data ? '\n' : '') + line.slice(5).trimStart()
+      }
+    }
+    if (!data) return
+    try {
+      handlers.onUpdate(JSON.parse(data) as DisputeDetailsResponse)
+    } catch {
+      // Ignora payloads inválidos
+    }
+  }
+
+  const connect = async () => {
+    if (cancelled) return
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/api/orders/${orderId}/dispute/events`,
+        { headers, signal: controller.signal }
+      )
+
+      if (res.status === 401 || res.status === 403 || res.status === 404) {
+        cancelled = true
+        handlers.onError?.(new Error(`SSE indisponível (${res.status})`))
+        return
+      }
+      if (!res.ok || !res.body) throw new Error(`SSE indisponível (${res.status})`)
+
+      retryDelay = 1000
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      for (;;) {
+        if (cancelled) break
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+        const parts = buffer.split('\n\n')
+        buffer = parts.pop() ?? ''
+        for (const part of parts) handleBlock(part)
+      }
+    } catch (error) {
+      if (!cancelled && (error as Error)?.name !== 'AbortError') {
+        handlers.onError?.(error)
+      }
+    }
+
+    if (!cancelled) {
+      timeoutId = window.setTimeout(connect, retryDelay)
+      retryDelay = Math.min(retryDelay * 2, 15000)
+    }
+  }
+
+  void connect()
+
+  return () => {
+    cancelled = true
+    if (timeoutId) window.clearTimeout(timeoutId)
+    controller.abort()
+  }
+}
+
+// --- Notificações de Disputas (badges + toasts) ---
+export interface DisputeUnreadItem {
+  disputeId: string
+  orderId: string
+  orderNumber: string
+  status: string
+  unreadCount: number
+  lastMessage?: {
+    id: string
+    senderRole: string
+    senderId?: string
+    senderName?: string
+    content: string
+    createdAt: string
+  }
+}
+
+export interface DisputeUnreadResponse {
+  total: number
+  items: DisputeUnreadItem[]
+}
+
+export async function fetchDisputeUnread(): Promise<DisputeUnreadResponse> {
+  const { data } = await api.get('/orders/disputes/unread')
+  return data
+}
+
+export async function markOrderDisputeRead(orderId: string): Promise<{ success: boolean; marked: boolean }> {
+  const { data } = await api.put(`/orders/${orderId}/dispute/read`)
+  return data
+}
+
+export type DisputeModerationAction = 'MANUAL_OVERRIDE_ACCEPT' | 'DEFINITIVE_REJECT'
+
+export interface DisputeModerationResult {
+  action: DisputeModerationAction
+  dispute: OrderDispute | null
+  order: {
+    id: string
+    orderNumber: string
+    status: string
+    paymentStatus: string
+    validationStatus: string
+  }
+}
+
+export async function moderateOrderDispute(
+  orderId: string,
+  action: DisputeModerationAction,
+  note?: string
+): Promise<DisputeModerationResult> {
+  const { data } = await api.post(`/orders/${orderId}/dispute/moderation`, { action, note })
+  return data
+}
+
+// --- Admin Disputes ---
+export interface AdminDispute {
+  id: string
+  orderId: string
+  orderNumber: string
+  status: 'OPEN' | 'RESOLVED' | 'CLOSED'
+  reason: string
+  createdAt: string
+  updatedAt: string
+  messagesCount: number
+  unreadMessages: number
+  lastMessage?: {
+    content: string
+    senderRole: string
+    createdAt: string
+  }
+  order: {
+    id: string
+    orderNumber: string
+    total: number
+    status: string
+    paymentStatus?: string
+    validationStatus?: string
+    receiptAttempts?: number
+    shippingName: string
+    shippingProvince: string
+    createdAt: string
+  }
+  client?: {
+    id: string
+    name: string
+    email: string
+  }
+  seller?: {
+    id: string
+    name: string
+    storeName: string
+  }
+}
+
+export interface AdminDisputesResponse {
+  disputes: AdminDispute[]
+  pagination: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+  }
+  stats: {
+    total: number
+    open: number
+    resolved: number
+    closed: number
+  }
+}
+
+export async function fetchAdminDisputes(params: {
+  page?: number
+  limit?: number
+  status?: string
+  q?: string
+} = {}): Promise<AdminDisputesResponse> {
+  const query = new URLSearchParams()
+  if (params.page) query.set('page', String(params.page))
+  if (params.limit) query.set('limit', String(params.limit))
+  if (params.status) query.set('status', params.status)
+  if (params.q) query.set('q', params.q)
+
+  const { data } = await api.get(`/admin/disputes?${query.toString()}`)
+  return data
+}
+
+export async function fetchAdminDisputeStats() {
+  const { data } = await api.get('/admin/disputes/stats')
   return data
 }
 

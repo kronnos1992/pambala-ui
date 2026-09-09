@@ -574,6 +574,64 @@
     },
     "receiptImageAlt": "Justificatif de paiement"
   },
+  "orderTimeline": {
+    "title": "Suivi de commande",
+    "empty": "Aucun événement pour le moment",
+    "loadError": "Impossible de charger le suivi de la commande",
+    "actor": {
+      "buyer": "Acheteur",
+      "seller": "Vendeur",
+      "admin": "Support",
+      "system": "Système"
+    },
+    "event": {
+      "orderCreated": "Commande passée",
+      "orderProcessing": "En préparation",
+      "orderShipped": "Expédiée",
+      "orderDelivered": "Livrée",
+      "orderReceived": "Réception confirmée",
+      "orderCancelled": "Commande annulée",
+      "statusChanged": "Statut mis à jour",
+      "paymentPaid": "Paiement confirmé",
+      "paymentReceivedBySeller": "Paiement reçu par le vendeur",
+      "paymentRejected": "Paiement refusé",
+      "paymentUpdated": "Paiement mis à jour",
+      "receiptSubmitted": "Preuve de paiement envoyée",
+      "receiptApproved": "Preuve de paiement approuvée",
+      "receiptRejected": "Preuve de paiement refusée",
+      "receiptManualReview": "Preuve de paiement en examen manuel",
+      "receiptChecked": "Vérification de la preuve de paiement",
+      "adminApproved": "Approuvée par le support",
+      "adminRejected": "Refusée par le support",
+      "adminAction": "Action du support"
+    },
+    "tracking": {
+      "carrier": "Transporteur",
+      "code": "Code de suivi",
+      "delivery": "Livraison prévue"
+    },
+    "ship": {
+      "action": "Marquer comme expédiée",
+      "carrier": "Transporteur",
+      "trackingCode": "Code de suivi",
+      "estimatedDelivery": "Livraison prévue (optionnel)",
+      "submit": "Confirmer l'envoi",
+      "required": "Le transporteur et le code de suivi sont obligatoires",
+      "success": "Commande marquée comme expédiée",
+      "error": "Impossible de marquer la commande comme expédiée"
+    },
+    "deliver": {
+      "action": "Marquer comme livrée",
+      "success": "Commande marquée comme livrée",
+      "error": "Impossible de marquer la commande comme livrée"
+    },
+    "receipt": {
+      "action": "Confirmer la réception",
+      "hint": "Confirmez-vous avoir reçu le colis ? Le cycle de la commande sera alors terminé.",
+      "confirmed": "Réception confirmée",
+      "error": "Impossible de confirmer la réception"
+    }
+  },
   "sidebar": {
     "title": "Catégories"
   },
@@ -834,6 +892,7 @@
     "panelName": "Admin",
     "navDashboard": "Tableau de bord",
     "navOrders": "Commandes",
+    "navDisputes": "Litiges",
     "navUsers": "Utilisateurs",
     "navStores": "Boutiques",
     "navProducts": "Produits",
@@ -1005,7 +1064,8 @@
     "declared": "Déclaré",
     "ordersColumn": "Commandes",
     "product": "Produit",
-    "units": "Unités"
+    "units": "Unités",
+    "statusReceived": "Reçu"
   },
   "adminReviews": {
     "title": "Gérer les Avis",
@@ -1151,7 +1211,10 @@
     "attachmentSuccess": "Fichier joint avec succès",
     "attachmentError": "Erreur lors du téléchargement du fichier",
     "statusUpdatedSuccess": "Statut de la médiation mis à jour",
-    "statusUpdatedError": "Erreur lors de la mise à jour du statut"
+    "statusUpdatedError": "Erreur lors de la mise à jour du statut",
+    "moderationBarTitle": "Action d'autorité du support",
+    "moderateApprove": "Approuver le reçu",
+    "moderateReject": "Rejet définitif"
   },
   "orderAudit": {
     "titleRejected": "Motifs du Rejet du Reçu",
@@ -1187,6 +1250,59 @@
     "attemptsExceeded": "Limite de 3 tentatives dépassée. En attente de médiation du support.",
     "viewAudit": "Audit",
     "viewReasons": "Motifs du rejet",
-    "viewReport": "Voir l'audit"
+    "viewReport": "Voir l'audit",
+    "moderateApprove": "Approuver manuellement",
+    "moderateReject": "Rejet définitif"
+  },
+  "adminDisputes": {
+    "title": "Centre des litiges",
+    "subtitle": "File de médiation et de support des commandes",
+    "disputesCount": "{count, plural, one {# litige} other {# litiges}}",
+    "searchPlaceholder": "Rechercher par n° commande, client ou boutique...",
+    "statusOpen": "Ouvert",
+    "statusResolved": "Résolu",
+    "statusClosed": "Fermé",
+    "kpiTotalDisputes": "Total des litiges",
+    "kpiOpen": "Ouverts",
+    "kpiResolved": "Résolus",
+    "kpiClosed": "Fermés",
+    "orderNumber": "Commande",
+    "client": "Client",
+    "seller": "Vendeur",
+    "reason": "Motif",
+    "riskScore": "Risque",
+    "messages": "Messages",
+    "lastActivity": "Dernière activité",
+    "status": "État",
+    "actions": "Actions",
+    "highRisk": "Risque élevé",
+    "mediumRisk": "Risque moyen",
+    "lowRisk": "Risque faible",
+    "openChat": "Ouvrir la médiation",
+    "empty": "Aucun litige trouvé.",
+    "emptyHint": "Les médiations ouvertes apparaîtront ici.",
+    "pageInfo": "Page {page} sur {totalPages}",
+    "loadError": "Erreur de chargement des litiges",
+    "minutesAgo": "il y a {count} min",
+    "hoursAgo": "il y a {count} h",
+    "daysAgo": "il y a {count} j"
+  },
+  "disputeNotifications": {
+    "newMessage": "Nouveau message dans la médiation de la commande #{order}",
+    "newCount": "{count} nouveaux messages dans vos médiations",
+    "title": "Médiations",
+    "unread": "non lus",
+    "openDisputes": "Voir les médiations"
+  },
+  "moderation": {
+    "approveTitle": "Approuver le reçu manuellement",
+    "approvePrompt": "Le reçu sera approuvé manuellement malgré le signalement de la vérification automatique (override). Le vendeur pourra confirmer la réception du paiement. Cette action est enregistrée dans la médiation.",
+    "approveConfirm": "Approuver manuellement",
+    "rejectTitle": "Rejet définitif du paiement",
+    "rejectPrompt": "Le paiement sera définitivement rejeté et la commande annulée. Aucun nouveau reçu ne pourra être soumis. Cette action est irréversible.",
+    "rejectConfirm": "Rejeter définitivement",
+    "notePlaceholder": "Motif de la décision (facultatif)...",
+    "success": "Action de modération exécutée avec succès",
+    "error": "Erreur lors de l'exécution de l'action de modération"
   }
 }

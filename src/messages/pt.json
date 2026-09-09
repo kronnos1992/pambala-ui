@@ -576,6 +576,64 @@
     },
     "receiptImageAlt": "Comprovativo de pagamento"
   },
+  "orderTimeline": {
+    "title": "Rastreamento do pedido",
+    "empty": "Sem eventos ainda",
+    "loadError": "Não foi possível carregar o rastreamento do pedido",
+    "actor": {
+      "buyer": "Comprador",
+      "seller": "Vendedor",
+      "admin": "Suporte",
+      "system": "Sistema"
+    },
+    "event": {
+      "orderCreated": "Pedido realizado",
+      "orderProcessing": "Em preparação",
+      "orderShipped": "Enviado",
+      "orderDelivered": "Entregue",
+      "orderReceived": "Receção confirmada",
+      "orderCancelled": "Pedido cancelado",
+      "statusChanged": "Estado atualizado",
+      "paymentPaid": "Pagamento confirmado",
+      "paymentReceivedBySeller": "Pagamento recebido pelo vendedor",
+      "paymentRejected": "Pagamento rejeitado",
+      "paymentUpdated": "Pagamento atualizado",
+      "receiptSubmitted": "Comprovativo enviado",
+      "receiptApproved": "Comprovativo aprovado",
+      "receiptRejected": "Comprovativo rejeitado",
+      "receiptManualReview": "Comprovativo em análise manual",
+      "receiptChecked": "Verificação do comprovativo",
+      "adminApproved": "Aprovado pelo suporte",
+      "adminRejected": "Rejeitado pelo suporte",
+      "adminAction": "Ação do suporte"
+    },
+    "tracking": {
+      "carrier": "Transportadora",
+      "code": "Código de rastreio",
+      "delivery": "Entrega prevista"
+    },
+    "ship": {
+      "action": "Marcar como enviado",
+      "carrier": "Transportadora",
+      "trackingCode": "Código de rastreio",
+      "estimatedDelivery": "Entrega prevista (opcional)",
+      "submit": "Confirmar envio",
+      "required": "Indique a transportadora e o código de rastreio",
+      "success": "Pedido marcado como enviado",
+      "error": "Não foi possível marcar o pedido como enviado"
+    },
+    "deliver": {
+      "action": "Marcar como entregue",
+      "success": "Pedido marcado como entregue",
+      "error": "Não foi possível marcar o pedido como entregue"
+    },
+    "receipt": {
+      "action": "Confirmar recebimento",
+      "hint": "Confirma que recebeu a encomenda? O ciclo do pedido fica concluído.",
+      "confirmed": "Recebimento confirmado",
+      "error": "Não foi possível confirmar o recebimento"
+    }
+  },
   "sidebar": {
     "title": "Categorias"
   },
@@ -836,6 +894,7 @@
     "panelName": "Admin",
     "navDashboard": "Dashboard",
     "navOrders": "Pedidos",
+    "navDisputes": "Disputas",
     "navUsers": "Utilizadores",
     "navStores": "Lojas",
     "navProducts": "Produtos",
@@ -1007,7 +1066,8 @@
     "declared": "Declarado",
     "ordersColumn": "Pedidos",
     "product": "Produto",
-    "units": "Unid."
+    "units": "Unid.",
+    "statusReceived": "Recebido"
   },
   "adminReviews": {
     "title": "Gerir Avaliacoes",
@@ -1151,7 +1211,10 @@
     "attachmentSuccess": "Ficheiro anexado com sucesso",
     "attachmentError": "Erro ao carregar ficheiro",
     "statusUpdatedSuccess": "Estado da mediação atualizado",
-    "statusUpdatedError": "Erro ao atualizar estado"
+    "statusUpdatedError": "Erro ao atualizar estado",
+    "moderationBarTitle": "Ação de autoridade do suporte",
+    "moderateApprove": "Aprovar comprovativo",
+    "moderateReject": "Rejeição definitiva"
   },
   "orderAudit": {
     "titleRejected": "Motivos da Recusa do Comprovativo",
@@ -1187,6 +1250,59 @@
     "attemptsExceeded": "Limite de 3 tentativas excedido. Aguardando mediação do suporte.",
     "viewAudit": "Auditoria",
     "viewReasons": "Motivos da recusa",
-    "viewReport": "Ver auditoria"
+    "viewReport": "Ver auditoria",
+    "moderateApprove": "Aprovar manualmente",
+    "moderateReject": "Rejeição definitiva"
+  },
+  "adminDisputes": {
+    "title": "Central de Disputas",
+    "subtitle": "Fila de mediação e suporte de pedidos",
+    "disputesCount": "{count, plural, one {# disputa} other {# disputas}}",
+    "searchPlaceholder": "Pesquisar por nr. pedido, cliente ou loja...",
+    "statusOpen": "Em Aberto",
+    "statusResolved": "Resolvido",
+    "statusClosed": "Encerrado",
+    "kpiTotalDisputes": "Total de disputas",
+    "kpiOpen": "Em aberto",
+    "kpiResolved": "Resolvidas",
+    "kpiClosed": "Encerradas",
+    "orderNumber": "Pedido",
+    "client": "Cliente",
+    "seller": "Vendedor",
+    "reason": "Motivo",
+    "riskScore": "Risco",
+    "messages": "Mensagens",
+    "lastActivity": "Ultima atividade",
+    "status": "Estado",
+    "actions": "Acoes",
+    "highRisk": "Risco alto",
+    "mediumRisk": "Risco medio",
+    "lowRisk": "Risco baixo",
+    "openChat": "Abrir mediacao",
+    "empty": "Nenhuma disputa encontrada.",
+    "emptyHint": "As mediacoes abertas aparecerao aqui.",
+    "pageInfo": "Pagina {page} de {totalPages}",
+    "loadError": "Erro ao carregar disputas",
+    "minutesAgo": "{count} min atras",
+    "hoursAgo": "{count} h atras",
+    "daysAgo": "{count} d atras"
+  },
+  "disputeNotifications": {
+    "newMessage": "Nova mensagem na mediação do pedido #{order}",
+    "newCount": "{count} novas mensagens nas suas mediações",
+    "title": "Mediações",
+    "unread": "não lidas",
+    "openDisputes": "Ver mediações"
+  },
+  "moderation": {
+    "approveTitle": "Aprovar comprovativo manualmente",
+    "approvePrompt": "O comprovativo será aprovado manualmente apesar da sinalização da verificação automática (override). O vendedor poderá confirmar o recebimento do pagamento. Esta ação fica registada na mediação.",
+    "approveConfirm": "Aprovar manualmente",
+    "rejectTitle": "Rejeição definitiva do pagamento",
+    "rejectPrompt": "O pagamento será rejeitado em definitivo e o pedido cancelado. Não será possível enviar novos comprovativos. Esta ação é irreversível.",
+    "rejectConfirm": "Rejeitar em definitivo",
+    "notePlaceholder": "Motivo da decisão (opcional)...",
+    "success": "Ação de moderação executada com sucesso",
+    "error": "Erro ao executar a ação de moderação"
   }
 }

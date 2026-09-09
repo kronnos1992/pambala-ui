@@ -4,13 +4,14 @@ import * as React from 'react'
 import { use } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin, CreditCard, Upload, FileCheck, X, Copy, AlertTriangle, ShieldAlert, Info, MessageSquare } from 'lucide-react'
+import { ChevronRight, MapPin, CreditCard, Upload, FileCheck, X, Copy, AlertTriangle, ShieldAlert, Info, MessageSquare } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn, isPdfUrl, receiptDisplayUrl } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
-import { fetchOrderById, mapStatus, uploadOrderReceipt, uploadFile, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
+import { fetchOrderById, uploadOrderReceipt, uploadFile, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
+import { OrderTimeline } from '@/components/orders/order-timeline'
 
 const flagDescriptions: Record<string, string> = {
   AMOUNT_MISMATCH: 'O valor no comprovativo não coincide com o total do pedido',
@@ -23,16 +24,6 @@ const flagDescriptions: Record<string, string> = {
   EDITOR_METADATA: 'Metadados de software de edição gráfica detetados no ficheiro',
   MAGIC_MISMATCH: 'O formato do ficheiro difere da extensão declarada',
 }
-
-const timelineIcons: Record<string, React.ElementType> = {
-  pending: Clock,
-  confirmed: CheckCircle,
-  processing: Package,
-  shipped: Truck,
-  delivered: CheckCircle,
-}
-
-const statusSteps = ['pending', 'confirmed', 'processing', 'shipped', 'delivered']
 
 function firstImage(images: unknown): string {
   if (Array.isArray(images) && images.length > 0) return images[0] as string
@@ -68,14 +59,18 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     } catch {
       return null
     }
-  }, [order?.validationResult])
+  }, [order])
 
-  React.useEffect(() => {
+  const load = React.useCallback(() => {
     fetchOrderById(id)
       .then(setOrder)
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [id])
+
+  React.useEffect(() => {
+    load()
+  }, [load])
 
   const handleReceiptUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -129,9 +124,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     )
   }
 
-  const orderStatus = mapStatus(order.status)
-  const currentStepIndex = statusSteps.indexOf(orderStatus)
-
   const items = (order.items || []).map((item) => ({
     name: item.product?.name || t('productFallback'),
     price: item.price,
@@ -160,39 +152,7 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
-          <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">{t('statusTitle')}</h2>
-            <div className="space-y-0">
-              {statusSteps.map((step, i) => {
-                const label = t(`status.${step}`)
-                const Icon = timelineIcons[step] || Clock
-                const completed = i <= currentStepIndex
-                const isCurrent = i === currentStepIndex
-                return (
-                  <div key={step} className="flex gap-4">
-                    <div className="flex flex-col items-center">
-                      <div className={cn(
-                        'flex h-8 w-8 items-center justify-center rounded-full',
-                        completed ? 'bg-emerald-600 text-white' : 'bg-gray-100 text-gray-400',
-                        isCurrent && 'ring-2 ring-emerald-200'
-                      )}>
-                        <Icon className="h-4 w-4" />
-                      </div>
-                      {i < statusSteps.length - 1 && (
-                        <div className={cn('w-0.5 flex-1 my-1', completed ? 'bg-emerald-600' : 'bg-gray-200')} />
-                      )}
-                    </div>
-                    <div className="pb-6">
-                      <p className={cn('font-medium', completed ? 'text-gray-900 dark:text-white' : 'text-gray-400')}>{label}</p>
-                      {isCurrent && (
-                        <p className="text-sm text-gray-500">{new Date(order.createdAt).toLocaleDateString('pt-AO')}</p>
-                      )}
-                    </div>
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+          <OrderTimeline orderId={order.id} onProgress={load} />
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('itemsTitle')}</h2>

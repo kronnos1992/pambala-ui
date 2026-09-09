@@ -574,6 +574,64 @@
     },
     "receiptImageAlt": "Payment proof"
   },
+  "orderTimeline": {
+    "title": "Order tracking",
+    "empty": "No events yet",
+    "loadError": "Could not load order tracking",
+    "actor": {
+      "buyer": "Buyer",
+      "seller": "Seller",
+      "admin": "Support",
+      "system": "System"
+    },
+    "event": {
+      "orderCreated": "Order placed",
+      "orderProcessing": "Being prepared",
+      "orderShipped": "Shipped",
+      "orderDelivered": "Delivered",
+      "orderReceived": "Receipt confirmed",
+      "orderCancelled": "Order cancelled",
+      "statusChanged": "Status updated",
+      "paymentPaid": "Payment confirmed",
+      "paymentReceivedBySeller": "Payment received by seller",
+      "paymentRejected": "Payment rejected",
+      "paymentUpdated": "Payment updated",
+      "receiptSubmitted": "Receipt submitted",
+      "receiptApproved": "Receipt approved",
+      "receiptRejected": "Receipt rejected",
+      "receiptManualReview": "Receipt in manual review",
+      "receiptChecked": "Receipt verification",
+      "adminApproved": "Approved by support",
+      "adminRejected": "Rejected by support",
+      "adminAction": "Support action"
+    },
+    "tracking": {
+      "carrier": "Carrier",
+      "code": "Tracking code",
+      "delivery": "Estimated delivery"
+    },
+    "ship": {
+      "action": "Mark as shipped",
+      "carrier": "Carrier",
+      "trackingCode": "Tracking code",
+      "estimatedDelivery": "Estimated delivery (optional)",
+      "submit": "Confirm shipment",
+      "required": "Carrier and tracking code are required",
+      "success": "Order marked as shipped",
+      "error": "Could not mark order as shipped"
+    },
+    "deliver": {
+      "action": "Mark as delivered",
+      "success": "Order marked as delivered",
+      "error": "Could not mark order as delivered"
+    },
+    "receipt": {
+      "action": "Confirm receipt",
+      "hint": "Confirm you received the package? The order cycle is then complete.",
+      "confirmed": "Receipt confirmed",
+      "error": "Could not confirm receipt"
+    }
+  },
   "sidebar": {
     "title": "Categories"
   },
@@ -834,6 +892,7 @@
     "panelName": "Admin",
     "navDashboard": "Dashboard",
     "navOrders": "Orders",
+    "navDisputes": "Disputes",
     "navUsers": "Users",
     "navStores": "Stores",
     "navProducts": "Products",
@@ -1005,7 +1064,8 @@
     "declared": "Declared",
     "ordersColumn": "Orders",
     "product": "Product",
-    "units": "Units"
+    "units": "Units",
+    "statusReceived": "Received"
   },
   "adminReviews": {
     "title": "Manage Reviews",
@@ -1151,7 +1211,10 @@
     "attachmentSuccess": "File attached successfully",
     "attachmentError": "Error uploading file",
     "statusUpdatedSuccess": "Mediation status updated",
-    "statusUpdatedError": "Error updating status"
+    "statusUpdatedError": "Error updating status",
+    "moderationBarTitle": "Support authority action",
+    "moderateApprove": "Approve receipt",
+    "moderateReject": "Definitive rejection"
   },
   "orderAudit": {
     "titleRejected": "Reasons for Payment Proof Rejection",
@@ -1187,6 +1250,59 @@
     "attemptsExceeded": "Limit of 3 attempts exceeded. Awaiting support mediation.",
     "viewAudit": "Audit",
     "viewReasons": "Rejection reasons",
-    "viewReport": "View audit"
+    "viewReport": "View audit",
+    "moderateApprove": "Approve manually",
+    "moderateReject": "Definitive rejection"
+  },
+  "adminDisputes": {
+    "title": "Dispute Center",
+    "subtitle": "Mediation & order support queue",
+    "disputesCount": "{count, plural, one {# dispute} other {# disputes}}",
+    "searchPlaceholder": "Search by order no., customer or store...",
+    "statusOpen": "Open",
+    "statusResolved": "Resolved",
+    "statusClosed": "Closed",
+    "kpiTotalDisputes": "Total disputes",
+    "kpiOpen": "Open",
+    "kpiResolved": "Resolved",
+    "kpiClosed": "Closed",
+    "orderNumber": "Order",
+    "client": "Customer",
+    "seller": "Seller",
+    "reason": "Reason",
+    "riskScore": "Risk",
+    "messages": "Messages",
+    "lastActivity": "Last activity",
+    "status": "Status",
+    "actions": "Actions",
+    "highRisk": "High risk",
+    "mediumRisk": "Medium risk",
+    "lowRisk": "Low risk",
+    "openChat": "Open mediation",
+    "empty": "No disputes found.",
+    "emptyHint": "Open mediations will appear here.",
+    "pageInfo": "Page {page} of {totalPages}",
+    "loadError": "Error loading disputes",
+    "minutesAgo": "{count} min ago",
+    "hoursAgo": "{count} h ago",
+    "daysAgo": "{count} d ago"
+  },
+  "disputeNotifications": {
+    "newMessage": "New message in order #{order} mediation",
+    "newCount": "{count} new messages in your mediations",
+    "title": "Mediations",
+    "unread": "unread",
+    "openDisputes": "View mediations"
+  },
+  "moderation": {
+    "approveTitle": "Manually approve receipt",
+    "approvePrompt": "The receipt will be manually approved despite the automated verification flag (override). The seller will be able to confirm receipt of payment. This action is recorded in the mediation.",
+    "approveConfirm": "Approve manually",
+    "rejectTitle": "Definitive payment rejection",
+    "rejectPrompt": "The payment will be definitively rejected and the order cancelled. No new receipts can be submitted. This action is irreversible.",
+    "rejectConfirm": "Reject definitively",
+    "notePlaceholder": "Reason for decision (optional)...",
+    "success": "Moderation action completed successfully",
+    "error": "Error performing moderation action"
   }
 }

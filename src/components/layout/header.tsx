@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { fetchCategories, type ApiCategory } from '@/lib/api-helpers'
 import { getCategoryIcon } from '@/lib/category-icons'
+import { DisputeUnreadBadge } from '@/components/notifications/dispute-unread-badge'
 
 export function Header() {
   const router = useRouter()
@@ -173,6 +174,7 @@ export function Header() {
                     >
                       <Package className="h-4 w-4" />
                       Pedidos
+                      <DisputeUnreadBadge className="ml-auto" />
                     </button>
                     {user.role === 'seller' && (
                       <button
@@ -181,6 +183,7 @@ export function Header() {
                       >
                         <Store className="h-4 w-4" />
                         Painel Vendedor
+                        <DisputeUnreadBadge className="ml-auto" />
                       </button>
                     )}
                     {user.role === 'admin' && (
@@ -190,6 +193,7 @@ export function Header() {
                       >
                         <LayoutDashboard className="h-4 w-4" />
                         Painel Admin
+                        <DisputeUnreadBadge className="ml-auto" />
                       </button>
                     )}
                     <hr className="my-1 border-gray-100 dark:border-gray-700" />
@@ -275,6 +279,7 @@ export function Header() {
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   <Package className="h-4 w-4" /> Pedidos
+                  <DisputeUnreadBadge className="ml-auto" />
                 </Link>
                 {user.role === 'seller' && (
                   <Link
@@ -283,6 +288,7 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <LayoutDashboard className="h-4 w-4" /> Painel Vendedor
+                    <DisputeUnreadBadge className="ml-auto" />
                   </Link>
                 )}
                 {user.role === 'admin' && (
@@ -292,6 +298,7 @@ export function Header() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     <LayoutDashboard className="h-4 w-4" /> Painel Admin
+                    <DisputeUnreadBadge className="ml-auto" />
                   </Link>
                 )}
                 <button

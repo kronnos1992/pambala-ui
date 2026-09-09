@@ -574,6 +574,64 @@
     },
     "receiptImageAlt": "إثبات الدفع"
   },
+  "orderTimeline": {
+    "title": "تتبع الطلب",
+    "empty": "لا توجد أحداث بعد",
+    "loadError": "تعذر تحميل تتبع الطلب",
+    "actor": {
+      "buyer": "المشتري",
+      "seller": "البائع",
+      "admin": "الدعم",
+      "system": "النظام"
+    },
+    "event": {
+      "orderCreated": "تم إنشاء الطلب",
+      "orderProcessing": "قيد التحضير",
+      "orderShipped": "تم الشحن",
+      "orderDelivered": "تم التسليم",
+      "orderReceived": "تم تأكيد الاستلام",
+      "orderCancelled": "تم إلغاء الطلب",
+      "statusChanged": "تم تحديث الحالة",
+      "paymentPaid": "تم تأكيد الدفع",
+      "paymentReceivedBySeller": "استلم البائع الدفع",
+      "paymentRejected": "تم رفض الدفع",
+      "paymentUpdated": "تم تحديث الدفع",
+      "receiptSubmitted": "تم إرسال إيصال الدفع",
+      "receiptApproved": "تمت الموافقة على الإيصال",
+      "receiptRejected": "تم رفض الإيصال",
+      "receiptManualReview": "الإيصال قيد المراجعة اليدوية",
+      "receiptChecked": "التحقق من إيصال الدفع",
+      "adminApproved": "تمت الموافقة من الدعم",
+      "adminRejected": "تم الرفض من الدعم",
+      "adminAction": "إجراء من الدعم"
+    },
+    "tracking": {
+      "carrier": "شركة الشحن",
+      "code": "رقم التتبع",
+      "delivery": "التسليم المتوقع"
+    },
+    "ship": {
+      "action": "تحديد كشحن",
+      "carrier": "شركة الشحن",
+      "trackingCode": "رقم التتبع",
+      "estimatedDelivery": "التسليم المتوقع (اختياري)",
+      "submit": "تأكيد الشحن",
+      "required": "يرجى إدخال شركة الشحن ورقم التتبع",
+      "success": "تم تحديد الطلب كشحن",
+      "error": "تعذر تحديد الطلب كشحن"
+    },
+    "deliver": {
+      "action": "تحديد كتسليم",
+      "success": "تم تحديد الطلب كتسليم",
+      "error": "تعذر تحديد الطلب كتسليم"
+    },
+    "receipt": {
+      "action": "تأكيد الاستلام",
+      "hint": "هل تؤكد استلام الطرد؟ سيتم إكمال دورة الطلب عند التأكيد.",
+      "confirmed": "تم تأكيد الاستلام",
+      "error": "تعذر تأكيد الاستلام"
+    }
+  },
   "sidebar": {
     "title": "الفئات"
   },
@@ -834,6 +892,7 @@
     "panelName": "الإدارة",
     "navDashboard": "لوحة المعلومات",
     "navOrders": "الطلبات",
+    "navDisputes": "النزاعات",
     "navUsers": "المستخدمون",
     "navStores": "المتاجر",
     "navProducts": "المنتجات",
@@ -1005,7 +1064,8 @@
     "declared": "مُعلن",
     "ordersColumn": "الطلبات",
     "product": "المنتج",
-    "units": "الوحدات"
+    "units": "الوحدات",
+    "statusReceived": "تم الاستلام"
   },
   "adminReviews": {
     "title": "إدارة التقييمات",
@@ -1151,7 +1211,10 @@
     "attachmentSuccess": "تم إرفاق الملف بنجاح",
     "attachmentError": "خطأ في تحميل الملف",
     "statusUpdatedSuccess": "تم تحديث حالة الوساطة",
-    "statusUpdatedError": "خطأ في تحديث الحالة"
+    "statusUpdatedError": "خطأ في تحديث الحالة",
+    "moderationBarTitle": "إجراء سلطة الدعم",
+    "moderateApprove": "الموافقة على الإيصال",
+    "moderateReject": "رفض نهائي"
   },
   "orderAudit": {
     "titleRejected": "أسباب رفض إيصال الدفع",
@@ -1187,6 +1250,59 @@
     "attemptsExceeded": "تم تجاوز حد الـ 3 محاولات. بانتظار وساطة الدعم.",
     "viewAudit": "تدقيق",
     "viewReasons": "أسباب الرفض",
-    "viewReport": "عرض التدقيق"
+    "viewReport": "عرض التدقيق",
+    "moderateApprove": "الموافقة يدوياً",
+    "moderateReject": "رفض نهائي"
+  },
+  "adminDisputes": {
+    "title": "مركز النزاعات",
+    "subtitle": "قائمة الوساطة ودعم الطلبات",
+    "disputesCount": "{count, plural, one {# نزاع} other {# نزاع}}",
+    "searchPlaceholder": "ابحث برقم الطلب أو العميل أو المتجر...",
+    "statusOpen": "مفتوح",
+    "statusResolved": "تم الحل",
+    "statusClosed": "مغلق",
+    "kpiTotalDisputes": "إجمالي النزاعات",
+    "kpiOpen": "مفتوحة",
+    "kpiResolved": "تم حلها",
+    "kpiClosed": "مغلقة",
+    "orderNumber": "الطلب",
+    "client": "العميل",
+    "seller": "البائع",
+    "reason": "السبب",
+    "riskScore": "المخاطر",
+    "messages": "الرسائل",
+    "lastActivity": "آخر نشاط",
+    "status": "الحالة",
+    "actions": "إجراءات",
+    "highRisk": "مخاطر عالية",
+    "mediumRisk": "مخاطر متوسطة",
+    "lowRisk": "مخاطر منخفضة",
+    "openChat": "فتح الوساطة",
+    "empty": "لا توجد نزاعات.",
+    "emptyHint": "ستظهر الوساطات المفتوحة هنا.",
+    "pageInfo": "صفحة {page} من {totalPages}",
+    "loadError": "خطأ في تحميل النزاعات",
+    "minutesAgo": "قبل {count} دقيقة",
+    "hoursAgo": "قبل {count} ساعة",
+    "daysAgo": "قبل {count} يوم"
+  },
+  "disputeNotifications": {
+    "newMessage": "رسالة جديدة في وساطة الطلب #{order}",
+    "newCount": "{count} رسائل جديدة في وسطاءك",
+    "title": "الوساطات",
+    "unread": "غير مقروء",
+    "openDisputes": "عرض الوساطات"
+  },
+  "moderation": {
+    "approveTitle": "الموافقة اليدوية على الإيصال",
+    "approvePrompt": "ستتم الموافقة على الإيصال يدوياً رغم إشارة التحقق التلقائي (تجاوز). سيتمكن البائع من تأكيد استلام الدفعة. يتم تسجيل هذا الإجراء في الوساطة.",
+    "approveConfirm": "الموافقة يدوياً",
+    "rejectTitle": "رفض الدفع نهائياً",
+    "rejectPrompt": "سيتم رفض الدفع نهائياً وإلغاء الطلب. لن يكون بالإمكان إرسال إيصالات جديدة. هذا الإجراء لا رجعة فيه.",
+    "rejectConfirm": "رفض نهائي",
+    "notePlaceholder": "سبب القرار (اختياري)...",
+    "success": "تم تنفيذ إجراء الإشراف بنجاح",
+    "error": "خطأ أثناء تنفيذ إجراء الإشراف"
   }
 }

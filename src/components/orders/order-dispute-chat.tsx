@@ -15,18 +15,26 @@ import {
   ExternalLink,
   Bot,
   AlertCircle,
+  ShieldCheck,
+  ShieldX,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn, isPdfUrl } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
+import { useDisputeUnreadStore } from '@/store/dispute-unread-store'
 import {
   fetchOrderDispute,
   sendOrderDisputeMessage,
   updateOrderDisputeStatus,
   uploadFile,
+  markOrderDisputeRead,
+  subscribeOrderDispute,
   type OrderDispute,
   type OrderDisputeMessage,
+  type DisputeModerationAction,
+  type DisputeDetailsResponse,
 } from '@/lib/api-helpers'
+import { ModerationDialog } from '@/components/orders/moderation-dialog'
 
 interface OrderDisputeChatProps {
   orderId: string
@@ -53,30 +61,63 @@ export function OrderDisputeChat({
   const [content, setContent] = React.useState('')
   const [attachment, setAttachment] = React.useState<string | null>(null)
   const [statusUpdating, setStatusUpdating] = React.useState(false)
+  const [moderationAction, setModerationAction] = React.useState<DisputeModerationAction | null>(null)
+  const [moderating, setModerating] = React.useState(false)
 
   const messagesEndRef = React.useRef<HTMLDivElement>(null)
   const fileInputRef = React.useRef<HTMLInputElement>(null)
+  const lastMarkedIdRef = React.useRef<string | null>(null)
 
-  const loadData = React.useCallback(async (silent = false) => {
-    if (!silent) setLoading(true)
-    try {
-      const res = await fetchOrderDispute(orderId)
-      setDispute(res.dispute)
-      setCurrentUserRole(res.currentUserRole)
-    } catch {
-      // Ignorar erros silenciosos no polling
-    } finally {
-      if (!silent) setLoading(false)
-    }
-  }, [orderId])
+  const applyDisputeSnapshot = React.useCallback(
+    (snapshot: DisputeDetailsResponse) => {
+      setDispute(snapshot.dispute)
+      setCurrentUserRole(snapshot.currentUserRole)
+      const lastId =
+        snapshot.dispute?.messages?.[snapshot.dispute.messages.length - 1]?.id || null
+      if (snapshot.dispute?.messages?.length && lastId !== lastMarkedIdRef.current) {
+        lastMarkedIdRef.current = lastId
+        markOrderDisputeRead(orderId).catch(() => {})
+        void useDisputeUnreadStore.getState().refresh()
+      }
+    },
+    [orderId]
+  )
 
-  // Polling a cada 4 segundos
+  const loadData = React.useCallback(
+    async (silent = false) => {
+      if (!silent) setLoading(true)
+      try {
+        applyDisputeSnapshot(await fetchOrderDispute(orderId))
+      } catch {
+        // Ignorar erros silenciosos (a reconexão do stream trata o resto)
+      } finally {
+        if (!silent) setLoading(false)
+      }
+    },
+    [orderId, applyDisputeSnapshot]
+  )
+
+  // Tempo real via SSE (substitui o polling de 4s): o servidor empurra o snapshot
+  // completo da disputa quando há mensagens/estado/ações de moderação novas.
   React.useEffect(() => {
     loadData(false)
-    const interval = setInterval(() => {
-      loadData(true)
-    }, 4000)
-    return () => clearInterval(interval)
+    const unsubscribe = subscribeOrderDispute(orderId, {
+      onUpdate: applyDisputeSnapshot,
+      onError: () => {
+        // A reconexão com backoff é gerida pelo stream; apenas refresca em falha
+        void loadData(true)
+      },
+    })
+    return unsubscribe
+  }, [orderId, loadData, applyDisputeSnapshot])
+
+  // Refresca ao voltar a focar o separador (o navegador suspende streams em segundo plano)
+  React.useEffect(() => {
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') void loadData(true)
+    }
+    document.addEventListener('visibilitychange', onVisible)
+    return () => document.removeEventListener('visibilitychange', onVisible)
   }, [loadData])
 
   // Scroll automático para a mensagem mais recente
@@ -289,6 +330,38 @@ export function OrderDisputeChat({
         </div>
       </div>
 
+      {/* Ações de Moderação Manual (Admin) */}
+      {currentUserRole === 'ADMIN' && dispute && dispute.status === 'OPEN' && (
+        <div className="flex items-center justify-between gap-2 px-5 py-2.5 border-b border-gray-100 dark:border-gray-800 bg-amber-50/60 dark:bg-amber-950/20 flex-wrap">
+          <div className="flex items-center gap-1.5 text-[11px] font-semibold text-amber-800 dark:text-amber-300">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {t('moderationBarTitle')}
+          </div>
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs px-2.5 text-emerald-700 border-emerald-300 hover:bg-emerald-50 dark:border-emerald-800 dark:text-emerald-300"
+              onClick={() => setModerationAction('MANUAL_OVERRIDE_ACCEPT')}
+              disabled={moderating}
+            >
+              <ShieldCheck className="h-3.5 w-3.5 mr-1" />
+              {t('moderateApprove')}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-7 text-xs px-2.5 text-red-700 border-red-300 hover:bg-red-50 dark:border-red-800 dark:text-red-300"
+              onClick={() => setModerationAction('DEFINITIVE_REJECT')}
+              disabled={moderating}
+            >
+              <ShieldX className="h-3.5 w-3.5 mr-1" />
+              {t('moderateReject')}
+            </Button>
+          </div>
+        </div>
+      )}
+
       {/* Messages Scroll Area */}
       <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
         {loading && !dispute ? (
@@ -476,6 +549,19 @@ export function OrderDisputeChat({
           </Button>
         </form>
       )}
+
+      <ModerationDialog
+        key={moderationAction ?? 'closed'}
+        open={moderationAction !== null}
+        orderId={orderId}
+        action={moderationAction}
+        onClose={() => setModerationAction(null)}
+        onSuccess={async () => {
+          setModerating(true)
+          await loadData(true)
+          setModerating(false)
+        }}
+      />
     </div>
   )
 }

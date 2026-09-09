@@ -5,10 +5,11 @@ import { useTranslations } from 'next-intl'
 import { Link, usePathname } from '@/i18n/navigation'
 import {
   LayoutDashboard, Users, ShoppingCart, Store, Package, Star, FolderTree,
-  Shield, ShieldCheck, Menu, X, LogOut, ExternalLink
+  Shield, ShieldCheck, Menu, X, LogOut, ExternalLink, Scale
 } from 'lucide-react'
 import { useAuthStore } from '@/store/auth-store'
 import { cn } from '@/lib/utils'
+import { DisputeUnreadBadge } from '@/components/notifications/dispute-unread-badge'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const t = useTranslations('adminLayout')
@@ -19,6 +20,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = [
     { href: '/admin', label: t('navDashboard'), icon: LayoutDashboard },
     { href: '/admin/pedidos', label: t('navOrders'), icon: ShoppingCart },
+    { href: '/admin/disputas', label: t('navDisputes'), icon: Scale },
     { href: '/admin/users', label: t('navUsers'), icon: Users },
     { href: '/admin/lojas', label: t('navStores'), icon: Store },
     { href: '/admin/produtos', label: t('navProducts'), icon: Package },
@@ -81,6 +83,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                 >
                   <Icon className={cn('h-4.5 w-4.5', isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-gray-500 dark:text-gray-300')} />
                   {item.label}
+                  {item.href === '/admin/disputas' && <DisputeUnreadBadge className="ml-auto" />}
                 </Link>
               )
             })}

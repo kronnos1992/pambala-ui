@@ -10,6 +10,7 @@ import "../globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { ToastProvider } from "@/components/ui/toast";
+import { DisputeNotifications } from "@/components/notifications/dispute-notifications";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -79,6 +80,7 @@ export default async function LocaleLayout({
                 <Header />
                 <main className="flex-1">{children}</main>
                 <Footer />
+                <DisputeNotifications />
                 <ToastProvider />
               </LocaleProvider>
             </ThemeProvider>
