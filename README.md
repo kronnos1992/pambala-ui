@@ -53,6 +53,7 @@ src/
 │       │   ├── layout.tsx        # Layout com sidebar admin (off-canvas em mobile)
 │       │   ├── page.tsx          # Dashboard admin (stats)
 │       │   ├── pedidos/page.tsx  # Gerir pedidos
+│       │   ├── disputas/page.tsx # Central de disputas (fila de mediação/suporte)
 │       │   ├── users/page.tsx    # Gerir utilizadores
 │       │   ├── lojas/page.tsx    # Gerir lojas
 │       │   ├── produtos/page.tsx # Gerir produtos
@@ -66,7 +67,7 @@ src/
 │   ├── product/                  # ProductCard, Grid, Filters, Gallery
 │   ├── store/                    # StoreCard
 │   ├── cart/                     # CartDrawer
-│   ├── orders/                   # OrderDisputeChat (chat tripartido de mediação)
+│   ├── orders/                   # OrderDisputeChat (chat tripartido de mediação em tempo real via SSE), moderação manual do admin, OrderTimeline (rastreamento do ciclo de vida do pedido)
 │   └── search/                   # SearchBar
 ├── i18n/
 │   ├── routing.ts                # Config de locales e retorno
@@ -159,16 +160,17 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/checkout` | Finalizar compra (envio + pagamento) |
 | `/minha-conta` | Perfil do utilizador (upload de foto de perfil) |
 | `/minha-conta/pedidos` | Histórico de pedidos |
-| `/minha-conta/pedidos/[id]` | Detalhe do pedido (timeline, código de validação único, upload/visualização de comprovativo, modal de justificativas de recusa e chat tripartido de mediação) |
+| `/minha-conta/pedidos/[id]` | Detalhe do pedido (timeline de rastreamento do ciclo de vida, código de validação único, upload/visualização de comprovativo, modal de justificativas de recusa, chat tripartido em tempo real via SSE e confirmação de recepção que fecha o ciclo) |
 | `/vendedor` | Dashboard do vendedor (stats + pedidos recentes) |
 | `/vendedor/produtos` | Gerir produtos do vendedor |
 | `/vendedor/produtos/novo` | Criar novo produto |
 | `/vendedor/pedidos` | Pedidos da loja do vendedor |
-| `/vendedor/pedidos/[id]` | Detalhe do pedido (bloqueio de confirmação se comprovativo rejeitado por antifraude, visualização segura, auditoria e chat tripartido de mediação) |
+| `/vendedor/pedidos/[id]` | Detalhe do pedido (blocking de confirmação se comprovativo rejeitado por antifraude, visualização segura, auditoria, chat tripartido de mediação em tempo real via SSE e rastreamento do ciclo de vida: marcar enviado com transportadora/rastreio e marcar entregue) |
 | `/vendedor/pagamento` | Métodos de pagamento da loja |
 | `/vendedor/loja` | Loja do vendedor (criar/editar; logótipo + foto de capa com upload e preview; após guardar redireciona para o dashboard) |
 | `/admin` | Dashboard admin (stats: receita, pedidos, users, lojas) |
-| `/admin/pedidos` | Gerir todos os pedidos (filtro, validação de pagamentos e mediação via chat tripartido) |
+| `/admin/pedidos` | Gerir todos os pedidos (filtro, validação de pagamentos, mediação via chat tripartido em tempo real via SSE e ações de moderação manual: aprovar comprovativo / rejeição definitiva no modal de auditoria) |
+| `/admin/disputas` | Central de disputas: fila dedicada com todos os casos abertos (estado, risco do comprovativo, não lidas, último contacto) e acesso ao chat tripartido de mediação + badge de não lidas no menu/header |
 | `/admin/users` | Gerir utilizadores (role, eliminação) |
 | `/admin/lojas` | Gerir lojas (verificação, eliminação) |
 | `/admin/produtos` | Gerir todos os produtos (ativo/inativo, eliminação) |
