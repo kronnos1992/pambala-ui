@@ -66,6 +66,7 @@ src/
 │   ├── product/                  # ProductCard, Grid, Filters, Gallery
 │   ├── store/                    # StoreCard
 │   ├── cart/                     # CartDrawer
+│   ├── orders/                   # OrderDisputeChat (chat tripartido de mediação)
 │   └── search/                   # SearchBar
 ├── i18n/
 │   ├── routing.ts                # Config de locales e retorno
@@ -158,16 +159,16 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/checkout` | Finalizar compra (envio + pagamento) |
 | `/minha-conta` | Perfil do utilizador (upload de foto de perfil) |
 | `/minha-conta/pedidos` | Histórico de pedidos |
-| `/minha-conta/pedidos/[id]` | Detalhe do pedido (timeline, código de validação único e upload/visualização de comprovativo com suporte Cloudinary/PDF) |
+| `/minha-conta/pedidos/[id]` | Detalhe do pedido (timeline, código de validação único, upload/visualização de comprovativo, modal de justificativas de recusa e chat tripartido de mediação) |
 | `/vendedor` | Dashboard do vendedor (stats + pedidos recentes) |
 | `/vendedor/produtos` | Gerir produtos do vendedor |
 | `/vendedor/produtos/novo` | Criar novo produto |
 | `/vendedor/pedidos` | Pedidos da loja do vendedor |
-| `/vendedor/pedidos/[id]` | Detalhe do pedido (comprovação de pagamento, código esperado, visualização segura e relatório de auditoria anti-fraude) |
+| `/vendedor/pedidos/[id]` | Detalhe do pedido (bloqueio de confirmação se comprovativo rejeitado por antifraude, visualização segura, auditoria e chat tripartido de mediação) |
 | `/vendedor/pagamento` | Métodos de pagamento da loja |
 | `/vendedor/loja` | Loja do vendedor (criar/editar; logótipo + foto de capa com upload e preview; após guardar redireciona para o dashboard) |
 | `/admin` | Dashboard admin (stats: receita, pedidos, users, lojas) |
-| `/admin/pedidos` | Gerir todos os pedidos (filtro + mudança de estado) |
+| `/admin/pedidos` | Gerir todos os pedidos (filtro, validação de pagamentos e mediação via chat tripartido) |
 | `/admin/users` | Gerir utilizadores (role, eliminação) |
 | `/admin/lojas` | Gerir lojas (verificação, eliminação) |
 | `/admin/produtos` | Gerir todos os produtos (ativo/inativo, eliminação) |
