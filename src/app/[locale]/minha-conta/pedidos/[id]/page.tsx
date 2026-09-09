@@ -4,12 +4,25 @@ import * as React from 'react'
 import { use } from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
-import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin, CreditCard, Upload, FileCheck, X, Copy } from 'lucide-react'
+import { ChevronRight, Package, Truck, CheckCircle, Clock, MapPin, CreditCard, Upload, FileCheck, X, Copy, AlertTriangle, ShieldAlert, Info, MessageSquare } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn, isPdfUrl, receiptDisplayUrl } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
 import { fetchOrderById, mapStatus, uploadOrderReceipt, uploadFile, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
+import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
+
+const flagDescriptions: Record<string, string> = {
+  AMOUNT_MISMATCH: 'O valor no comprovativo não coincide com o total do pedido',
+  CODE_MISMATCH: 'O código de pagamento do pedido não foi identificado no comprovativo',
+  DATE_MISMATCH: 'A data do comprovativo não coincide com a data da compra',
+  DUPLICATE_RECEIPT: 'Este comprovativo já foi utilizado num pedido anterior',
+  DUPLICATE_FINGERPRINT: 'Esta transação bancária já foi utilizada noutro pedido',
+  SUSPICIOUS_DOCUMENT: 'Foram identificados indícios de alteração digital no documento',
+  EDITED_REGIONS: 'Regiões adulteradas detetadas na imagem do comprovativo',
+  EDITOR_METADATA: 'Metadados de software de edição gráfica detetados no ficheiro',
+  MAGIC_MISMATCH: 'O formato do ficheiro difere da extensão declarada',
+}
 
 const timelineIcons: Record<string, React.ElementType> = {
   pending: Clock,
@@ -43,7 +56,19 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
   const [loading, setLoading] = React.useState(true)
   const [uploading, setUploading] = React.useState(false)
   const [viewingReceipt, setViewingReceipt] = React.useState(false)
+  const [viewingRejectionModal, setViewingRejectionModal] = React.useState(false)
+  const [viewingDisputeChat, setViewingDisputeChat] = React.useState(false)
   const fileRef = React.useRef<HTMLInputElement>(null)
+
+  const parsedValidationResult = React.useMemo(() => {
+    if (!order?.validationResult) return null
+    try {
+      const vr = typeof order.validationResult === 'string' ? JSON.parse(order.validationResult) : order.validationResult
+      return vr && typeof vr === 'object' ? vr : null
+    } catch {
+      return null
+    }
+  }, [order?.validationResult])
 
   React.useEffect(() => {
     fetchOrderById(id)
@@ -278,6 +303,13 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
               {order.paymentMethod !== 'CASH_ON_DELIVERY' && order.paymentStatus !== 'PAID' && (
                 <div className="mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    accept="image/*,application/pdf"
+                    className="hidden"
+                    onChange={handleReceiptUpload}
+                  />
                   {order.receiptImage ? (
                     <div className="space-y-2">
                       <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">{t('receiptSent')}</p>
@@ -288,16 +320,34 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                       {order.validationStatus && order.validationStatus !== 'PENDING' && (
                         <ValidationBadge status={order.validationStatus} />
                       )}
-                      {order.paymentStatus === 'REJECTED' && (
-                        <>
-                          <p className="text-sm text-red-600 dark:text-red-400">
-                            {t('receiptRejected')}
-                          </p>
-                          <Button variant="outline" size="sm" className="w-full" onClick={() => fileRef.current?.click()} disabled={uploading}>
-                            <Upload className="h-4 w-4 mr-2" />
-                            {uploading ? t('uploading') : t('resendReceipt')}
-                          </Button>
-                        </>
+                      {(order.paymentStatus === 'REJECTED' ||
+                        order.validationStatus === 'PROOF_REJECTED' ||
+                        order.validationStatus === 'FAIL') && (
+                        <div className="space-y-2 pt-1">
+                          <div className="flex items-start justify-between gap-2">
+                            <p className="text-sm text-red-600 dark:text-red-400 font-medium">
+                              {t('receiptRejected')}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => setViewingRejectionModal(true)}
+                              className="inline-flex items-center gap-1 text-xs text-red-700 hover:text-red-800 dark:text-red-300 dark:hover:text-red-200 underline font-medium cursor-pointer shrink-0"
+                            >
+                              <AlertTriangle className="h-3.5 w-3.5" />
+                              {t('viewRejectionReasons')}
+                            </button>
+                          </div>
+                          {(order.receiptAttempts ?? 0) < 3 ? (
+                            <Button variant="outline" size="sm" className="w-full" onClick={() => fileRef.current?.click()} disabled={uploading}>
+                              <Upload className="h-4 w-4 mr-2" />
+                              {uploading ? t('uploading') : t('resendReceipt')}
+                            </Button>
+                          ) : (
+                            <p className="text-xs text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-lg border border-amber-200 dark:border-amber-800 text-center font-medium">
+                              {t('receiptAttemptsExceeded')}
+                            </p>
+                          )}
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -305,13 +355,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                       <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                         {t('receiptHint')}
                       </p>
-                      <input
-                        ref={fileRef}
-                        type="file"
-                        accept="image/*,application/pdf"
-                        className="hidden"
-                        onChange={handleReceiptUpload}
-                      />
                       <Button variant="outline" size="sm" className="w-full" onClick={() => fileRef.current?.click()} disabled={uploading}>
                         <Upload className="h-4 w-4 mr-2" />
                         {uploading ? t('uploading') : t('sendReceipt')}
@@ -321,6 +364,30 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 </div>
               )}
             </div>
+          </div>
+
+          <div className="rounded-xl border border-indigo-200 dark:border-indigo-900/60 bg-gradient-to-br from-indigo-50/70 via-white to-purple-50/40 dark:from-indigo-950/30 dark:via-gray-900 dark:to-purple-950/20 p-5 space-y-3 shadow-sm">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 dark:bg-indigo-900/60 text-indigo-600 dark:text-indigo-300">
+                <MessageSquare className="h-4 w-4" />
+              </div>
+              <div>
+                <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                  {t('openDisputeChat')}
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Canal tripartido de apoio com vendedor e suporte
+                </p>
+              </div>
+            </div>
+            <Button
+              className="w-full bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+              size="sm"
+              onClick={() => setViewingDisputeChat(true)}
+            >
+              <MessageSquare className="h-4 w-4 mr-1.5" />
+              {t('openDisputeChat')}
+            </Button>
           </div>
         </div>
       </div>
@@ -355,6 +422,184 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 className="max-h-[90vh] w-full rounded-lg object-contain bg-white"
               />
             )}
+          </div>
+        </div>
+      )}
+
+      {viewingRejectionModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setViewingRejectionModal(false)}
+        >
+          <div
+            className="relative max-w-lg w-full rounded-2xl bg-white dark:bg-gray-900 shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 dark:border-gray-800 px-6 py-4 bg-red-50/70 dark:bg-red-950/30">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/50 dark:text-red-300">
+                  <ShieldAlert className="h-5 w-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">
+                    {t('rejectionModalTitle')}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    {t('rejectionModalSubtitle')}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setViewingRejectionModal(false)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                aria-label={tc('close')}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+              <div className="rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 p-3.5 text-xs text-red-800 dark:text-red-300 space-y-1">
+                <p className="font-semibold text-sm flex items-center gap-1.5">
+                  <AlertTriangle className="h-4 w-4 shrink-0 text-red-600 dark:text-red-400" />
+                  {t('rejectionModalNotice')}
+                </p>
+                <p className="text-xs opacity-90 leading-relaxed">
+                  {t('rejectionModalDescription')}
+                </p>
+              </div>
+
+              {/* Justificativas identificadas */}
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                  {t('rejectionReasonsHeader')}
+                </h4>
+                {parsedValidationResult?.reasons && parsedValidationResult.reasons.length > 0 ? (
+                  <ul className="space-y-2">
+                    {parsedValidationResult.reasons.map((reason: string, idx: number) => (
+                      <li
+                        key={idx}
+                        className="flex items-start gap-2.5 text-xs text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-100 dark:border-gray-800 leading-relaxed"
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                        <span>{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : parsedValidationResult?.flags && parsedValidationResult.flags.length > 0 ? (
+                  <ul className="space-y-2">
+                    {parsedValidationResult.flags.map((flag: string, idx: number) => (
+                      <li
+                        key={idx}
+                        className="flex items-start gap-2.5 text-xs text-gray-800 dark:text-gray-200 bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-100 dark:border-gray-800 leading-relaxed"
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-red-500 mt-1.5 shrink-0" />
+                        <span>{flagDescriptions[flag] || flag}</span>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/60 p-3 rounded-lg border border-gray-100 dark:border-gray-800 leading-relaxed">
+                    {t('rejectionDefaultReason')}
+                  </p>
+                )}
+              </div>
+
+              {/* Dados extraídos do comprovativo (se disponíveis) */}
+              {parsedValidationResult?.transaction && (
+                <div className="space-y-1.5 pt-1">
+                  <h4 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                    {t('detectedDataHeader')}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-gray-50 dark:bg-gray-800/40 p-3 rounded-lg border border-gray-100 dark:border-gray-800 text-gray-600 dark:text-gray-300">
+                    {parsedValidationResult.transaction.bank && (
+                      <div>
+                        <span className="font-medium text-gray-900 dark:text-white">{t('payment.bankName')}:</span>{' '}
+                        {parsedValidationResult.transaction.bank}
+                      </div>
+                    )}
+                    {parsedValidationResult.transaction.amount != null && (
+                      <div>
+                        <span className="font-medium text-gray-900 dark:text-white">{tc('total')}:</span>{' '}
+                        {Number(parsedValidationResult.transaction.amount).toLocaleString('pt-AO')} {tc('currency')}
+                      </div>
+                    )}
+                    {parsedValidationResult.transaction.date && (
+                      <div>
+                        <span className="font-medium text-gray-900 dark:text-white">{tc('date')}:</span>{' '}
+                        {parsedValidationResult.transaction.date}
+                      </div>
+                    )}
+                    {parsedValidationResult.transaction.transactionId && (
+                      <div>
+                        <span className="font-medium text-gray-900 dark:text-white">Ref:</span>{' '}
+                        {parsedValidationResult.transaction.transactionId}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Dica para reenvio */}
+              <div className="rounded-lg bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 p-3 text-xs text-emerald-800 dark:text-emerald-300 space-y-1">
+                <p className="font-semibold flex items-center gap-1.5">
+                  <Info className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                  {t('rejectionTipTitle')}
+                </p>
+                <p className="text-xs opacity-90 leading-relaxed">
+                  {t('rejectionTipText')}
+                </p>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex items-center justify-end gap-2 border-t border-gray-100 dark:border-gray-800 px-6 py-3.5 bg-gray-50 dark:bg-gray-800/50">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setViewingRejectionModal(false)}
+              >
+                {tc('close')}
+              </Button>
+              {(order.receiptAttempts ?? 0) < 3 && (
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    setViewingRejectionModal(false)
+                    fileRef.current?.click()
+                  }}
+                  disabled={uploading}
+                >
+                  <Upload className="h-4 w-4 mr-1.5" />
+                  {t('resendReceipt')}
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewingDisputeChat && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setViewingDisputeChat(false)}
+        >
+          <div
+            className="relative max-w-2xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setViewingDisputeChat(false)}
+              className="absolute -top-3 -right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 cursor-pointer"
+              aria-label={tc('close')}
+            >
+              <X className="h-5 w-5" />
+            </button>
+            <OrderDisputeChat orderId={order.id} orderNumber={order.orderNumber} />
           </div>
         </div>
       )}

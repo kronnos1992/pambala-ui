@@ -4,12 +4,13 @@ import * as React from 'react'
 import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import { use } from 'react'
-import { ChevronRight, MapPin, CreditCard, CheckCircle, XCircle, FileCheck, User, Eye, FileText } from 'lucide-react'
+import { ChevronRight, MapPin, CreditCard, CheckCircle, XCircle, FileCheck, User, Eye, FileText, MessageSquare } from 'lucide-react'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { cn, isPdfUrl, receiptDisplayUrl } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
 import { fetchSellerOrderById, updateOrderPaymentStatus, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
+import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
 
 function fileName(url: string): string {
   const base = url.split(/[?#]/)[0].split('/').pop() || 'comprovativo'
@@ -29,6 +30,7 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
   const [loading, setLoading] = React.useState(true)
   const [acting, setActing] = React.useState(false)
   const [viewingReceipt, setViewingReceipt] = React.useState(false)
+  const [viewingDisputeChat, setViewingDisputeChat] = React.useState(false)
 
   const load = React.useCallback(() => {
     fetchSellerOrderById(id)
@@ -41,8 +43,13 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
     load()
   }, [load])
 
+  const isReceiptRejected =
+    order?.validationStatus === 'PROOF_REJECTED' ||
+    order?.validationStatus === 'FAIL' ||
+    order?.paymentStatus === 'REJECTED'
+
   const handleConfirmPayment = async () => {
-    if (!order) return
+    if (!order || isReceiptRejected) return
     setActing(true)
     try {
       await updateOrderPaymentStatus(order.id, 'PAYMENT_RECEIVED')
@@ -300,13 +307,23 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
 
                       {order.paymentStatus !== 'PAID' && order.paymentStatus !== 'PAYMENT_RECEIVED' ? (
                         <div className="space-y-2 pt-1">
-                          <Button className="w-full" onClick={handleConfirmPayment} disabled={acting}>
+                          <Button
+                            className="w-full"
+                            onClick={handleConfirmPayment}
+                            disabled={acting || isReceiptRejected}
+                          >
                             <CheckCircle className="h-4 w-4 mr-2" />
                             {acting ? t('processingAction') : t('declaredPaymentReceived')}
                           </Button>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                            {t('finalConfirmationNote')}
-                          </p>
+                          {isReceiptRejected ? (
+                            <p className="text-xs text-red-600 dark:text-red-400 text-center font-medium">
+                              {t('receiptRejectedNote')}
+                            </p>
+                          ) : (
+                            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                              {t('finalConfirmationNote')}
+                            </p>
+                          )}
                         </div>
                       ) : (
                         <p className={cn(
@@ -325,6 +342,19 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
                   )}
                 </div>
               )}
+
+              <div className="mt-4 pt-3 border-t border-gray-100 dark:border-gray-800">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="w-full border-indigo-200 text-indigo-700 hover:bg-indigo-50 dark:border-indigo-800 dark:text-indigo-300"
+                  onClick={() => setViewingDisputeChat(true)}
+                >
+                  <MessageSquare className="h-4 w-4 mr-1.5" />
+                  {t('openDisputeChat')}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -360,6 +390,28 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
                 className="max-h-[90vh] w-full rounded-lg object-contain bg-white"
               />
             )}
+          </div>
+        </div>
+      )}
+
+      {viewingDisputeChat && order && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setViewingDisputeChat(false)}
+        >
+          <div
+            className="relative max-w-2xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setViewingDisputeChat(false)}
+              className="absolute -top-3 -right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 cursor-pointer"
+              aria-label={tc('close')}
+            >
+              <XCircle className="h-5 w-5" />
+            </button>
+            <OrderDisputeChat orderId={order.id} orderNumber={order.orderNumber || order.id} />
           </div>
         </div>
       )}

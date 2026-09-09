@@ -2,12 +2,13 @@
 
 import * as React from 'react'
 import { useTranslations } from 'next-intl'
-import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle, Store, Package, TrendingUp } from 'lucide-react'
+import { Search, ChevronLeft, ChevronRight, CheckCircle, XCircle, Store, Package, TrendingUp, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { formatPrice, cn } from '@/lib/utils'
 import { fetchAdminOrders, fetchAdminStoreRevenue, updateOrderStatus, updateAdminPaymentStatus, getStatusColor, type ApiOrder, type AdminStoreRevenue } from '@/lib/api-helpers'
 import { toast } from '@/components/ui/toast'
+import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
 
 const statusOptions = ['', 'PENDING', 'CONFIRMED', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
 
@@ -27,6 +28,7 @@ export default function AdminPedidosPage() {
   const [page, setPage] = React.useState(1)
   const [updatingId, setUpdatingId] = React.useState<string | null>(null)
   const [confirmDialog, setConfirmDialog] = React.useState<{ orderId: string; paymentStatus: string } | null>(null)
+  const [chatOrder, setChatOrder] = React.useState<ApiOrder | null>(null)
 
   const load = React.useCallback(() => {
     setLoading(true)
@@ -250,6 +252,17 @@ export default function AdminPedidosPage() {
                             </button>
                           </div>
                         )}
+                        <div className="pt-1">
+                          <button
+                            type="button"
+                            onClick={() => setChatOrder(order)}
+                            title="Chat Tripartido / Mediação"
+                            className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:text-indigo-300 cursor-pointer"
+                          >
+                            <MessageSquare className="h-3 w-3" />
+                            <span>Mediação</span>
+                          </button>
+                        </div>
                       </div>
                     </td>
                     <td className="px-4 py-3 text-xs text-gray-500 dark:text-gray-300">{order.shippingProvince || '-'}</td>
@@ -325,6 +338,28 @@ export default function AdminPedidosPage() {
           </DialogContent>
         )}
       </Dialog>
+
+      {chatOrder && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-in fade-in duration-200"
+          onClick={() => setChatOrder(null)}
+        >
+          <div
+            className="relative max-w-2xl w-full"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setChatOrder(null)}
+              className="absolute -top-3 -right-3 z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow-md hover:bg-gray-100 cursor-pointer"
+              aria-label={tc('close')}
+            >
+              <XCircle className="h-5 w-5" />
+            </button>
+            <OrderDisputeChat orderId={chatOrder.id} orderNumber={chatOrder.orderNumber || chatOrder.id} />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

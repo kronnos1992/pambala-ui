@@ -119,6 +119,7 @@ export interface ApiOrder {
   paymentStatus?: 'PENDING' | 'AWAITING_PAYMENT' | 'PAYMENT_RECEIVED' | 'PAID' | 'REJECTED'
   paymentCode?: string
   receiptImage?: string
+  receiptAttempts?: number
   paymentDetails?: string
   validationStatus?: 'PENDING' | 'AQUEUE' | 'PASS' | 'REVIEW' | 'FAIL' | 'ERROR' | 'PROOF_ACCEPTED' | 'MANUAL_REVIEW' | 'PROOF_REJECTED'
   validationResult?: string
@@ -966,3 +967,72 @@ export async function deleteReview(reviewId: string) {
   const { data } = await api.delete(`/admin/reviews/${reviewId}`)
   return data
 }
+
+// --- Chat Tripartido (Disputas / Mediação de Pedidos) ---
+export interface OrderDisputeSender {
+  id: string
+  name: string
+  role?: string
+  avatar?: string | null
+}
+
+export interface OrderDisputeMessage {
+  id: string
+  disputeId: string
+  senderId: string
+  senderRole: 'CLIENT' | 'SELLER' | 'ADMIN' | 'SYSTEM'
+  content: string
+  attachment?: string | null
+  createdAt: string
+  sender?: OrderDisputeSender
+}
+
+export interface OrderDispute {
+  id: string
+  orderId: string
+  status: 'OPEN' | 'RESOLVED' | 'CLOSED'
+  reason: string
+  createdAt: string
+  updatedAt: string
+  messages: OrderDisputeMessage[]
+}
+
+export interface DisputeDetailsResponse {
+  dispute: OrderDispute | null
+  currentUserRole: 'CLIENT' | 'SELLER' | 'ADMIN'
+  order: {
+    id: string
+    orderNumber: string
+    status: string
+    paymentStatus?: string
+    validationStatus?: string
+    receiptAttempts?: number
+    customerName?: string
+  }
+}
+
+export async function fetchOrderDispute(orderId: string): Promise<DisputeDetailsResponse> {
+  const { data } = await api.get(`/orders/${orderId}/dispute`)
+  return data
+}
+
+export async function sendOrderDisputeMessage(
+  orderId: string,
+  content: string,
+  attachment?: string
+): Promise<{ message: OrderDisputeMessage; disputeId: string }> {
+  const { data } = await api.post(`/orders/${orderId}/dispute/messages`, {
+    content,
+    attachment,
+  })
+  return data
+}
+
+export async function updateOrderDisputeStatus(
+  orderId: string,
+  status: 'OPEN' | 'RESOLVED' | 'CLOSED'
+): Promise<{ dispute: OrderDispute }> {
+  const { data } = await api.put(`/orders/${orderId}/dispute/status`, { status })
+  return data
+}
+
