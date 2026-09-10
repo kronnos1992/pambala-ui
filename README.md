@@ -120,7 +120,8 @@ Payloads sensíveis (login, perfil, pagamento) são cifrados com `tweetnacl` ent
 - `/vendedor/loja` permite criar/editar a loja própria. Ao criar a loja, a conta passa automaticamente a `SELLER` (a API faz o `refreshUser` e o state do auth store é atualizado com a loja).
 - O dashboard do vendedor mostra um banner de onboarding quando o utilizador é vendedor e ainda não tem loja.
 - O `auth-store` armazena agora `roles` (todas as keys) e `store` (loja do `me`); `resolveUiRole` mapeia `ADMIN`→admin, `MANAGER`/`SELLER`→seller (o toggler do register continua a criar apenas `CLIENT` no backend).
-- O detalhe do pedido `/vendedor/pedidos/[id]` inclui a emissão de fatura: botão **Emitir Fatura** (idempotente, `POST /api/fiscal/orders/:id/invoice`) e, se já existir, mostra `documentNo`, estado AGT (`agtStatus`), totais, atualização de estado (`refresh-status`) e consulta pública via QR.
+- O detalhe do pedido `/vendedor/pedidos/[id]` inclui a emissão de fatura: botão **Emitir Fatura** (idempotente, `POST /api/fiscal/orders/:id/invoice`) e, se já existir, mostra `documentNo`, estado AGT (`agtStatus`), totais, atualização de estado (`refresh-status`), consulta pública via QR e **visualização/download em PDF** (`GET /api/fiscal/invoices/:id/pdf`).
+- O cliente também tem direito de consulta: `/minha-conta/pedidos/[id]` mostra a fatura do pedido (cartão em modo apenas-leitura) com **ver/baixar PDF** e QR de consulta — sem ações de emissão/atualização.
 
 ## Responsividade (mobile-first)
 
