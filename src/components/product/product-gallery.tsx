@@ -54,7 +54,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
           alt={name}
           fill
           unoptimized
-          loading="lazy"
+          loading="eager"
           className="object-cover transition-transform duration-200"
           style={
             isZoomed

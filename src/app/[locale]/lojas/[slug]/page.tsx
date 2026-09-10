@@ -94,7 +94,7 @@ export default function StoreDetailPage({ params }: { params: Promise<{ slug: st
 
       <div className="relative rounded-2xl overflow-hidden h-40 sm:h-52 mb-[-40px] sm:mb-[-52px]">
         {store.banner ? (
-          <Image src={store.banner} alt="" fill unoptimized className="object-cover" />
+          <Image src={store.banner} alt="" fill unoptimized loading="eager" className="object-cover" />
         ) : (
           <div className="h-full w-full bg-gradient-to-r from-emerald-600 to-green-500" />
         )}
