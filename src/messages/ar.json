@@ -1334,7 +1334,11 @@
       "INVALID": "غير صالحة",
       "REJECTED": "مرفوضة",
       "FAILED": "فاشلة"
-    }
+    },
+    "viewPdf": "عرض الفاتورة (PDF)",
+    "pdfLoading": "جارٍ إنشاء ملف PDF...",
+    "pdfOpenError": "خطأ في إنشاء ملف PDF للفاتورة.",
+    "pdfDownload": "تنزيل PDF"
   },
   "sellerFiscal": {
     "title": "إدارة الفوترة",

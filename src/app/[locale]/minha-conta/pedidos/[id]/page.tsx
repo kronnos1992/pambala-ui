@@ -12,6 +12,7 @@ import { toast } from '@/components/ui/toast'
 import { fetchOrderById, uploadOrderReceipt, uploadFile, paymentLabels, type ApiOrder } from '@/lib/api-helpers'
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
 import { OrderTimeline } from '@/components/orders/order-timeline'
+import { OrderInvoiceCard } from '@/components/fiscal/order-invoice-card'
 
 const flagDescriptions: Record<string, string> = {
   AMOUNT_MISMATCH: 'O valor no comprovativo não coincide com o total do pedido',
@@ -152,6 +153,8 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-6">
+          <OrderInvoiceCard orderId={order.id} readOnly />
+
           <OrderTimeline orderId={order.id} onProgress={load} />
 
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">

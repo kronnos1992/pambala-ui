@@ -1334,7 +1334,11 @@
       "INVALID": "Invalide",
       "REJECTED": "Rejetée",
       "FAILED": "Échouée"
-    }
+    },
+    "viewPdf": "Voir la Facture (PDF)",
+    "pdfLoading": "Génération du PDF...",
+    "pdfOpenError": "Erreur lors de la génération du PDF de la facture.",
+    "pdfDownload": "Télécharger le PDF"
   },
   "sellerFiscal": {
     "title": "Gestion fiscale",

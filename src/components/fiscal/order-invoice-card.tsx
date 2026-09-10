@@ -2,7 +2,7 @@
 
 import * as React from 'react'
 import { useTranslations } from 'next-intl'
-import { FileCheck, FileText, RefreshCw, ExternalLink } from 'lucide-react'
+import { FileCheck, FileDown, FileText, RefreshCw, ExternalLink, X, Download } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import { toast } from '@/components/ui/toast'
@@ -10,6 +10,7 @@ import {
   fetchOrderInvoice,
   emitOrderInvoice,
   refreshInvoiceAgtStatus,
+  fetchInvoicePdf,
   formatAoaCents,
   type ApiInvoice,
 } from '@/lib/api-helpers'
@@ -34,13 +35,16 @@ function AgtStatusBadge({ status, t }: { status: string; t: (key: string) => str
   )
 }
 
-export function OrderInvoiceCard({ orderId }: { orderId: string }) {
+export function OrderInvoiceCard({ orderId, readOnly = false }: { orderId: string; readOnly?: boolean }) {
   const t = useTranslations('orderInvoice')
   const tc = useTranslations('common')
   const [invoices, setInvoices] = React.useState<ApiInvoice[]>([])
   const [loading, setLoading] = React.useState(true)
   const [acting, setActing] = React.useState(false)
   const [refreshingId, setRefreshingId] = React.useState<string | null>(null)
+  const [pdfUrl, setPdfUrl] = React.useState<string | null>(null)
+  const [pdfLoading, setPdfLoading] = React.useState(false)
+  const pdfUrlRef = React.useRef<string | null>(null)
 
   const load = React.useCallback(() => {
     fetchOrderInvoice(orderId)
@@ -52,6 +56,12 @@ export function OrderInvoiceCard({ orderId }: { orderId: string }) {
   React.useEffect(() => {
     load()
   }, [load])
+
+  React.useEffect(() => {
+    return () => {
+      if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current)
+    }
+  }, [])
 
   const invoice = invoices[0] || null
 
@@ -86,6 +96,29 @@ export function OrderInvoiceCard({ orderId }: { orderId: string }) {
     }
   }
 
+  const handleViewPdf = async (target: ApiInvoice) => {
+    setPdfLoading(true)
+    try {
+      const blob = await fetchInvoicePdf(target.id)
+      const url = URL.createObjectURL(blob)
+      if (pdfUrlRef.current) URL.revokeObjectURL(pdfUrlRef.current)
+      pdfUrlRef.current = url
+      setPdfUrl(url)
+    } catch {
+      toast(t('pdfOpenError'), 'error')
+    } finally {
+      setPdfLoading(false)
+    }
+  }
+
+  const closePdf = () => {
+    if (pdfUrlRef.current) {
+      URL.revokeObjectURL(pdfUrlRef.current)
+      pdfUrlRef.current = null
+    }
+    setPdfUrl(null)
+  }
+
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
@@ -99,14 +132,18 @@ export function OrderInvoiceCard({ orderId }: { orderId: string }) {
           <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded-lg animate-pulse" />
         </div>
       ) : !invoice ? (
-        <div className="space-y-4">
+        readOnly ? (
           <p className="text-sm text-gray-600 dark:text-gray-400">{t('noInvoice')}</p>
-          <Button className="w-full" onClick={handleEmit} disabled={acting}>
-            <FileText className="h-4 w-4 mr-2" />
-            {acting ? t('emitting') : t('emit')}
-          </Button>
-          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">{t('emitHint')}</p>
-        </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600 dark:text-gray-400">{t('noInvoice')}</p>
+            <Button className="w-full" onClick={handleEmit} disabled={acting}>
+              <FileText className="h-4 w-4 mr-2" />
+              {acting ? t('emitting') : t('emit')}
+            </Button>
+            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">{t('emitHint')}</p>
+          </div>
+        )
       ) : (
         <div className="space-y-4">
           <div className="flex items-center justify-between gap-3">
@@ -148,12 +185,24 @@ export function OrderInvoiceCard({ orderId }: { orderId: string }) {
             <Button
               variant="outline"
               size="sm"
-              onClick={() => handleRefresh(invoice)}
-              disabled={refreshingId === invoice.id || invoice.agtStatus === 'FAILED'}
+              onClick={() => handleViewPdf(invoice)}
+              disabled={pdfLoading}
+              className="text-emerald-700 dark:text-emerald-400"
             >
-              <RefreshCw className={cn('h-4 w-4 mr-1.5', refreshingId === invoice.id && 'animate-spin')} />
-              {refreshingId === invoice.id ? t('refreshing') : t('refresh')}
+              <FileDown className="h-4 w-4 mr-1.5" />
+              {pdfLoading ? t('pdfLoading') : t('viewPdf')}
             </Button>
+            {!readOnly && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleRefresh(invoice)}
+                disabled={refreshingId === invoice.id || invoice.agtStatus === 'FAILED'}
+              >
+                <RefreshCw className={cn('h-4 w-4 mr-1.5', refreshingId === invoice.id && 'animate-spin')} />
+                {refreshingId === invoice.id ? t('refreshing') : t('refresh')}
+              </Button>
+            )}
             {invoice.qrUrl && (
               <a href={invoice.qrUrl} target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" size="sm" className="cursor-pointer">
@@ -162,6 +211,42 @@ export function OrderInvoiceCard({ orderId }: { orderId: string }) {
                 </Button>
               </a>
             )}
+          </div>
+        </div>
+      )}
+
+      {pdfUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4"
+          onClick={closePdf}
+        >
+          <div className="relative max-h-[92vh] max-w-4xl w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-white truncate">{invoice?.documentNo}</span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={pdfUrl}
+                  download={`${invoice?.documentNo || 'fatura'}.pdf`}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-white/95 px-3 py-1.5 text-sm font-semibold text-emerald-800 hover:bg-white shadow"
+                >
+                  <Download className="h-4 w-4" />
+                  {t('pdfDownload')}
+                </a>
+                <button
+                  type="button"
+                  onClick={closePdf}
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white text-gray-700 shadow hover:bg-gray-100 cursor-pointer"
+                  aria-label={tc('close')}
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+            </div>
+            <iframe
+              src={pdfUrl}
+              title={`${invoice?.documentNo || 'fatura'}.pdf`}
+              className="h-[82vh] w-full rounded-lg bg-white"
+            />
           </div>
         </div>
       )}

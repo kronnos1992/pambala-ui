@@ -1482,6 +1482,13 @@ export async function fetchOrderInvoice(orderId: string): Promise<ApiInvoice[]> 
   return (data.invoices ?? []) as ApiInvoice[]
 }
 
+export async function fetchInvoicePdf(invoiceId: string): Promise<Blob> {
+  const { data } = await api.get(`/fiscal/invoices/${encodeURIComponent(invoiceId)}/pdf`, {
+    responseType: 'blob',
+  })
+  return data as Blob
+}
+
 export async function emitOrderInvoice(
   orderId: string
 ): Promise<{ invoice: ApiInvoice; created: boolean }> {

@@ -1334,7 +1334,11 @@
       "INVALID": "Invalid",
       "REJECTED": "Rejected",
       "FAILED": "Failed"
-    }
+    },
+    "viewPdf": "View Invoice (PDF)",
+    "pdfLoading": "Generating PDF...",
+    "pdfOpenError": "Error generating the invoice PDF.",
+    "pdfDownload": "Download PDF"
   },
   "sellerFiscal": {
     "title": "Fiscal Management",

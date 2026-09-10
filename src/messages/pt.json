@@ -1325,6 +1325,10 @@
     "refreshing": "A atualizar...",
     "refreshDone": "Estado AGT atualizado.",
     "refreshError": "Erro ao atualizar o estado.",
+    "viewPdf": "Ver Fatura (PDF)",
+    "pdfLoading": "A gerar PDF...",
+    "pdfOpenError": "Erro ao gerar o PDF da fatura.",
+    "pdfDownload": "Baixar PDF",
     "qrOpen": "Consulta pública (QR)",
     "offlineNote": "Modo de desenvolvimento — sem estado remoto na AGT.",
     "status": {

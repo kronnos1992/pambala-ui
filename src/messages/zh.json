@@ -1334,7 +1334,11 @@
       "INVALID": "无效",
       "REJECTED": "已拒绝",
       "FAILED": "失败"
-    }
+    },
+    "viewPdf": "查看发票 (PDF)",
+    "pdfLoading": "正在生成 PDF...",
+    "pdfOpenError": "生成发票 PDF 时出错。",
+    "pdfDownload": "下载 PDF"
   },
   "sellerFiscal": {
     "title": "开票管理",
