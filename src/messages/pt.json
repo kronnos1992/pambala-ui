@@ -74,7 +74,8 @@
     "myAccount": "Minha Conta",
     "orders": "Pedidos",
     "cart": "Carrinho",
-    "checkout": "Finalizar compra"
+    "checkout": "Finalizar compra",
+    "fiscal": "Fiscal"
   },
   "login": {
     "welcomeBack": "Bem-vindo de volta!",
@@ -669,7 +670,8 @@
     "manageStore": "Minha Loja",
     "noStoreTitle": "Ainda não tens loja",
     "noStoreHint": "Cria a tua loja para começar a vender.",
-    "createStore": "Criar Loja"
+    "createStore": "Criar Loja",
+    "manageFiscal": "Gestão Fiscal"
   },
   "sellerPayout": {
     "title": "Formas de Pagamento",
@@ -902,7 +904,8 @@
     "navReviews": "Avaliacoes",
     "navRoles": "Roles",
     "viewStore": "Ver Loja",
-    "logout": "Sair"
+    "logout": "Sair",
+    "navFiscal": "Fiscal"
   },
   "adminDashboard": {
     "title": "Dashboard",
@@ -1304,5 +1307,112 @@
     "notePlaceholder": "Motivo da decisão (opcional)...",
     "success": "Ação de moderação executada com sucesso",
     "error": "Erro ao executar a ação de moderação"
+  },
+  "orderInvoice": {
+    "title": "Fatura",
+    "noInvoice": "Sem fatura emitida para este pedido.",
+    "emit": "Emitir Fatura",
+    "emitting": "A emitir...",
+    "emitSuccess": "Fatura emitida com sucesso.",
+    "alreadyEmitted": "A fatura já tinha sido emitida anteriormente.",
+    "emitError": "Erro ao emitir fatura.",
+    "emitHint": "A emissão oficial requer o perfil fiscal da loja configurado e uma série autorizada pela AGT.",
+    "documentNo": "Nº do documento",
+    "issuedOn": "Emitida a",
+    "subtotal": "Subtotal",
+    "iva": "IVA",
+    "refresh": "Atualizar estado",
+    "refreshing": "A atualizar...",
+    "refreshDone": "Estado AGT atualizado.",
+    "refreshError": "Erro ao atualizar o estado.",
+    "qrOpen": "Consulta pública (QR)",
+    "offlineNote": "Modo de desenvolvimento — sem estado remoto na AGT.",
+    "status": {
+      "PENDING": "Pendente",
+      "SUBMITTED": "Submetida",
+      "VALID": "Válida",
+      "INVALID": "Inválida",
+      "REJECTED": "Rejeitada",
+      "FAILED": "Falhada"
+    }
+  },
+  "sellerFiscal": {
+    "title": "Gestão Fiscal",
+    "breadcrumb": "Fiscal",
+    "noStore": "Ainda não tens loja.",
+    "noStoreHint": "Cria primeiro a tua loja para configurar os dados fiscais.",
+    "profileTitle": "Perfil Fiscal da Loja",
+    "profileHint": "Dados do emitente para facturação electrónica (AGT / DE 683/25).",
+    "inactiveNote": "Perfil inativo — contacta a administração da plataforma.",
+    "nif": "NIF",
+    "nifRequired": "O NIF é obrigatório.",
+    "legalName": "Denominação social",
+    "legalNameRequired": "A denominação social é obrigatória.",
+    "address": "Endereço",
+    "addressRequired": "O endereço é obrigatório.",
+    "province": "Província",
+    "selectProvince": "Selecionar província",
+    "provinceRequired": "A província é obrigatória.",
+    "district": "Município / Distrito",
+    "industryCode": "CAE",
+    "vatRegime": "Regime de IVA",
+    "regimes": {
+      "GERAL": "Geral",
+      "SIMPLIFICADO": "Simplificado",
+      "EXCLUIDO": "Excluído",
+      "ISENTO": "Isento"
+    },
+    "vatExemptionCode": "Código de isenção",
+    "establishmentNumber": "Estabelecimento",
+    "establishmentRegistered": "Estabelecimento registado na AGT",
+    "saveProfile": "Guardar perfil fiscal",
+    "saving": "A guardar...",
+    "saveSuccess": "Perfil fiscal guardado.",
+    "saveError": "Erro ao guardar o perfil fiscal.",
+    "loadError": "Erro ao carregar os dados fiscais.",
+    "seriesTitle": "Séries",
+    "seriesHint": "Séries de numeração autorizadas pela AGT para este estabelecimento.",
+    "documentType": "Tipo (título)",
+    "year": "Ano",
+    "openSeries": "Abrir série",
+    "opening": "A abrir...",
+    "openSuccess": "Série aberta com sucesso.",
+    "openError": "Erro ao abrir série.",
+    "seriesList": "Séries desta loja",
+    "reload": "Recarregar",
+    "noSeries": "Sem séries. Abre uma série para começar a emitir facturas.",
+    "progress": "Próximo: {next} · Último: {last}",
+    "seriesStatus": {
+      "PENDING": "Pendente",
+      "OPEN": "Aberta",
+      "CLOSED": "Fechada",
+      "CANCELLED": "Cancelada",
+      "REJECTED": "Rejeitada"
+    }
+  },
+  "adminFiscal": {
+    "title": "Fiscal",
+    "subtitle": "Configuração da facturação electrónica (AGT)",
+    "loadError": "Erro ao carregar as configurações.",
+    "saveSuccess": "Configurações guardadas.",
+    "saveError": "Erro ao guardar as configurações.",
+    "devModeNote": "Sem base URL da AGT configurada — faturas assinadas localmente, sem envio (modo de desenvolvimento).",
+    "settingsTitle": "Configurações da plataforma",
+    "productId": "ID do produto",
+    "productVersion": "Versão do produto",
+    "softwareValidationNumber": "Nº de validação do software",
+    "certificationDate": "Data de certificação",
+    "signatureVersion": "Versão da assinatura",
+    "timezone": "Fuso horário",
+    "agtTitle": "Credenciais AGT (SIFP)",
+    "agtBaseUrl": "Base URL AGT",
+    "agtUsername": "Utilizador",
+    "agtPassword": "Palavra-passe",
+    "signatureKey": "Chave de assinatura do produtor",
+    "signatureKeySet": "Definida",
+    "signatureKeyMissing": "Por gerar (criada na primeira emissão)",
+    "schemaVersion": "schemaVersion: {v}",
+    "saving": "A guardar...",
+    "save": "Guardar configurações"
   }
 }

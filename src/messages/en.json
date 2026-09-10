@@ -74,7 +74,8 @@
     "myAccount": "My Account",
     "orders": "Orders",
     "cart": "Cart",
-    "checkout": "Checkout"
+    "checkout": "Checkout",
+    "fiscal": "Fiscal"
   },
   "login": {
     "welcomeBack": "Welcome back!",
@@ -667,7 +668,8 @@
     "manageStore": "My Store",
     "noStoreTitle": "You don't have a store yet",
     "noStoreHint": "Create your store to start selling.",
-    "createStore": "Create Store"
+    "createStore": "Create Store",
+    "manageFiscal": "Fiscal Management"
   },
   "sellerPayout": {
     "title": "Payment Methods",
@@ -900,7 +902,8 @@
     "navReviews": "Reviews",
     "navRoles": "Roles",
     "viewStore": "View Store",
-    "logout": "Log out"
+    "logout": "Log out",
+    "navFiscal": "Fiscal"
   },
   "adminDashboard": {
     "title": "Dashboard",
@@ -1304,5 +1307,112 @@
     "notePlaceholder": "Reason for decision (optional)...",
     "success": "Moderation action completed successfully",
     "error": "Error performing moderation action"
+  },
+  "orderInvoice": {
+    "title": "Invoice",
+    "noInvoice": "No invoice issued for this order.",
+    "emit": "Issue Invoice",
+    "emitting": "Issuing...",
+    "emitSuccess": "Invoice issued successfully.",
+    "alreadyEmitted": "The invoice had already been issued.",
+    "emitError": "Failed to issue invoice.",
+    "emitHint": "Official issuance requires a configured fiscal profile and an AGT-authorized series.",
+    "documentNo": "Document number",
+    "issuedOn": "Issued on",
+    "subtotal": "Subtotal",
+    "iva": "VAT",
+    "refresh": "Refresh status",
+    "refreshing": "Refreshing...",
+    "refreshDone": "AGT status updated.",
+    "refreshError": "Failed to refresh status.",
+    "qrOpen": "Public query (QR)",
+    "offlineNote": "Development mode — no remote AGT status.",
+    "status": {
+      "PENDING": "Pending",
+      "SUBMITTED": "Submitted",
+      "VALID": "Valid",
+      "INVALID": "Invalid",
+      "REJECTED": "Rejected",
+      "FAILED": "Failed"
+    }
+  },
+  "sellerFiscal": {
+    "title": "Fiscal Management",
+    "breadcrumb": "Fiscal",
+    "noStore": "You don't have a store yet.",
+    "noStoreHint": "Create your store first to configure fiscal data.",
+    "profileTitle": "Store Fiscal Profile",
+    "profileHint": "Issuer details for electronic invoicing (AGT / DE 683/25).",
+    "inactiveNote": "Inactive profile — contact the platform administrators.",
+    "nif": "Tax ID (NIF)",
+    "nifRequired": "Tax ID is required.",
+    "legalName": "Legal name",
+    "legalNameRequired": "Legal name is required.",
+    "address": "Address",
+    "addressRequired": "Address is required.",
+    "province": "Province",
+    "selectProvince": "Select province",
+    "provinceRequired": "Province is required.",
+    "district": "District / Municipality",
+    "industryCode": "CAE",
+    "vatRegime": "VAT regime",
+    "regimes": {
+      "GERAL": "General",
+      "SIMPLIFICADO": "Simplified",
+      "EXCLUIDO": "Excluded",
+      "ISENTO": "Exempt"
+    },
+    "vatExemptionCode": "Exemption code",
+    "establishmentNumber": "Establishment",
+    "establishmentRegistered": "Establishment registered with AGT",
+    "saveProfile": "Save fiscal profile",
+    "saving": "Saving...",
+    "saveSuccess": "Fiscal profile saved.",
+    "saveError": "Failed to save fiscal profile.",
+    "loadError": "Failed to load fiscal data.",
+    "seriesTitle": "Series",
+    "seriesHint": "Numbering series authorized by AGT for this establishment.",
+    "documentType": "Type (title)",
+    "year": "Year",
+    "openSeries": "Open series",
+    "opening": "Opening...",
+    "openSuccess": "Series opened successfully.",
+    "openError": "Failed to open series.",
+    "seriesList": "Store series",
+    "reload": "Reload",
+    "noSeries": "No series yet. Open a series to start issuing invoices.",
+    "progress": "Next: {next} · Last: {last}",
+    "seriesStatus": {
+      "PENDING": "Pending",
+      "OPEN": "Open",
+      "CLOSED": "Closed",
+      "CANCELLED": "Cancelled",
+      "REJECTED": "Rejected"
+    }
+  },
+  "adminFiscal": {
+    "title": "Fiscal",
+    "subtitle": "Electronic invoicing configuration (AGT)",
+    "loadError": "Failed to load settings.",
+    "saveSuccess": "Settings saved.",
+    "saveError": "Failed to save settings.",
+    "devModeNote": "No AGT base URL configured — invoices signed locally without submission (development mode).",
+    "settingsTitle": "Platform settings",
+    "productId": "Product ID",
+    "productVersion": "Product version",
+    "softwareValidationNumber": "Software validation number",
+    "certificationDate": "Certification date",
+    "signatureVersion": "Signature version",
+    "timezone": "Timezone",
+    "agtTitle": "AGT credentials (SIFP)",
+    "agtBaseUrl": "AGT base URL",
+    "agtUsername": "Username",
+    "agtPassword": "Password",
+    "signatureKey": "Producer signing key",
+    "signatureKeySet": "Set",
+    "signatureKeyMissing": "To be generated (created on first issuance)",
+    "schemaVersion": "schemaVersion: {v}",
+    "saving": "Saving...",
+    "save": "Save settings"
   }
 }

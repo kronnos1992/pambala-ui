@@ -13,6 +13,7 @@ import { fetchSellerOrderById, updateOrderPaymentStatus, paymentLabels, type Api
 import { OrderDisputeChat } from '@/components/orders/order-dispute-chat'
 import { OrderAuditModal } from '@/components/orders/order-audit-modal'
 import { OrderTimeline } from '@/components/orders/order-timeline'
+import { OrderInvoiceCard } from '@/components/fiscal/order-invoice-card'
 
 function fileName(url: string): string {
   const base = url.split(/[?#]/)[0].split('/').pop() || 'comprovativo'
@@ -158,6 +159,8 @@ export default function VendorOrderDetailPage({ params }: { params: Promise<{ id
         </div>
 
         <div className="space-y-6">
+          <OrderInvoiceCard orderId={order.id} />
+
           <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">{t('summary')}</h2>
             <div className="space-y-2 text-sm">

@@ -74,7 +74,8 @@
     "myAccount": "Mon Compte",
     "orders": "Commandes",
     "cart": "Panier",
-    "checkout": "Finaliser l'achat"
+    "checkout": "Finaliser l'achat",
+    "fiscal": "Fiscal"
   },
   "login": {
     "welcomeBack": "Bon retour parmi nous !",
@@ -667,7 +668,8 @@
     "manageStore": "Ma Boutique",
     "noStoreTitle": "Vous n'avez pas encore de boutique",
     "noStoreHint": "Créez votre boutique pour commencer à vendre.",
-    "createStore": "Créer la Boutique"
+    "createStore": "Créer la Boutique",
+    "manageFiscal": "Gestion fiscale"
   },
   "sellerPayout": {
     "title": "Modes de Paiement",
@@ -900,7 +902,8 @@
     "navReviews": "Avis",
     "navRoles": "Rôles",
     "viewStore": "Voir la Boutique",
-    "logout": "Se déconnecter"
+    "logout": "Se déconnecter",
+    "navFiscal": "Fiscal"
   },
   "adminDashboard": {
     "title": "Tableau de bord",
@@ -1304,5 +1307,112 @@
     "notePlaceholder": "Motif de la décision (facultatif)...",
     "success": "Action de modération exécutée avec succès",
     "error": "Erreur lors de l'exécution de l'action de modération"
+  },
+  "orderInvoice": {
+    "title": "Facture",
+    "noInvoice": "Aucune facture émise pour cette commande.",
+    "emit": "Émettre la facture",
+    "emitting": "Émission...",
+    "emitSuccess": "Facture émise avec succès.",
+    "alreadyEmitted": "La facture avait déjà été émise.",
+    "emitError": "Erreur lors de l’émission de la facture.",
+    "emitHint": "L’émission officielle nécessite un profil fiscal configuré et une série autorisée par l’AGT.",
+    "documentNo": "N° de document",
+    "issuedOn": "Émise le",
+    "subtotal": "Sous-total",
+    "iva": "TVA",
+    "refresh": "Actualiser le statut",
+    "refreshing": "Actualisation...",
+    "refreshDone": "Statut AGT actualisé.",
+    "refreshError": "Erreur lors de l’actualisation.",
+    "qrOpen": "Consultation publique (QR)",
+    "offlineNote": "Mode développement — pas de statut distant AGT.",
+    "status": {
+      "PENDING": "En attente",
+      "SUBMITTED": "Soumise",
+      "VALID": "Valide",
+      "INVALID": "Invalide",
+      "REJECTED": "Rejetée",
+      "FAILED": "Échouée"
+    }
+  },
+  "sellerFiscal": {
+    "title": "Gestion fiscale",
+    "breadcrumb": "Fiscal",
+    "noStore": "Vous n’avez pas encore de boutique.",
+    "noStoreHint": "Créez d’abord votre boutique pour configurer les données fiscales.",
+    "profileTitle": "Profil fiscal de la boutique",
+    "profileHint": "Données de l’émetteur pour la facturation électronique (AGT / DE 683/25).",
+    "inactiveNote": "Profil inactif — contactez les administrateurs de la plateforme.",
+    "nif": "NIF",
+    "nifRequired": "Le NIF est obligatoire.",
+    "legalName": "Dénomination sociale",
+    "legalNameRequired": "La dénomination sociale est obligatoire.",
+    "address": "Adresse",
+    "addressRequired": "L’adresse est obligatoire.",
+    "province": "Province",
+    "selectProvince": "Sélectionner la province",
+    "provinceRequired": "La province est obligatoire.",
+    "district": "Municipalité / District",
+    "industryCode": "CAE",
+    "vatRegime": "Régime de TVA",
+    "regimes": {
+      "GERAL": "Général",
+      "SIMPLIFICADO": "Simplifié",
+      "EXCLUIDO": "Exclu",
+      "ISENTO": "Exempté"
+    },
+    "vatExemptionCode": "Code d’exemption",
+    "establishmentNumber": "Établissement",
+    "establishmentRegistered": "Établissement enregistré auprès de l’AGT",
+    "saveProfile": "Enregistrer le profil fiscal",
+    "saving": "Enregistrement...",
+    "saveSuccess": "Profil fiscal enregistré.",
+    "saveError": "Erreur lors de l’enregistrement du profil fiscal.",
+    "loadError": "Erreur lors du chargement des données fiscales.",
+    "seriesTitle": "Séries",
+    "seriesHint": "Séries de numérotation autorisées par l’AGT pour cet établissement.",
+    "documentType": "Type (titre)",
+    "year": "Année",
+    "openSeries": "Ouvrir une série",
+    "opening": "Ouverture...",
+    "openSuccess": "Série ouverte avec succès.",
+    "openError": "Erreur lors de l’ouverture de la série.",
+    "seriesList": "Séries de la boutique",
+    "reload": "Recharger",
+    "noSeries": "Aucune série. Ouvrez une série pour commencer à émettre des factures.",
+    "progress": "Prochain : {next} · Dernier : {last}",
+    "seriesStatus": {
+      "PENDING": "En attente",
+      "OPEN": "Ouverte",
+      "CLOSED": "Fermée",
+      "CANCELLED": "Annulée",
+      "REJECTED": "Rejetée"
+    }
+  },
+  "adminFiscal": {
+    "title": "Fiscal",
+    "subtitle": "Configuration de la facturation électronique (AGT)",
+    "loadError": "Erreur lors du chargement des réglages.",
+    "saveSuccess": "Réglages enregistrés.",
+    "saveError": "Erreur lors de l’enregistrement des réglages.",
+    "devModeNote": "Aucune URL de base AGT configurée — factures signées localement sans envoi (mode développement).",
+    "settingsTitle": "Réglages de la plateforme",
+    "productId": "Identifiant du produit",
+    "productVersion": "Version du produit",
+    "softwareValidationNumber": "N° de validation du logiciel",
+    "certificationDate": "Date de certification",
+    "signatureVersion": "Version de signature",
+    "timezone": "Fuseau horaire",
+    "agtTitle": "Identifiants AGT (SIFP)",
+    "agtBaseUrl": "URL de base AGT",
+    "agtUsername": "Utilisateur",
+    "agtPassword": "Mot de passe",
+    "signatureKey": "Clé de signature du producteur",
+    "signatureKeySet": "Définie",
+    "signatureKeyMissing": "À générer (créée lors de la première émission)",
+    "schemaVersion": "schemaVersion : {v}",
+    "saving": "Enregistrement...",
+    "save": "Enregistrer les réglages"
   }
 }

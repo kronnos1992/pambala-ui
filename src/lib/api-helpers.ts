@@ -1336,3 +1336,170 @@ export async function fetchAdminDisputeStats() {
   return data
 }
 
+// --- Faturação Electrónica (AGT / DE 683/25) ---
+export interface ApiFiscalSettings {
+  id: string
+  productId: string
+  productVersion: string
+  softwareValidationNumber?: string | null
+  certificationDate?: string | null
+  signatureVersion: number
+  signatureKeyPem?: string | null
+  schemaVersion: string
+  agtBaseUrl?: string | null
+  agtUsername?: string | null
+  agtPassword?: string | null
+  timezone: string
+  createdAt: string
+  updatedAt: string
+}
+
+export const VAT_REGIMES = ['GERAL', 'SIMPLIFICADO', 'EXCLUIDO', 'ISENTO'] as const
+export type VatRegime = (typeof VAT_REGIMES)[number]
+
+export interface ApiStoreFiscalProfile {
+  id: string
+  storeId: string
+  nif: string
+  legalName: string
+  address: string
+  province: string
+  district?: string | null
+  industryCode?: string | null
+  vatRegime: VatRegime
+  vatExemptionCode?: string | null
+  establishmentNumber: string
+  establishmentRegistered: boolean
+  isActive: boolean
+  createdAt: string
+  updatedAt: string
+  store?: { id: string; name: string; slug: string }
+}
+
+export interface ApiInvoiceSeries {
+  id: string
+  storeId: string
+  documentType: string
+  agtSeriesCode?: string | null
+  establishmentNumber: string
+  year: number
+  status: 'PENDING' | 'OPEN' | 'CLOSED' | 'CANCELLED' | 'REJECTED'
+  nextNumber: number
+  lastNumberUsed?: number | null
+  authorizedQuantity?: number | null
+  firstDocumentNo?: string | null
+  lastDocumentNo?: string | null
+  validFrom: string
+  validUntil?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export const FISCAL_DOCUMENT_TYPES = [
+  'FA', 'FT', 'FR', 'FG', 'GF', 'AC', 'AR', 'TV', 'RC',
+  'RG', 'RE', 'ND', 'NC', 'AF', 'RP', 'RA', 'CS', 'LD',
+] as const
+
+export interface ApiInvoiceLine {
+  id: string
+  productName: string
+  productSku?: string | null
+  quantity: number
+  unitPrice: number
+  taxRate: number
+  taxAmount: number
+  lineTotal: number
+}
+
+export interface ApiInvoice {
+  id: string
+  storeId: string
+  orderId?: string | null
+  seriesId: string
+  documentType: string
+  number: number
+  documentNo: string
+  status: string
+  issueDate: string
+  customerTaxId?: string | null
+  currency: string
+  subtotal: number
+  discountTotal: number
+  taxTotal: number
+  total: number
+  taxSummary: string
+  signature: string
+  qrUrl?: string | null
+  agtStatus: string
+  agtResponse?: string | null
+  agtRequestId?: string | null
+  agtValidatedAt?: string | null
+  createdAt: string
+  lines?: ApiInvoiceLine[]
+  series?: ApiInvoiceSeries | null
+}
+
+export const AGT_INVOICE_STATUSES = ['PENDING', 'SUBMITTED', 'VALID', 'INVALID', 'REJECTED', 'FAILED'] as const
+
+export async function fetchFiscalSettings(): Promise<ApiFiscalSettings> {
+  const { data } = await api.get('/fiscal/settings')
+  return data.settings
+}
+
+export async function updateFiscalSettings(payload: Partial<ApiFiscalSettings>): Promise<ApiFiscalSettings> {
+  const { data } = await api.put('/fiscal/settings', payload)
+  return data.settings
+}
+
+export async function fetchStoreFiscalProfile(storeId: string): Promise<ApiStoreFiscalProfile | null> {
+  const { data } = await api.get(`/fiscal/stores/${storeId}/fiscal-profile`)
+  return data.profile ?? null
+}
+
+export async function updateStoreFiscalProfile(
+  storeId: string,
+  payload: Partial<ApiStoreFiscalProfile>
+): Promise<ApiStoreFiscalProfile> {
+  const { data } = await api.put(`/fiscal/stores/${storeId}/fiscal-profile`, payload)
+  return data.profile
+}
+
+export async function fetchStoreFiscalSeries(storeId: string): Promise<ApiInvoiceSeries[]> {
+  const { data } = await api.get(`/fiscal/stores/${storeId}/series`)
+  return data.series ?? []
+}
+
+export async function openInvoiceSeries(
+  storeId: string,
+  payload: { documentType: string; establishmentNumber?: string; year?: number }
+): Promise<ApiInvoiceSeries> {
+  const { data } = await api.post(`/fiscal/stores/${storeId}/series`, payload)
+  return data.series
+}
+
+export async function fetchOrderInvoice(orderId: string): Promise<ApiInvoice[]> {
+  const { data } = await api.get(`/fiscal/orders/${encodeURIComponent(orderId)}/invoice`)
+  return (data.invoices ?? []) as ApiInvoice[]
+}
+
+export async function emitOrderInvoice(
+  orderId: string
+): Promise<{ invoice: ApiInvoice; created: boolean }> {
+  const { data } = await api.post(`/fiscal/orders/${encodeURIComponent(orderId)}/invoice`)
+  return data
+}
+
+export async function refreshInvoiceAgtStatus(
+  invoiceId: string
+): Promise<{ invoice: ApiInvoice; refreshed: boolean; message?: string }> {
+  const { data } = await api.post(`/fiscal/invoices/${encodeURIComponent(invoiceId)}/refresh-status`)
+  return data
+}
+
+export function formatAoaCents(cents: number): string {
+  return new Intl.NumberFormat('pt-AO', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format((cents || 0) / 100)
+}
+

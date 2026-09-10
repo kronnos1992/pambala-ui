@@ -74,7 +74,8 @@
     "myAccount": "حسابي",
     "orders": "الطلبات",
     "cart": "سلة التسوق",
-    "checkout": "إتمام الشراء"
+    "checkout": "إتمام الشراء",
+    "fiscal": "الفوترة"
   },
   "login": {
     "welcomeBack": "مرحباً بعودتك!",
@@ -667,7 +668,8 @@
     "manageStore": "متجري",
     "noStoreTitle": "ليس لديك متجر بعد",
     "noStoreHint": "أنشئ متجرك لبدء البيع.",
-    "createStore": "إنشاء متجر"
+    "createStore": "إنشاء متجر",
+    "manageFiscal": "إدارة الفوترة"
   },
   "sellerPayout": {
     "title": "طرق الدفع",
@@ -900,7 +902,8 @@
     "navReviews": "التقييمات",
     "navRoles": "الأدوار",
     "viewStore": "عرض المتجر",
-    "logout": "خروج"
+    "logout": "خروج",
+    "navFiscal": "الفوترة"
   },
   "adminDashboard": {
     "title": "لوحة المعلومات",
@@ -1304,5 +1307,112 @@
     "notePlaceholder": "سبب القرار (اختياري)...",
     "success": "تم تنفيذ إجراء الإشراف بنجاح",
     "error": "خطأ أثناء تنفيذ إجراء الإشراف"
+  },
+  "orderInvoice": {
+    "title": "فاتورة",
+    "noInvoice": "لا توجد فاتورة صادرة لهذا الطلب.",
+    "emit": "إصدار فاتورة",
+    "emitting": "جارٍ الإصدار...",
+    "emitSuccess": "تم إصدار الفاتورة بنجاح.",
+    "alreadyEmitted": "سبق إصدار الفاتورة مسبقًا.",
+    "emitError": "خطأ في إصدار الفاتورة.",
+    "emitHint": "يتطلب الإصدار الرسمي ملفًا ضريبيًا مُعدًا وسلسلة مرخّصة من AGT.",
+    "documentNo": "رقم المستند",
+    "issuedOn": "أُصدرت في",
+    "subtotal": "المجموع الفرعي",
+    "iva": "ضريبة القيمة المضافة",
+    "refresh": "تحديث الحالة",
+    "refreshing": "جارٍ التحديث...",
+    "refreshDone": "تم تحديث الحالة لدى AGT.",
+    "refreshError": "خطأ في تحديث الحالة.",
+    "qrOpen": "استعلام عام (QR)",
+    "offlineNote": "وضع التطوير — لا توجد حالة عن بُعد لدى AGT.",
+    "status": {
+      "PENDING": "معلّق",
+      "SUBMITTED": "مُرسل",
+      "VALID": "صالحة",
+      "INVALID": "غير صالحة",
+      "REJECTED": "مرفوضة",
+      "FAILED": "فاشلة"
+    }
+  },
+  "sellerFiscal": {
+    "title": "إدارة الفوترة",
+    "breadcrumb": "الفوترة",
+    "noStore": "ليس لديك متجر بعد.",
+    "noStoreHint": "أنشئ متجرك أولاً لتكوين البيانات الضريبية.",
+    "profileTitle": "الملف الضريبي للمتجر",
+    "profileHint": "بيانات المُصدر للفوترة الإلكترونية (AGT / DE 683/25).",
+    "inactiveNote": "الملف غير نشط — تواصل مع إدارة المنصة.",
+    "nif": "الرقم الضريبي (NIF)",
+    "nifRequired": "الرقم الضريبي مطلوب.",
+    "legalName": "الاسم القانوني",
+    "legalNameRequired": "الاسم القانوني مطلوب.",
+    "address": "العنوان",
+    "addressRequired": "العنوان مطلوب.",
+    "province": "المقاطعة",
+    "selectProvince": "اختر المقاطعة",
+    "provinceRequired": "المقاطعة مطلوبة.",
+    "district": "البلدية / المنطقة",
+    "industryCode": "CAE",
+    "vatRegime": "نظام ضريبة القيمة المضافة",
+    "regimes": {
+      "GERAL": "عام",
+      "SIMPLIFICADO": "مبسّط",
+      "EXCLUIDO": "مستثنًى",
+      "ISENTO": "معفى"
+    },
+    "vatExemptionCode": "رمز الإعفاء",
+    "establishmentNumber": "المنشأة",
+    "establishmentRegistered": "المنشأة مسجلة لدى AGT",
+    "saveProfile": "حفظ الملف الضريبي",
+    "saving": "جارٍ الحفظ...",
+    "saveSuccess": "تم حفظ الملف الضريبي.",
+    "saveError": "خطأ في حفظ الملف الضريبي.",
+    "loadError": "خطأ في تحميل البيانات الضريبية.",
+    "seriesTitle": "السلاسل",
+    "seriesHint": "سلاسل الترقيم المرخّصة من AGT لهذه المنشأة.",
+    "documentType": "النوع (العنوان)",
+    "year": "السنة",
+    "openSeries": "فتح سلسلة",
+    "opening": "جارٍ الفتح...",
+    "openSuccess": "تم فتح السلسلة بنجاح.",
+    "openError": "خطأ في فتح السلسلة.",
+    "seriesList": "سلاسل المتجر",
+    "reload": "إعادة تحميل",
+    "noSeries": "لا توجد سلاسل. افتح سلسلة لبدء إصدار الفواتير.",
+    "progress": "التالي: {next} · الأخير: {last}",
+    "seriesStatus": {
+      "PENDING": "معلّقة",
+      "OPEN": "مفتوحة",
+      "CLOSED": "مغلقة",
+      "CANCELLED": "ملغاة",
+      "REJECTED": "مرفوضة"
+    }
+  },
+  "adminFiscal": {
+    "title": "الفوترة",
+    "subtitle": "إعداد الفوترة الإلكترونية (AGT)",
+    "loadError": "خطأ في تحميل الإعدادات.",
+    "saveSuccess": "تم حفظ الإعدادات.",
+    "saveError": "خطأ في حفظ الإعدادات.",
+    "devModeNote": "لا يوجد عنوان AGT أساسي مُعد — الفواتير تُوقّع محليًا دون إرسال (وضع التطوير).",
+    "settingsTitle": "إعدادات المنصة",
+    "productId": "معرّف المنتج",
+    "productVersion": "إصدار المنتج",
+    "softwareValidationNumber": "رقم التحقق من البرنامج",
+    "certificationDate": "تاريخ الاعتماد",
+    "signatureVersion": "إصدار التوقيع",
+    "timezone": "المنطقة الزمنية",
+    "agtTitle": "بيانات اعتماد AGT (SIFP)",
+    "agtBaseUrl": "عنوان AGT الأساسي",
+    "agtUsername": "اسم المستخدم",
+    "agtPassword": "كلمة المرور",
+    "signatureKey": "مفتاح توقيع المُنتِج",
+    "signatureKeySet": "مُحدد",
+    "signatureKeyMissing": "سيُولّد (عند أول إصدار)",
+    "schemaVersion": "schemaVersion: {v}",
+    "saving": "جارٍ الحفظ...",
+    "save": "حفظ الإعدادات"
   }
 }

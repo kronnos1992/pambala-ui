@@ -74,7 +74,8 @@
     "myAccount": "我的账户",
     "orders": "订单",
     "cart": "购物车",
-    "checkout": "结算"
+    "checkout": "结算",
+    "fiscal": "开票"
   },
   "login": {
     "welcomeBack": "欢迎回来！",
@@ -667,7 +668,8 @@
     "manageStore": "我的店铺",
     "noStoreTitle": "你还没有店铺",
     "noStoreHint": "创建你的店铺，开始销售。",
-    "createStore": "创建店铺"
+    "createStore": "创建店铺",
+    "manageFiscal": "开票管理"
   },
   "sellerPayout": {
     "title": "支付方式",
@@ -900,7 +902,8 @@
     "navReviews": "评价",
     "navRoles": "角色",
     "viewStore": "查看店铺",
-    "logout": "退出"
+    "logout": "退出",
+    "navFiscal": "开票"
   },
   "adminDashboard": {
     "title": "仪表盘",
@@ -1304,5 +1307,112 @@
     "notePlaceholder": "决定理由（可选）...",
     "success": "审核操作成功执行",
     "error": "执行审核操作时出错"
+  },
+  "orderInvoice": {
+    "title": "发票",
+    "noInvoice": "此订单尚未开具发票。",
+    "emit": "开具发票",
+    "emitting": "正在开具...",
+    "emitSuccess": "发票开具成功。",
+    "alreadyEmitted": "发票之前已开具。",
+    "emitError": "开具发票出错。",
+    "emitHint": "正式开具发票需要已配置店铺税务资料并获得 AGT 授权的序列号。",
+    "documentNo": "单据编号",
+    "issuedOn": "开具于",
+    "subtotal": "小计",
+    "iva": "增值税",
+    "refresh": "刷新状态",
+    "refreshing": "正在刷新...",
+    "refreshDone": "AGT 状态已更新。",
+    "refreshError": "刷新状态出错。",
+    "qrOpen": "公开查询 (QR)",
+    "offlineNote": "开发模式 — AGT 无远程状态。",
+    "status": {
+      "PENDING": "待处理",
+      "SUBMITTED": "已提交",
+      "VALID": "有效",
+      "INVALID": "无效",
+      "REJECTED": "已拒绝",
+      "FAILED": "失败"
+    }
+  },
+  "sellerFiscal": {
+    "title": "开票管理",
+    "breadcrumb": "开票",
+    "noStore": "您还没有店铺。",
+    "noStoreHint": "请先创建您的店铺以配置税务数据。",
+    "profileTitle": "店铺税务资料",
+    "profileHint": "用于电子开票的签发人信息（AGT / DE 683/25）。",
+    "inactiveNote": "资料未激活 — 请联系平台管理员。",
+    "nif": "税号 (NIF)",
+    "nifRequired": "税号为必填项。",
+    "legalName": "法定名称",
+    "legalNameRequired": "法定名称为必填项。",
+    "address": "地址",
+    "addressRequired": "地址为必填项。",
+    "province": "省份",
+    "selectProvince": "选择省份",
+    "provinceRequired": "省份为必填项。",
+    "district": "区 / 市",
+    "industryCode": "CAE",
+    "vatRegime": "增值税制度",
+    "regimes": {
+      "GERAL": "一般",
+      "SIMPLIFICADO": "简化",
+      "EXCLUIDO": "排除",
+      "ISENTO": "免税"
+    },
+    "vatExemptionCode": "免税代码",
+    "establishmentNumber": "营业场所",
+    "establishmentRegistered": "营业场所已在 AGT 注册",
+    "saveProfile": "保存税务资料",
+    "saving": "正在保存...",
+    "saveSuccess": "税务资料已保存。",
+    "saveError": "保存税务资料出错。",
+    "loadError": "加载税务数据出错。",
+    "seriesTitle": "序列",
+    "seriesHint": "AGT 为此营业场所授权的编号序列。",
+    "documentType": "类型（标题）",
+    "year": "年份",
+    "openSeries": "打开序列",
+    "opening": "正在打开...",
+    "openSuccess": "序列打开成功。",
+    "openError": "打开序列出错。",
+    "seriesList": "店铺序列",
+    "reload": "重新加载",
+    "noSeries": "暂无序列。打开一个序列以开始开具发票。",
+    "progress": "下一个：{next} · 最近：{last}",
+    "seriesStatus": {
+      "PENDING": "待处理",
+      "OPEN": "已打开",
+      "CLOSED": "已关闭",
+      "CANCELLED": "已取消",
+      "REJECTED": "已拒绝"
+    }
+  },
+  "adminFiscal": {
+    "title": "开票",
+    "subtitle": "电子开票配置（AGT）",
+    "loadError": "加载设置出错。",
+    "saveSuccess": "设置已保存。",
+    "saveError": "保存设置出错。",
+    "devModeNote": "未配置 AGT 基础 URL — 发票在本地签名而不提交（开发模式）。",
+    "settingsTitle": "平台设置",
+    "productId": "产品 ID",
+    "productVersion": "产品版本",
+    "softwareValidationNumber": "软件验证号",
+    "certificationDate": "认证日期",
+    "signatureVersion": "签名版本",
+    "timezone": "时区",
+    "agtTitle": "AGT 凭据 (SIFP)",
+    "agtBaseUrl": "AGT 基础 URL",
+    "agtUsername": "用户名",
+    "agtPassword": "密码",
+    "signatureKey": "生产商签名密钥",
+    "signatureKeySet": "已设置",
+    "signatureKeyMissing": "待生成（首次开具时创建）",
+    "schemaVersion": "schemaVersion: {v}",
+    "saving": "正在保存...",
+    "save": "保存设置"
   }
 }

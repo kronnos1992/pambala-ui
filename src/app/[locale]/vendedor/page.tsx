@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl'
 import { Link } from '@/i18n/navigation'
 import {
   ShoppingCart, DollarSign, Star, Package, Plus,
-  ChevronRight, Eye, Clock, ArrowUpRight, CreditCard, Store
+  ChevronRight, Eye, Clock, ArrowUpRight, CreditCard, Store, FileText
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -101,6 +101,12 @@ export default function VendedorPage() {
             <Button variant="outline" size="sm">
               <ShoppingCart className="h-4 w-4 mr-2" />
               {t('manageOrders')}
+            </Button>
+          </Link>
+          <Link href="/vendedor/fiscal">
+            <Button variant="outline" size="sm">
+              <FileText className="h-4 w-4 mr-2" />
+              {t('manageFiscal')}
             </Button>
           </Link>
         </div>
