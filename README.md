@@ -120,6 +120,7 @@ Payloads sensíveis (login, perfil, pagamento) são cifrados com `tweetnacl` ent
 - `/vendedor/loja` permite criar/editar a loja própria. Ao criar a loja, a conta passa automaticamente a `SELLER` (a API faz o `refreshUser` e o state do auth store é atualizado com a loja).
 - O dashboard do vendedor mostra um banner de onboarding quando o utilizador é vendedor e ainda não tem loja.
 - O `auth-store` armazena agora `roles` (todas as keys) e `store` (loja do `me`); `resolveUiRole` mapeia `ADMIN`→admin, `MANAGER`/`SELLER`→seller (o toggler do register continua a criar apenas `CLIENT` no backend).
+- O detalhe do pedido `/vendedor/pedidos/[id]` inclui a emissão de fatura: botão **Emitir Fatura** (idempotente, `POST /api/fiscal/orders/:id/invoice`) e, se já existir, mostra `documentNo`, estado AGT (`agtStatus`), totais, atualização de estado (`refresh-status`) e consulta pública via QR.
 
 ## Responsividade (mobile-first)
 
@@ -168,6 +169,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/vendedor/pedidos/[id]` | Detalhe do pedido (blocking de confirmação se comprovativo rejeitado por antifraude, visualização segura, auditoria, chat tripartido de mediação em tempo real via SSE e rastreamento do ciclo de vida: marcar enviado com transportadora/rastreio e marcar entregue) |
 | `/vendedor/pagamento` | Métodos de pagamento da loja |
 | `/vendedor/loja` | Loja do vendedor (criar/editar; logótipo + foto de capa com upload e preview; após guardar redireciona para o dashboard) |
+| `/vendedor/fiscal` | Faturação electrónica da loja (AGT): perfil fiscal (NIF, regime de IVA, estabelecimento) e séries autorizadas (abrir série FT/NC/...) |
 | `/admin` | Dashboard admin (stats: receita, pedidos, users, lojas) |
 | `/admin/pedidos` | Gerir todos os pedidos (filtro, validação de pagamentos, mediação via chat tripartido em tempo real via SSE e ações de moderação manual: aprovar comprovativo / rejeição definitiva no modal de auditoria) |
 | `/admin/disputas` | Central de disputas: fila dedicada com todos os casos abertos (estado, risco do comprovativo, não lidas, último contacto) e acesso ao chat tripartido de mediação + badge de não lidas no menu/header |
@@ -176,6 +178,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/admin/produtos` | Gerir todos os produtos (ativo/inativo, eliminação) |
 | `/admin/categorias` | CRUD de categorias |
 | `/admin/avaliacoes` | Gerir/eliminar avaliações |
+| `/admin/fiscal` | Configuração da faturação electrónica da plataforma: identificação do software (AGT), nº de validação, data de certificação e credenciais SIFP |
 | `/admin/roles` | RBAC: CRUD de roles, responsabilidades e atribuição de permissões |
 | `/como-funciona` | Como funciona |
 | `/contacto` | Contacto |
