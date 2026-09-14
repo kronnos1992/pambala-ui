@@ -7,7 +7,7 @@ type E2ERetryConfig = InternalAxiosRequestConfig & {
 }
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://pambala-api.monait.workers.dev/api',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -15,7 +15,7 @@ const api = axios.create({
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL
   ? process.env.NEXT_PUBLIC_API_URL.replace(/\/api\/?$/, '')
-  : 'http://localhost:3001'
+  : 'https://pambala-api.monait.workers.dev'
 
 /**
  * Request Interceptor: Autentica + Criptografa
@@ -89,10 +89,11 @@ api.interceptors.response.use(
 
     // Self-heal E2E: se a sessão foi perdida no servidor (restart/expiry),
     // re-faz o handshake e repete o pedido uma vez, de forma transparente.
+    // Válido para GETs (respostas cifradas com 400 "Invalid session") e
+    // para writes cujo body foi rejeitado por sessão inválida.
     const retryConfig = error.config as E2ERetryConfig | undefined
     if (
       retryConfig &&
-      retryConfig._e2eOriginal &&
       !retryConfig._e2eRetried &&
       error.response?.status === 400 &&
       typeof error.response?.data?.error === 'string' &&
@@ -100,14 +101,13 @@ api.interceptors.response.use(
         error.response.data.error
       )
     ) {
-      const original = retryConfig._e2eOriginal
       retryConfig._e2eRetried = true
+      if (retryConfig._e2eOriginal) {
+        retryConfig.data = retryConfig._e2eOriginal
+      }
       return e2eClient
         .init()
-        .then(() => {
-          retryConfig.data = original
-          return api(retryConfig)
-        })
+        .then(() => api(retryConfig))
         .catch(() => Promise.reject(error))
     }
 
