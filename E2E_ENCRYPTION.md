@@ -14,11 +14,11 @@ Um sistema **completo de criptografia ponta-a-ponta (E2E)** onde:
 ## 🏗️ Arquitetura
 
 ```
-FRONTEND (Next.js)                    BACKEND (Hono + Node.js)
+FRONTEND (Next.js)                    BACKEND (Cloudflare Workers)
 ┌─────────────────────────────────┐   ┌─────────────────────────────────┐
 │ E2EProvider (App startup)       │   │ E2EManager (Server keys)        │
-│ • Gera keypair                  │   │ • Gera keypair                  │
-│ • Obtém public key do servidor  │   │ • Gerencia sessões              │
+│ • Gera keypair                  │   │ • Gera keypair (partilhado)     │
+│ • Obtém public key do servidor  │   │ • Gerencia sessões (Durable Obj)│
 │ • Faz handshake                 │   │ • Criptografa/Descriptografa    │
 └─────────────────────────────────┘   └─────────────────────────────────┘
          ↓ axios interceptor            ↓ middleware
@@ -41,9 +41,11 @@ FRONTEND (Next.js)                    BACKEND (Hono + Node.js)
 | Arquivo | Descrição |
 |---------|-----------|
 | `src/security/e2e-manager.ts` | Gerenciador E2E - keyPairs, sessões, criptografia |
+| `src/security/e2e-do.ts` | **Durable Object** - estado E2E partilhado entre todos os isolates do Worker |
 | `src/middleware/e2e.middleware.ts` | Middlewares de descriptografia/criptografia |
 | `src/modules/security/routes.ts` | Rotas de handshake e status |
-| `src/index.ts` | **MODIFICADO** - Integração de middlewares |
+| `src/index.ts` | **MODIFICADO** - Integração de middlewares + export do Durable Object |
+| `wrangler.jsonc` | **MODIFICADO** - binding `E2E_STATE` + migration do Durable Object |
 
 ### Frontend (pambala-ui)
 
@@ -261,13 +263,15 @@ curl -X POST http://localhost:3001/api/security/handshake \
 </E2EProvider>
 ```
 
-### Erro: "Decryption failed"
+### Erro: "Decryption failed - Invalid session"
 
-**Causa**: SessionId expirado, servidor reiniciou (as sessões E2E vivem em memória na API) ou chave pública do servidor mudou.
+**Contexto (resolvido)**: Antes, as sessões E2E viviam **em memória da API** (`static Map`). No Cloudflare Workers cada request pode cair num isolate diferente e a memória é por-isolate — as sessões "sumiam" entre requests e as encriptadas falhavam intermitentemente com `400 Decryption failed: Invalid session`.
 
-**Solução**: O cliente faz **self-heal automático** — ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente. Não é preciso recarregar a página.
+**Solução (implementada)**: O estado E2E (**keypair do servidor + sessões**) foi movido para um **Durable Object** (`E2EStateDO`, binding `E2E_STATE`), que é partilhado e consistente entre todos os isolates. O `src/security/e2e-manager.ts` agora busca o keypair/sessão no DO; em dev local (sem binding) usa o fallback em memória.
+
+**Self-heal (rede de segurança)**: Ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor ainda re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente.
 - Lógica: `src/lib/api.ts` (response interceptor, guard `_e2eRetried` para evitar loop) + `src/lib/e2e-client.ts`.
-- Se mesmo depois do retry continuar a falhar, recarregue a página (novo handshake) e confirme que a API está a correr.
+- Se mesmo assim continuar a falhar, recarregue a página (novo handshake) e confirme que a API está a correr.
 
 **Nota**: `GET`s não são validados por sessão (não enviam body cifrado), por isso uma página pode carregar normalmente com a sessão já morta; o erro só aparece em `POST`/`PUT`/`PATCH`.
 
