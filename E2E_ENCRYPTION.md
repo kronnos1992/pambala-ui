@@ -269,11 +269,11 @@ curl -X POST http://localhost:3001/api/security/handshake \
 
 **Solução (implementada)**: O estado E2E (**keypair do servidor + sessões**) foi movido para um **Durable Object** (`E2EStateDO`, binding `E2E_STATE`), que é partilhado e consistente entre todos os isolates. O `src/security/e2e-manager.ts` agora busca o keypair/sessão no DO; em dev local (sem binding) usa o fallback em memória.
 
-**Self-heal (rede de segurança)**: Ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor ainda re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente.
+**Self-heal (rede de segurança)**: Ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente — aplica-se a `POST`/`PUT`/`PATCH` (body cifrado rejeitado) e a `GET`s cuja resposta seria cifrada.
 - Lógica: `src/lib/api.ts` (response interceptor, guard `_e2eRetried` para evitar loop) + `src/lib/e2e-client.ts`.
 - Se mesmo assim continuar a falhar, recarregue a página (novo handshake) e confirme que a API está a correr.
 
-**Nota**: `GET`s não são validados por sessão (não enviam body cifrado), por isso uma página pode carregar normalmente com a sessão já morta; o erro só aparece em `POST`/`PUT`/`PATCH`.
+**Respostas `GET` cifradas**: o backend também cifra respostas `JSON` de `GET` quando o pedido traz um `X-Session-ID` válido (ex: listas de séries, faturas, dados de lojas), e devolve `400 Invalid session` para sessões inválidas/expiradas — o interceptor volta a fazer o handshake e repete o pedido. Sem header de sessão (ex: primeira carga, clientes não-E2E) a resposta permanece em texto plano.
 
 ### Erro: "Missing X-Session-ID header"
 
