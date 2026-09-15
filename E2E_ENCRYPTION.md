@@ -172,7 +172,10 @@ async function updateProfile(data: any) {
 ### O que está protegido?
 
 ✅ **Em trânsito (Network)**
-- Todos os dados POST/PUT/PATCH são criptografados com NaCl Box
+- Todos os dados `POST`/`PUT`/`PATCH` são criptografados com NaCl Box
+- **Query params** de qualquer método são cifrados no header `X-E2E-Params` — nada de query em claro na URL
+- **O `Authorization` (token) é cifrado** no header `X-E2E-Auth` — o token nunca trafega em claro
+- **Respostas** `JSON` cifradas (incl. `GET`/`DELETE`/`HEAD` com sessão válida)
 - Cada requisição tem seu próprio nonce (aleatório)
 - Impossible descriptografar sem a chave do cliente
 
@@ -269,11 +272,13 @@ curl -X POST http://localhost:3001/api/security/handshake \
 
 **Solução (implementada)**: O estado E2E (**keypair do servidor + sessões**) foi movido para um **Durable Object** (`E2EStateDO`, binding `E2E_STATE`), que é partilhado e consistente entre todos os isolates. O `src/security/e2e-manager.ts` agora busca o keypair/sessão no DO; em dev local (sem binding) usa o fallback em memória.
 
-**Self-heal (rede de segurança)**: Ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente — aplica-se a `POST`/`PUT`/`PATCH` (body cifrado rejeitado) e a `GET`s cuja resposta seria cifrada.
+**Self-heal (rede de segurança)**: Ao receber um `400` com "Invalid session", "Session expired" ou "Decryption failed", o interceptor re-faz o handshake (`e2eClient.init()`) e repete o pedido uma vez, de forma transparente — aplica-se a `POST`/`PUT`/`PATCH` (body cifrado rejeitado), a `GET`/`DELETE`/`HEAD` (resposta ou params/auth cifrados rejeitados). Body e params originais são restaurados antes da repetição.
 - Lógica: `src/lib/api.ts` (response interceptor, guard `_e2eRetried` para evitar loop) + `src/lib/e2e-client.ts`.
 - Se mesmo assim continuar a falhar, recarregue a página (novo handshake) e confirme que a API está a correr.
 
-**Respostas `GET` cifradas**: o backend também cifra respostas `JSON` de `GET` quando o pedido traz um `X-Session-ID` válido (ex: listas de séries, faturas, dados de lojas), e devolve `400 Invalid session` para sessões inválidas/expiradas — o interceptor volta a fazer o handshake e repete o pedido. Sem header de sessão (ex: primeira carga, clientes não-E2E) a resposta permanece em texto plano.
+**Respostas cifradas em métodos sem body**: o backend também cifra respostas `JSON` de `GET`/`DELETE`/`HEAD` quando o pedido traz um `X-Session-ID` válido (ex: listas de séries, faturas, dados de lojas), e devolve `400 Invalid session` para sessões inválidas/expiradas — o interceptor volta a fazer o handshake e repete o pedido. Sem header de sessão (ex: primeira carga, clientes não-E2E) a resposta permanece em texto plano.
+
+**Query params + auth cifrados**: `config.params` de qualquer `api.get`/`api.delete`/etc. são cifrados no header `X-E2E-Params` (o interceptor guarda o original e restaura na repetição self-heal); o token (`Authorization`) é cifrado no header `X-E2E-Auth` e o header `Authorization` é removido do pedido. Permanecem em claro: endpoints de bootstrap (`public-key`, `handshake`, uploads), carregamento de ficheiros (`FormData`) e segmentos do caminho da URL.
 
 ### Erro: "Missing X-Session-ID header"
 
