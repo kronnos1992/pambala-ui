@@ -90,11 +90,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
     }
   }
 
-  const paymentDetails = React.useMemo(() => {
-    if (!order?.paymentDetails) return null
-    try { return JSON.parse(order.paymentDetails) } catch { return null }
-  }, [order])
-
   if (loading) {
     return (
       <div className="mx-auto max-w-7xl px-4 sm:px-6 py-6">
@@ -220,17 +215,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
                 <span className="text-gray-600 dark:text-gray-400">{t('paymentMethod')}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{paymentLabels[order.paymentMethod] || order.paymentMethod}</span>
               </div>
-              {paymentDetails && paymentDetails.type !== 'CASH_ON_DELIVERY' && (
-                <div className="mt-2 p-3 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 space-y-1">
-                  {paymentDetails.phone && <PaymentRow label={t('payment.phone')} value={paymentDetails.phone} />}
-                  {paymentDetails.ownerName && <PaymentRow label={t('payment.ownerName')} value={paymentDetails.ownerName} />}
-                  {paymentDetails.bankName && <PaymentRow label={t('payment.bankName')} value={paymentDetails.bankName} />}
-                  {paymentDetails.iban && <PaymentRow label={t('payment.iban')} value={paymentDetails.iban} />}
-                  {paymentDetails.bankAccount && <PaymentRow label={t('payment.accountNumber')} value={paymentDetails.bankAccount} />}
-                  {paymentDetails.entity && <PaymentRow label={t('payment.entity')} value={paymentDetails.entity} />}
-                  {paymentDetails.reference && <PaymentRow label={t('payment.reference')} value={paymentDetails.reference} />}
-                </div>
-              )}
 
               {order.paymentCode && order.paymentStatus !== 'PAID' && (
                 <div className="mt-3 p-3.5 rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700/50 space-y-1.5">
@@ -566,15 +550,6 @@ export default function OrderDetailPage({ params }: { params: Promise<{ id: stri
           </div>
         </div>
       )}
-    </div>
-  )
-}
-
-function PaymentRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between text-sm">
-      <span className="text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="font-medium text-gray-900 dark:text-white">{value}</span>
     </div>
   )
 }

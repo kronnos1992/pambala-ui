@@ -142,11 +142,11 @@ export default function CheckoutPage() {
   const methodTypeDetail = (method: PaymentMethod): string => {
     switch (method.type) {
       case 'EXPRESS':
-        return method.phone ? t('methodExpressWithPhone', { phone: method.phone }) : t('methodExpress')
+        return t('methodExpress')
       case 'TRANSFER':
-        return method.bankName ? t('methodTransferToBank', { bank: method.bankName }) : t('methodTransfer')
+        return t('methodTransfer')
       case 'REFERENCE':
-        return t('methodReference', { entity: method.entity ?? '', reference: method.reference ?? '' })
+        return t('methodReferenceNext')
       case 'CASH_ON_DELIVERY':
         return t('methodCashOnDelivery')
       default:
@@ -339,27 +339,10 @@ function PaymentInfo({ method }: { method: PaymentMethod }) {
   }
   return (
     <div className="mt-4 p-4 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
-      <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">{t('paymentDetailsTitle')}</p>
-      <PaymentDetailRow label={t('methodFieldLabel')} value={paymentLabels[method.type] || method.type} />
-      {method.phone && <PaymentDetailRow label={t('phoneFieldLabel')} value={method.phone} />}
-      {method.ownerName && <PaymentDetailRow label={t('ownerLabel')} value={method.ownerName} />}
-      {method.bankName && <PaymentDetailRow label={t('bankLabel')} value={method.bankName} />}
-      {method.iban && <PaymentDetailRow label="IBAN" value={method.iban} />}
-      {method.bankAccount && <PaymentDetailRow label={t('bankAccountLabel')} value={method.bankAccount} />}
-      {method.entity && <PaymentDetailRow label={t('entityLabel')} value={method.entity} />}
-      {method.reference && <PaymentDetailRow label={t('referenceLabel')} value={method.reference} />}
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
-        {t('uploadNote')}
+      <p className="text-sm font-medium text-gray-900 dark:text-white mb-2">{t('paymentNextStepTitle')}</p>
+      <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+        {t('paymentNextStepText')}
       </p>
-    </div>
-  )
-}
-
-function PaymentDetailRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex justify-between py-1 text-sm">
-      <span className="text-gray-500 dark:text-gray-400">{label}</span>
-      <span className="font-medium text-gray-900 dark:text-white">{value}</span>
     </div>
   )
 }
