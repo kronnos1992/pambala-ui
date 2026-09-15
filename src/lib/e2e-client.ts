@@ -11,7 +11,10 @@ export class E2EClient {
   private initPromise: Promise<string> | null = null
   private apiUrl: string
 
-  constructor(apiUrl: string = 'http://localhost:3001/api') {
+  constructor(
+    apiUrl: string = process.env.NEXT_PUBLIC_API_URL ||
+      'https://pambala-api.monait.workers.dev/api'
+  ) {
     this.apiUrl = apiUrl
     this.loadFromStorage()
   }
@@ -228,4 +231,6 @@ export class E2EClient {
 }
 
 // Instância global
-export const e2eClient = new E2EClient()
+export const e2eClient = new E2EClient(
+  process.env.NEXT_PUBLIC_API_URL || 'https://pambala-api.monait.workers.dev/api'
+)

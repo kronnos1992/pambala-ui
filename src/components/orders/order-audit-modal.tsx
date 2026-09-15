@@ -46,7 +46,9 @@ export interface OrderAuditModalProps {
 const receiptDisplayUrl = (url?: string) => {
   if (!url) return ''
   if (url.startsWith('http://') || url.startsWith('https://')) return url
-  const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'
+  const base = (
+    process.env.NEXT_PUBLIC_API_URL || 'https://pambala-api.monait.workers.dev'
+  ).replace(/\/api\/?$/, '')
   return `${base}${url.startsWith('/') ? '' : '/'}${url}`
 }
 

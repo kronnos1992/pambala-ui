@@ -688,7 +688,7 @@ export async function uploadFile(file: File) {
   })
   const url = data.url as string
   return {
-    url: url.startsWith('http') ? url : `http://localhost:3001${url}`,
+    url: url.startsWith('http') ? url : `${API_BASE_URL}${url}`,
     filename: data.filename as string,
   }
 }
