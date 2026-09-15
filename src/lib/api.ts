@@ -44,12 +44,13 @@ api.interceptors.request.use(async (config) => {
 
   const retryConfig = config as E2ERetryConfig
 
+  // Rotas plain: o servidor não descriptografa (skipRoutes no e2e.middleware),
+  // logo o Authorization/query têm de seguir em claro.
+  const url = (config.url || '') as string
+  const isPlainRoute = ['/security/handshake', '/security/public-key', '/health', '/uploads'].some((p) => url.startsWith(p))
+
   // 2.1 Criptografar query params (qualquer método): nada de query em claro na URL
-  if (
-    config.params &&
-    typeof config.params === 'object' &&
-    Object.keys(config.params).length > 0
-  ) {
+  if (!isPlainRoute && config.params && typeof config.params === 'object' && Object.keys(config.params).length > 0) {
     try {
       retryConfig._e2eParamsOriginal = config.params
       const { encrypted, nonce } = e2eClient.encrypt(config.params)
@@ -62,7 +63,7 @@ api.interceptors.request.use(async (config) => {
 
   // 2.2 Criptografar token de autenticação (não trafega no header Authorization)
   const authHeader = config.headers?.Authorization
-  if (authHeader) {
+  if (!isPlainRoute && authHeader) {
     try {
       const { encrypted, nonce } = e2eClient.encrypt(authHeader)
       config.headers['X-E2E-Auth'] = JSON.stringify({ encrypted, nonce })
