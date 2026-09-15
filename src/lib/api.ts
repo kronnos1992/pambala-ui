@@ -3,6 +3,7 @@ import { e2eClient } from './e2e-client'
 
 type E2ERetryConfig = InternalAxiosRequestConfig & {
   _e2eOriginal?: unknown
+  _e2eParamsOriginal?: unknown
   _e2eRetried?: boolean
 }
 
@@ -39,6 +40,36 @@ api.interceptors.request.use(async (config) => {
   const sessionId = e2eClient.getSessionId()
   if (sessionId) {
     config.headers['X-Session-ID'] = sessionId
+  }
+
+  const retryConfig = config as E2ERetryConfig
+
+  // 2.1 Criptografar query params (qualquer método): nada de query em claro na URL
+  if (
+    config.params &&
+    typeof config.params === 'object' &&
+    Object.keys(config.params).length > 0
+  ) {
+    try {
+      retryConfig._e2eParamsOriginal = config.params
+      const { encrypted, nonce } = e2eClient.encrypt(config.params)
+      config.headers['X-E2E-Params'] = JSON.stringify({ encrypted, nonce })
+      config.params = undefined
+    } catch (error) {
+      console.error('Params encryption error:', error)
+    }
+  }
+
+  // 2.2 Criptografar token de autenticação (não trafega no header Authorization)
+  const authHeader = config.headers?.Authorization
+  if (authHeader) {
+    try {
+      const { encrypted, nonce } = e2eClient.encrypt(authHeader)
+      config.headers['X-E2E-Auth'] = JSON.stringify({ encrypted, nonce })
+      config.headers.delete('Authorization')
+    } catch (error) {
+      console.error('Auth encryption error:', error)
+    }
   }
 
   // 3. Criptografar body se houver dados (exceto multipart/upload)
@@ -102,6 +133,9 @@ api.interceptors.response.use(
       )
     ) {
       retryConfig._e2eRetried = true
+      if (retryConfig._e2eParamsOriginal) {
+        retryConfig.params = retryConfig._e2eParamsOriginal
+      }
       if (retryConfig._e2eOriginal) {
         retryConfig.data = retryConfig._e2eOriginal
       }
