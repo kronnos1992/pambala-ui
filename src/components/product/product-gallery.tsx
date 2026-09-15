@@ -25,7 +25,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
   }
 
   return (
-    <div className="flex flex-col-reverse gap-3 sm:flex-row">
+    <div className="flex flex-col-reverse gap-3 sm:flex-row sm:max-w-md sm:mx-auto w-full">
       <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-y-auto sm:max-h-[500px]">
         {images.map((img, i) => (
           <button
