@@ -278,7 +278,7 @@ curl -X POST http://localhost:3001/api/security/handshake \
 
 **Respostas cifradas em métodos sem body**: o backend também cifra respostas `JSON` de `GET`/`DELETE`/`HEAD` quando o pedido traz um `X-Session-ID` válido (ex: listas de séries, faturas, dados de lojas), e devolve `400 Invalid session` para sessões inválidas/expiradas — o interceptor volta a fazer o handshake e repete o pedido. Sem header de sessão (ex: primeira carga, clientes não-E2E) a resposta permanece em texto plano.
 
-**Query params + auth cifrados**: `config.params` de qualquer `api.get`/`api.delete`/etc. são cifrados no header `X-E2E-Params` (o interceptor guarda o original e restaura na repetição self-heal); o token (`Authorization`) é cifrado no header `X-E2E-Auth` e o header `Authorization` é removido do pedido. Permanecem em claro: endpoints de bootstrap (`public-key`, `handshake`, uploads), carregamento de ficheiros (`FormData`) e segmentos do caminho da URL.
+**Query params + auth cifrados**: `config.params` de qualquer `api.get`/`api.delete`/etc. são cifrados no header `X-E2E-Params` (o interceptor guarda o original e restaura na repetição self-heal); o token (`Authorization`) é cifrado no header `X-E2E-Auth` e o header `Authorization` é removido do pedido. Permanecem em claro: endpoints de bootstrap (`public-key`, `handshake`, uploads), carregamento de ficheiros (`FormData`) e segmentos do caminho da URL. Para as rotas que o servidor não descriptografa (skipRoutes: `handshake`, `public-key`, `health`, `uploads`), o interceptor **não** cifra o `Authorization` nem os params — envia o header em claro para que o `authFilter` do backend o leia diretamente (`src/lib/api.ts`, `isPlainRoute`).
 
 ### Erro: "Missing X-Session-ID header"
 
