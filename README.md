@@ -179,7 +179,7 @@ A API base URL está configurada em `src/lib/api.ts` como `http://localhost:3001
 | `/admin/produtos` | Gerir todos os produtos (ativo/inativo, eliminação) |
 | `/admin/categorias` | CRUD de categorias |
 | `/admin/avaliacoes` | Gerir/eliminar avaliações |
-| `/admin/fiscal` | Configuração da faturação electrónica da plataforma: identificação do software (AGT), nº de validação, data de certificação e credenciais SIFP |
+| `/admin/fiscal` | Configuração da faturação electrónica da plataforma: identificação do software (AGT), nº de validação, data de certificação, credenciais SIFP e notificações AGT (URL de callback/webhook a registar na AGT + token de autenticação) |
 | `/admin/roles` | RBAC: CRUD de roles, responsabilidades e atribuição de permissões |
 | `/como-funciona` | Como funciona |
 | `/contacto` | Contacto |
