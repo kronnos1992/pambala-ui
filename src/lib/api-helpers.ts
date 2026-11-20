@@ -1349,6 +1349,9 @@ export interface ApiFiscalSettings {
   agtBaseUrl?: string | null
   agtUsername?: string | null
   agtPassword?: string | null
+  agtCallbackUrl?: string | null
+  agtWebhookToken?: string | null
+  webhookUrl?: string
   timezone: string
   createdAt: string
   updatedAt: string

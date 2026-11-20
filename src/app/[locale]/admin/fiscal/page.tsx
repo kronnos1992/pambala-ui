@@ -34,6 +34,8 @@ export default function AdminFiscalPage() {
     agtBaseUrl: '',
     agtUsername: '',
     agtPassword: '',
+    agtCallbackUrl: '',
+    agtWebhookToken: '',
     timezone: 'Africa/Luanda',
   })
 
@@ -50,6 +52,8 @@ export default function AdminFiscalPage() {
           agtBaseUrl: data.agtBaseUrl || '',
           agtUsername: data.agtUsername || '',
           agtPassword: data.agtPassword || '',
+          agtCallbackUrl: data.agtCallbackUrl || '',
+          agtWebhookToken: data.agtWebhookToken || '',
           timezone: data.timezone || 'Africa/Luanda',
         })
       })
@@ -70,6 +74,8 @@ export default function AdminFiscalPage() {
         agtBaseUrl: form.agtBaseUrl.trim() || undefined,
         agtUsername: form.agtUsername.trim() || undefined,
         agtPassword: form.agtPassword || undefined,
+        agtCallbackUrl: form.agtCallbackUrl.trim() || undefined,
+        agtWebhookToken: form.agtWebhookToken.trim() || undefined,
         timezone: form.timezone.trim() || 'Africa/Luanda',
       })
       setSettings(updated)
@@ -159,28 +165,57 @@ export default function AdminFiscalPage() {
               />
             </div>
 
-            <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4 space-y-4">
-              <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('agtTitle')}</p>
-              <Input
-                label={t('agtBaseUrl')}
-                placeholder="https://sifp.minfin.gov.ao"
-                value={form.agtBaseUrl}
-                onChange={(e) => setForm((p) => ({ ...p, agtBaseUrl: e.target.value }))}
-              />
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+<div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4 space-y-4">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('agtTitle')}</p>
                 <Input
-                  label={t('agtUsername')}
-                  value={form.agtUsername}
-                  onChange={(e) => setForm((p) => ({ ...p, agtUsername: e.target.value }))}
+                  label={t('agtBaseUrl')}
+                  placeholder="https://sifp.minfin.gov.ao"
+                  value={form.agtBaseUrl}
+                  onChange={(e) => setForm((p) => ({ ...p, agtBaseUrl: e.target.value }))}
                 />
-                <Input
-                  label={t('agtPassword')}
-                  type="password"
-                  value={form.agtPassword}
-                  onChange={(e) => setForm((p) => ({ ...p, agtPassword: e.target.value }))}
-                />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                  <Input
+                    label={t('agtUsername')}
+                    value={form.agtUsername}
+                    onChange={(e) => setForm((p) => ({ ...p, agtUsername: e.target.value }))}
+                  />
+                  <Input
+                    label={t('agtPassword')}
+                    type="password"
+                    value={form.agtPassword}
+                    onChange={(e) => setForm((p) => ({ ...p, agtPassword: e.target.value }))}
+                  />
+                </div>
               </div>
-            </div>
+
+              <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/60 p-4 space-y-4">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{t('callbackTitle')}</p>
+                {settings?.webhookUrl && (
+                  <div className="flex items-start gap-2 rounded-lg bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 px-3 py-2">
+                    <Info className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                      <p className="font-medium text-gray-800 dark:text-gray-200">{t('webhookUrlLabel')}</p>
+                      <code className="block break-all font-mono text-[11px] mt-1">{settings.webhookUrl}</code>
+                      <p className="mt-1.5">{t('webhookUrlNote')}</p>
+                    </div>
+                  </div>
+                )}
+                <Input
+                  label={t('agtCallbackUrl')}
+                  placeholder="https://pambala-api.monait.workers.dev/api/fiscal/webhooks/agt"
+                  value={form.agtCallbackUrl}
+                  onChange={(e) => setForm((p) => ({ ...p, agtCallbackUrl: e.target.value }))}
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">{t('agtCallbackUrlHint')}</p>
+                <Input
+                  label={t('agtWebhookToken')}
+                  type="password"
+                  placeholder="••••••••"
+                  value={form.agtWebhookToken}
+                  onChange={(e) => setForm((p) => ({ ...p, agtWebhookToken: e.target.value }))}
+                />
+                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-1">{t('agtWebhookTokenHint')}</p>
+              </div>
 
             {settings && (
               <div className="flex items-center gap-2 rounded-lg bg-gray-50 dark:bg-gray-800/60 px-4 py-3 text-sm">
